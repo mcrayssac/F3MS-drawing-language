@@ -1,0 +1,4 @@
+set_color(255,0,0); 
+point1 = point(200,300);
+point2 = point(400,400);
+line(point1,point2);

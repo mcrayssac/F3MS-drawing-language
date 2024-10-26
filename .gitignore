@@ -1,0 +1,21 @@
+# Ignore the src/temp folder
+/src/temp/
+
+# Ignore Flex and Bison generated files
+*.tab.c
+*.tab.h
+lex.yy.c
+
+# Ignore compiled Python files
+*.pyc
+__pycache__/
+
+# Ignore build artifacts
+/build/
+*.o
+*.out
+*.exe
+
+# Ignore editor or OS-specific files
+.DS_Store
+Thumbs.db

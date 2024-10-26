@@ -60,13 +60,42 @@ Ce compilateur permet aux utilisateurs de créer des dessins complexes et des an
    pip install pygame
    ```
 
-3. **Compiler le Compilateur**
+3. **Etapes de Compilation**
 
-   ```bash
-   flex lexer.l
-   bison -d parser.y
-   gcc -o f3ms_draw_compiler main.c parser.tab.c lex.yy.c -lfl
-   ```
+- Insérer le code dans un fichier `.draw` (dans le répertoire `home` avec exemple de nom `my_draw.draw`):
+
+    ```python
+    set_color(255,0,0); 
+    point1 = point(200,300);
+    point2 = point(400,400);
+    line(point1,point2);
+    ```
+
+- Supprimer les fichiers générés précédemment:
+
+    ```bash
+    make clean
+    ```
+
+- Compiler le compilateur:
+
+    ```bash
+    make (all) [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py]
+    ```
+- Compiler le fichier `.draw` en un script Python:
+
+    ```bash
+    make output [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py]
+    ```
+- Exécuter le script Python généré:
+
+    ```bash
+    python draw.py
+    ```
+    ou
+    ```bash
+    python3 draw.py
+    ```
 
 ## Usage
 
