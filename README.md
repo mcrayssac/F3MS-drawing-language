@@ -106,6 +106,7 @@ point(x,y);
 ##### Paramètres
 
 > `float x` : abscisse
+>
 > `float y` : ordonnée
 >
 
@@ -130,6 +131,7 @@ line(point1,point2);
 ##### Paramètres
 
 > `point point1` : première extrémité de la ligne
+>
 > `point point2` : deuxième extrémité de la ligne
 >
 
@@ -153,7 +155,9 @@ rectangle(point,width,height);
 ##### Paramètres
 
 > `point point` : coin supérieur gauche du rectangle
+>
 > `float width` : largeur du rectangle
+>
 > `float height` : hauteur du rectangle
 >
 
@@ -178,6 +182,7 @@ square(point,size);
 ##### Paramètres
 
 > `point point` : coin supérieur gauche du carré
+>
 > `float size` : taille d'un côté du carré
 > 
 
@@ -202,6 +207,7 @@ circle(point,radius);
 ##### Paramètres
 
 > `point point` : centre du cercle
+>
 > `float radius` : rayon du cercle
 > 
 
@@ -226,7 +232,9 @@ ellipse(point,width,height);
 ##### Paramètres
 
 > `point point` : centre de l’ellipse
+>
 > `float width` : largeur de l’ellipse
+>
 > `float height` : hauteur de l’ellipse
 > 
 
@@ -274,8 +282,11 @@ arc(point,radius,start_angle,end_angle);
 ##### Paramètres
 
 > `point point` : centre de l’arc
+>
 > `float radius` : rayon de l’arc
+>
 > `int start_angle` : angle de début de l’arc
+>
 > `int end_angle` : angle de fin de l’arc
 > 
 
@@ -300,7 +311,9 @@ regular_polygon(point,sides,radius);
 ##### Paramètres
 
 > `point point` : centre du polygone
+>
 > `int sides` : nombre de côtés du polygone
+>
 > `float radius` : rayon du polygone par lesquels les sommets passent
 > 
 
@@ -325,8 +338,11 @@ star(point,points,outer_radius,inner_radius);
 ##### Paramètres
 
 > `point point` : centre de l’étoile
+>
 > `int points` : nombre de points extérieurs de l’étoile
+>
 > `float outer_radius` : rayon extérieur de l’étoile
+>
 > `float inner_radius` : rayon intérieur de l’étoile
 > 
 
@@ -351,7 +367,9 @@ text(point,text,font_size);
 ##### Paramètres
 
 > `point point` : position de départ du texte à afficher
+>
 > `string text` : texte à afficher
+>
 > `int font_size` : taille de la police du texte
 > 
 
@@ -376,8 +394,11 @@ image(point,width,height,filepath);
 ##### Paramètres
 
 > `point point` : position de l’image à dessiner
+>
 > `float width` : largeur de l’image
+>
 > `float height` : hauteur de l’image
+>
 > `string filepath` : chemin du fichier image
 > 
 
