@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     // Write the header of the Python script
     fprintf(output, "import pygame\n");
     fprintf(output, "pygame.init()\n");
-    fprintf(output, "screen = pygame.display.set_mode((800, 600))\n");
+    fprintf(output, "screen = pygame.display.set_mode((1000, 800))\n");
     fprintf(output, "pygame.display.set_caption('Draw Line')\n");
     fprintf(output, "screen.fill((255, 255, 255))\n"); // Fill background with white
     fprintf(output, "color = (0, 0, 0)\n"); // Default color

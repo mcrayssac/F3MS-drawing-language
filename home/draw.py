@@ -1,12 +1,16 @@
 import pygame
 pygame.init()
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((1000, 800))
 pygame.display.set_caption('Draw Line')
 screen.fill((255, 255, 255))
 color = (0, 0, 0)
 
-color = (1.000000, 0.000000, 0.000000)
+color = [0, 0, 0]
 pygame.draw.line(screen, color, (200, 300), (400, 400), 1)
+color = [255, 0, 0]
+pygame.draw.line(screen, color, (600, 600), (100, 600), 1)
+color = [0, 100, 0]
+pygame.draw.line(screen, color, (150, 500), (500, 100), 1)
 
 pygame.display.flip()
 running = True

@@ -62,7 +62,7 @@ function_call:
 
 set_color_call:
     SET_COLOR LPAREN NUMBER COMMA NUMBER COMMA NUMBER RPAREN {
-        fprintf(output, "color = (%f, %f, %f)\n", $3/255.0, $5/255.0, $7/255.0);
+        fprintf(output, "color = [%d, %d, %d]\n", $3, $5, $7);
     }
     ;
 
