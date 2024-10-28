@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
     fprintf(output, "pygame.display.set_caption('Draw Line')\n");
     fprintf(output, "screen.fill((255, 255, 255))\n"); // Fill background with white
     fprintf(output, "color = (0, 0, 0)\n"); // Default color
+    fprintf(output, "line_width = 1\n"); // Default line width
     fprintf(output, "\n");
 
     yyparse();

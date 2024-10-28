@@ -40,7 +40,7 @@ Point *find_point(char *name);
 */
 %token <intval> NUMBER
 %token <strval> IDENTIFIER
-%token SET_COLOR POINT LINE
+%token SET_COLOR SET_LINE_WIDTH POINT LINE 
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 
 /* Section: Nonterminal Types
@@ -75,7 +75,14 @@ assignment:
 
 function_call:
     set_color_call
+    | set_line_width_call
     | line_call
+    ;
+
+set_line_width_call:
+    SET_LINE_WIDTH LPAREN NUMBER RPAREN {
+        fprintf(output, "line_width = %d\n", $3);
+    }
     ;
 
 set_color_call:
@@ -86,7 +93,7 @@ set_color_call:
 
 line_call:
     LINE LPAREN expr COMMA expr RPAREN {
-        fprintf(output, "pygame.draw.line(screen, color, (%d, %d), (%d, %d), 1)\n",
+        fprintf(output, "pygame.draw.line(screen, color, (%d, %d), (%d, %d), line_width)\n",
                 $3->x, $3->y, $5->x, $5->y);
     }
     ;

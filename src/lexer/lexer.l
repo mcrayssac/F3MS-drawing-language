@@ -42,6 +42,7 @@ COMMENT     "#".*
 %%
 
 "set_color"         { return SET_COLOR; }
+"set_line_width"    { return SET_LINE_WIDTH; }
 "point"             { return POINT; }
 "line"              { return LINE; }
 
