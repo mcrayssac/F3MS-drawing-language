@@ -13,6 +13,8 @@ color = [255, 0, 0]
 pygame.draw.line(screen, color, (600, 600), (100, 600), line_width)
 color = [0, 100, 0]
 pygame.draw.line(screen, color, (150, 500), (500, 100), line_width)
+color = [0, 0, 255]
+pygame.draw.rect(screen, color, pygame.Rect(100, 500, 100, 200))
 
 pygame.display.flip()
 running = True

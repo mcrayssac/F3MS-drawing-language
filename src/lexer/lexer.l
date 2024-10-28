@@ -45,6 +45,7 @@ COMMENT     "#".*
 "set_line_width"    { return SET_LINE_WIDTH; }
 "point"             { return POINT; }
 "line"              { return LINE; }
+"rectangle"         { return RECTANGLE; }
 
 {IDENTIFIER}        { yylval.strval = strdup(yytext); return IDENTIFIER; }
 {NUMBER}            { yylval.intval = atoi(yytext); return NUMBER; }
