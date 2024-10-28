@@ -1,35 +1,51 @@
-/* Include standard headers */
+/*  parser.y
+    This file contains the parser for the compiler.
+    It defines the grammar rules that the parser will use to parse the input file.
+    The parser is implemented using bison.
+*/
+
+/*  Section: Header Files
+    Include necessary header files.
+*/
 %{
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "../common/common.h"
 
-void yyerror(const char *s);
+void yyerror(const char *s); /* Function prototype for error handling */
 int yylex(void);
 
-FILE *output;
+FILE *output; /* Output file */
 
 /* Function prototypes */
 void add_point(char *name, int x, int y);
+void update_point(char *name, int x, int y);
 Point *find_point(char *name);
 
 %}
 
-/* Declare the union */
+/*  Section: Union
+    Define the union type for the parser.
+*/
 %union {
     int intval;
     char *strval;
     Point *pointval;
 }
 
-/* Token declarations */
+/*  Section: Token Types
+    Define the token types for the parser.
+*/
 %token <intval> NUMBER
 %token <strval> IDENTIFIER
 %token SET_COLOR POINT LINE
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 
-/* Non-terminal types */
+/* Section: Nonterminal Types
+    Define the nonterminal types for the parser.
+*/
 %type <pointval> point_expr
 %type <pointval> expr
 
@@ -37,7 +53,9 @@ Point *find_point(char *name);
 
 %%
 
-/* Grammar rules */
+/* Section: Grammar Rules
+    Define the grammar rules for the parser.
+*/
 
 program:
     /* Empty */
@@ -51,7 +69,7 @@ statement:
 
 assignment:
     IDENTIFIER EQUALS point_expr {
-        add_point($1, $3->x, $3->y);
+        update_point($1, $3->x, $3->y);
     }
     ;
 
@@ -96,15 +114,19 @@ expr:
 
 %%
 
-/* Function definitions */
+/*  Section: Function Definitions
+    Define the functions for the parser.
+*/
 
 void yyerror(const char *s) {
     fprintf(stderr, "Error: %s\n", s);
 }
 
+/* Symbol table for points (a table of names and coordinates) */
 Point symbol_table[100];
 int symbol_count = 0;
 
+/* Add a new point to the symbol table */
 void add_point(char *name, int x, int y) {
     symbol_table[symbol_count].name = strdup(name);
     symbol_table[symbol_count].x = x;
@@ -112,6 +134,20 @@ void add_point(char *name, int x, int y) {
     symbol_count++;
 }
 
+/* Update the coordinates of an existing point */
+void update_point(char *name, int x, int y) {
+    for (int i = 0; i < symbol_count; i++) {
+        if (strcmp(symbol_table[i].name, name) == 0) {
+            symbol_table[i].x = x;
+            symbol_table[i].y = y;
+            return;
+        }
+    }
+    // If the point doesn't exist, add it
+    add_point(name, x, y);
+}
+
+/* Find a point in the symbol table */
 Point *find_point(char *name) {
     for (int i = 0; i < symbol_count; i++) {
         if (strcmp(symbol_table[i].name, name) == 0) {

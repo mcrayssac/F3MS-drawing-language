@@ -1,18 +1,34 @@
+/*  lexer.l
+    This file contains the lexer for the parser.
+    It defines the tokens that the parser will use to parse the input file.
+    The lexer is implemented using flex.
+*/
+
+/*  Section: Header Files
+    Include necessary header files.
+*/
 %{
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "../common/common.h"
 
-/* Include parser definitions */
 #include "parser.tab.h"
 
 %}
 
+/*  Section: Options
+    Define options for the lexer.
+*/
 %option noyywrap
 %option nounput
 %option noinput
 
+/*  Section: Patterns Definitions
+    Define patterns for the lexer.
+*/
 DIGIT       [0-9]
 NUMBER      {DIGIT}+
 LETTER      [a-zA-Z]
@@ -20,6 +36,9 @@ IDENTIFIER  {LETTER}({LETTER}|{DIGIT})*
 WHITESPACE  [ \t\r\n]+
 COMMENT     "#".*
 
+/*  Section: Token Rules
+    Define rules for the lexer.
+*/
 %%
 
 "set_color"         { return SET_COLOR; }
