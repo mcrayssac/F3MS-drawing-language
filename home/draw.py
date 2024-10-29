@@ -15,6 +15,10 @@ color = [0, 100, 0]
 pygame.draw.line(screen, color, (150, 500), (500, 100), line_width)
 color = [0, 0, 255]
 pygame.draw.rect(screen, color, pygame.Rect(100, 500, 100, 200))
+line_width = 1
+pygame.draw.circle(screen, color,(500, 100), 100, line_width)
+line_width = 5
+pygame.draw.rect(screen, color, pygame.Rect(500, 100, 100, 100))
 
 pygame.display.flip()
 running = True
