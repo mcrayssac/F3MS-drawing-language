@@ -44,6 +44,7 @@ Ce compilateur permet aux utilisateurs de créer des dessins complexes et des an
 - **GCC** : Compilateur C.
 - **Python 3** : Version 3.6 ou ultérieure.
 - **Pygame** : Bibliothèque Python pour le multimédia et les jeux.
+- **Gtk 3** : Librairies pour creer un IDE 
 
 ### Étapes d'Installation
 

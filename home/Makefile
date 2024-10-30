@@ -6,7 +6,7 @@ FLEX = flex
 BISON = bison
 
 # Flags
-CFLAGS = -Wall -Wextra -std=c99 -I../src -Wno-sign-compare
+CFLAGS = -Wall -Wextra -std=c99 -I../src -Wno-sign-compare -D_GNU_SOURCE
 
 # Add -lm to link the math library if needed, and -ll or -lfl for Flex
 LDLIBS = -ll
@@ -38,14 +38,18 @@ $(COMPILER): $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_SRC)
 	$(CC) $(CFLAGS) -o $(COMPILER) $(MAIN_SRC) $(PARSER_C_OBJ) $(LEXER_OBJ) $(LDLIBS)
 	@echo "draw_compiler generated"
 
+# Ensure temp directory exists
+../src/temp/:
+	mkdir -p ../src/temp/
+
 # Generate the lexer
-$(LEXER_OBJ): $(LEXER_SRC) $(PARSER_H_OBJ)
+$(LEXER_OBJ): $(LEXER_SRC) $(PARSER_H_OBJ) | ../src/temp/
 	@echo "Generating lexer..."
 	$(FLEX) -o $(LEXER_OBJ) $(LEXER_SRC)
 	@echo "lex.yy.c generated"
 
 # Generate the parser
-$(PARSER_C_OBJ) $(PARSER_H_OBJ): $(PARSER_SRC)
+$(PARSER_C_OBJ) $(PARSER_H_OBJ): $(PARSER_SRC) | ../src/temp/
 	@echo "Generating parser..."
 	$(BISON) -d -o $(PARSER_C_OBJ) $(PARSER_SRC)
 	@echo "parser.tab.h generated"
