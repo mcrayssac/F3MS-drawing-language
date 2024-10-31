@@ -40,7 +40,7 @@ Point *find_point(char *name);
 */
 %token <intval> NUMBER
 %token <strval> IDENTIFIER
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE ELLIPSE
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 
 /* Section: Nonterminal Types
@@ -75,11 +75,12 @@ assignment:
 
 function_call:
     set_color_call
-    | set_line_width_call
-    | line_call
+    |set_line_width_call
+    |line_call
     |rectangle_call
     |square_call
     |circle_call
+    |ellipse_call
     ;
 
 set_line_width_call:
@@ -119,6 +120,13 @@ circle_call :
     CIRCLE LPAREN expr COMMA NUMBER RPAREN {
         fprintf(output, "pygame.draw.circle(screen, color,(%d, %d), %d, line_width)\n", 
         $3->x, $3->y, $5);
+    }
+    ;
+
+ellipse_call:
+    ELLIPSE LPAREN expr COMMA NUMBER COMMA NUMBER RPAREN {
+        fprintf(output, "pygame.draw.ellipse(screen, color, pygame.Rect(%d, %d, %d, %d))\n",
+                $3->x, $3->y, $5, $7);
     }
     ;
 

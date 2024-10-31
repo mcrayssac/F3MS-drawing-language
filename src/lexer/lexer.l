@@ -48,6 +48,7 @@ COMMENT     "#".*
 "rectangle"         { return RECTANGLE; }
 "square"            { return SQUARE;}
 "circle"            { return CIRCLE; }
+"ellipse"            { return ELLIPSE; }
 
 {IDENTIFIER}        { yylval.strval = strdup(yytext); return IDENTIFIER; }
 {NUMBER}            { yylval.intval = atoi(yytext); return NUMBER; }
