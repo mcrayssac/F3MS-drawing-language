@@ -7,6 +7,12 @@
 #define COMMAND_H
 
 #include "../point/point.h"
+#include "../circle/circle.h"
+#include "../rectangle/rectangle.h"
+#include "../square/square.h"
+#include "../line/line.h"
+#include "../color/color.h"
+
 
 /* Command types */
  typedef enum {
@@ -18,15 +24,27 @@
     CMD_DRAW_CIRCLE
 } CommandType;
 
+// typedef struct {
+//     CommandType type;
+//     union {
+//         struct { int r, g, b; } color;
+//         int line_width; //? 
+//         struct { Point *p1, *p2; } line;
+//         struct { Point *p; int width, height; } rectangle;
+//         struct { Point *p; int size; } square;
+//         struct { Point *p; int radius; } circle;
+//     } data;
+// } Command;
 typedef struct {
     CommandType type;
     union {
-        struct { int r, g, b; } color;
+        Color color;
         int line_width;
-        struct { Point *p1, *p2; } line;
-        struct { Point *p; int width, height; } rectangle;
-        struct { Point *p; int size; } square;
-        struct { Point *p; int radius; } circle;
+        Line line;
+        Rectangle rectangle;
+        Square square;
+        Circle circle;
+        //j'ai pas fait l'ellipse pck je sais pas si ca va créer des conflits 
     } data;
 } Command;
 

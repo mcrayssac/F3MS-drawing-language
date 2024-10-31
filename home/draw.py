@@ -46,6 +46,6 @@ while running:
         index += 1
 
     pygame.display.flip()
-    clock.tick(10)
+    clock.tick(5)
 
 pygame.quit()
