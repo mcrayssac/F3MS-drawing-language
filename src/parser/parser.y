@@ -8,28 +8,11 @@
     Include necessary header files.
 */
 %{
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "../common/common.h"
-
-/* Function prototype for error handling */
-void yyerror(const char *s); 
-int yylex(void);
-
-/* Output file */
-FILE *output; 
-
-/* Command list */
-Command command_list[1000];
-int command_count = 0;
+#include "../common/common.c"
 
 /* Function prototypes */
-void add_point(char *name, int x, int y);
-void update_point(char *name, int x, int y);
-Point *find_point(char *name);
-void add_command(Command cmd);
 void generate_python_code();
 
 %}
@@ -177,54 +160,6 @@ expr:
 /*  Section: Function Definitions
     Define the functions for the parser.
 */
-
-void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
-}
-
-/* Symbol table for points (a table of names and coordinates) */
-Point symbol_table[100];
-int symbol_count = 0;
-
-/* Add a new point to the symbol table */
-void add_point(char *name, int x, int y) {
-    symbol_table[symbol_count].name = strdup(name);
-    symbol_table[symbol_count].x = x;
-    symbol_table[symbol_count].y = y;
-    symbol_count++;
-}
-
-/* Update the coordinates of an existing point */
-void update_point(char *name, int x, int y) {
-    for (int i = 0; i < symbol_count; i++) {
-        if (strcmp(symbol_table[i].name, name) == 0) {
-            symbol_table[i].x = x;
-            symbol_table[i].y = y;
-            return;
-        }
-    }
-    // If the point doesn't exist, add it
-    add_point(name, x, y);
-}
-
-/* Find a point in the symbol table */
-Point *find_point(char *name) {
-    for (int i = 0; i < symbol_count; i++) {
-        if (strcmp(symbol_table[i].name, name) == 0) {
-            return &symbol_table[i];
-        }
-    }
-    return NULL;
-}
-
-/* Add a command to the command list */
-void add_command(Command cmd) {
-    if (command_count >= 1000) {
-        fprintf(stderr, "Too many commands\n");
-        exit(1);
-    }
-    command_list[command_count++] = cmd;
-}
 
 /* Generate Python code from the command list */
 void generate_python_code() {
