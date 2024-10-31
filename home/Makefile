@@ -1,5 +1,8 @@
 # Makefile for the .draw compiler
 
+# Frames per second
+FRAME ?= 5
+
 # Compiler and tools
 CC = gcc
 FLEX = flex
@@ -58,8 +61,8 @@ $(PARSER_C_OBJ) $(PARSER_H_OBJ): $(PARSER_SRC) | ../src/temp/
 
 # Generate output.py
 output: $(COMPILER)
-	@echo "Generating $(OUTPUT_PY) from $(DRAW_FILE)..."
-	$(COMPILER) $(DRAW_FILE) $(OUTPUT_PY)
+	@echo "Generating $(OUTPUT_PY) from $(DRAW_FILE) with $(FRAME) frames per second..."
+	$(COMPILER) $(DRAW_FILE) $(OUTPUT_PY) $(FRAME)
 
 # Clean generated files
 clean:
@@ -70,10 +73,10 @@ clean:
 .PHONY: all clean output
 
 # Compile the compiler and generate output.py
-# Usage: make [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py]
+# Usage: make [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py] [FRAME=5]
 
 # Generate output.py
-# Usage: make output [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py]
+# Usage: make output [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py] [FRAME=5]
 
 # Clean generated files
 # Usage: make clean

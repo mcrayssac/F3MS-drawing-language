@@ -14,15 +14,23 @@
 
 #include "../common/common.h"
 
-void yyerror(const char *s); /* Function prototype for error handling */
+/* Function prototype for error handling */
+void yyerror(const char *s); 
 int yylex(void);
 
-FILE *output; /* Output file */
+/* Output file */
+FILE *output; 
+
+/* Command list */
+Command command_list[1000];
+int command_count = 0;
 
 /* Function prototypes */
 void add_point(char *name, int x, int y);
 void update_point(char *name, int x, int y);
 Point *find_point(char *name);
+void add_command(Command cmd);
+void generate_python_code();
 
 %}
 
@@ -77,48 +85,69 @@ function_call:
     set_color_call
     | set_line_width_call
     | line_call
-    |rectangle_call
-    |square_call
-    |circle_call
+    | rectangle_call
+    | square_call
+    | circle_call
     ;
 
 set_line_width_call:
     SET_LINE_WIDTH LPAREN NUMBER RPAREN {
-        fprintf(output, "line_width = %d\n", $3);
+        Command cmd;
+        cmd.type = CMD_SET_LINE_WIDTH;
+        cmd.data.line_width = $3;
+        add_command(cmd);
     }
     ;
 
 set_color_call:
     SET_COLOR LPAREN NUMBER COMMA NUMBER COMMA NUMBER RPAREN {
-        fprintf(output, "color = [%d, %d, %d]\n", $3, $5, $7);
+        Command cmd;
+        cmd.type = CMD_SET_COLOR;
+        cmd.data.color.r = $3;
+        cmd.data.color.g = $5;
+        cmd.data.color.b = $7;
+        add_command(cmd);
     }
     ;
 
 line_call:
     LINE LPAREN expr COMMA expr RPAREN {
-        fprintf(output, "pygame.draw.line(screen, color, (%d, %d), (%d, %d), line_width)\n",
-                $3->x, $3->y, $5->x, $5->y);
+        Command cmd;
+        cmd.type = CMD_DRAW_LINE;
+        cmd.data.line.p1 = $3;
+        cmd.data.line.p2 = $5;
+        add_command(cmd);
     }
     ;
 
 rectangle_call:
     RECTANGLE LPAREN expr COMMA NUMBER COMMA NUMBER RPAREN {
-        fprintf(output, "pygame.draw.rect(screen, color, pygame.Rect(%d, %d, %d, %d))\n",
-                $3->x, $3->y, $5, $7);
+        Command cmd;
+        cmd.type = CMD_DRAW_RECTANGLE;
+        cmd.data.rectangle.p = $3;
+        cmd.data.rectangle.width = $5;
+        cmd.data.rectangle.height = $7;
+        add_command(cmd);
     }
     ;
     
 square_call:
     SQUARE LPAREN expr COMMA NUMBER RPAREN {
-        fprintf(output, "pygame.draw.rect(screen, color, pygame.Rect(%d, %d, %d, %d))\n",
-                $3->x, $3->y, $5, $5);
+        Command cmd;
+        cmd.type = CMD_DRAW_SQUARE;
+        cmd.data.square.p = $3;
+        cmd.data.square.size = $5;
+        add_command(cmd);
     }
     ;
 
 circle_call : 
     CIRCLE LPAREN expr COMMA NUMBER RPAREN {
-        fprintf(output, "pygame.draw.circle(screen, color,(%d, %d), %d, line_width)\n", 
-        $3->x, $3->y, $5);
+        Command cmd;
+        cmd.type = CMD_DRAW_CIRCLE;
+        cmd.data.circle.p = $3;
+        cmd.data.circle.radius = $5;
+        add_command(cmd);
     }
     ;
 
@@ -186,4 +215,53 @@ Point *find_point(char *name) {
         }
     }
     return NULL;
+}
+
+/* Add a command to the command list */
+void add_command(Command cmd) {
+    if (command_count >= 1000) {
+        fprintf(stderr, "Too many commands\n");
+        exit(1);
+    }
+    command_list[command_count++] = cmd;
+}
+
+/* Generate Python code from the command list */
+void generate_python_code() {
+    // Generate code to store commands
+    for (int i = 0; i < command_count; i++) {
+        Command cmd = command_list[i];
+        switch (cmd.type) {
+            case CMD_SET_COLOR:
+                fprintf(output, "commands.append(('SET_COLOR', (%d, %d, %d)))\n",
+                        cmd.data.color.r, cmd.data.color.g, cmd.data.color.b);
+                break;
+            case CMD_SET_LINE_WIDTH:
+                fprintf(output, "commands.append(('SET_LINE_WIDTH', %d))\n",
+                        cmd.data.line_width);
+                break;
+            case CMD_DRAW_LINE:
+                fprintf(output, "commands.append(('DRAW_LINE', (%d, %d), (%d, %d)))\n",
+                        cmd.data.line.p1->x, cmd.data.line.p1->y,
+                        cmd.data.line.p2->x, cmd.data.line.p2->y);
+                break;
+            case CMD_DRAW_RECTANGLE:
+                fprintf(output, "commands.append(('DRAW_RECTANGLE', (%d, %d), %d, %d))\n",
+                        cmd.data.rectangle.p->x, cmd.data.rectangle.p->y,
+                        cmd.data.rectangle.width, cmd.data.rectangle.height);
+                break;
+            case CMD_DRAW_SQUARE:
+                fprintf(output, "commands.append(('DRAW_SQUARE', (%d, %d), %d))\n",
+                        cmd.data.square.p->x, cmd.data.square.p->y,
+                        cmd.data.square.size);
+                break;
+            case CMD_DRAW_CIRCLE:
+                fprintf(output, "commands.append(('DRAW_CIRCLE', (%d, %d), %d))\n",
+                        cmd.data.circle.p->x, cmd.data.circle.p->y,
+                        cmd.data.circle.radius);
+                break;
+            default:
+                break;
+        }
+    }
 }
