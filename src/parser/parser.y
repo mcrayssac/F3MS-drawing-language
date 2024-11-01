@@ -172,40 +172,41 @@ expr:
 
 /* Generate Python code from the command list */
 void generate_python_code() {
-    // Generate code to store commands
-    for (int i = 0; i < command_count; i++) {
-        Command cmd = command_list[i];
-        switch (cmd.type) {
+    LinkedList current = command_list;
+    while (current != NULL) {
+        Command *cmd = (Command *)current->valeur;
+        switch (cmd->type) {
             case CMD_SET_COLOR:
                 fprintf(output, "commands.append(('SET_COLOR', (%d, %d, %d)))\n",
-                        cmd.data.color.r, cmd.data.color.g, cmd.data.color.b);
+                        cmd->data.color.r, cmd->data.color.g, cmd->data.color.b);
                 break;
             case CMD_SET_LINE_WIDTH:
                 fprintf(output, "commands.append(('SET_LINE_WIDTH', %d))\n",
-                        cmd.data.line_width);
+                        cmd->data.line_width);
                 break;
             case CMD_DRAW_LINE:
                 fprintf(output, "commands.append(('DRAW_LINE', (%d, %d), (%d, %d)))\n",
-                        cmd.data.line.p1->x, cmd.data.line.p1->y,
-                        cmd.data.line.p2->x, cmd.data.line.p2->y);
+                        cmd->data.line.p1->x, cmd->data.line.p1->y,
+                        cmd->data.line.p2->x, cmd->data.line.p2->y);
                 break;
             case CMD_DRAW_RECTANGLE:
                 fprintf(output, "commands.append(('DRAW_RECTANGLE', (%d, %d), %d, %d))\n",
-                        cmd.data.rectangle.p->x, cmd.data.rectangle.p->y,
-                        cmd.data.rectangle.width, cmd.data.rectangle.height);
+                        cmd->data.rectangle.p->x, cmd->data.rectangle.p->y,
+                        cmd->data.rectangle.width, cmd->data.rectangle.height);
                 break;
             case CMD_DRAW_SQUARE:
                 fprintf(output, "commands.append(('DRAW_SQUARE', (%d, %d), %d))\n",
-                        cmd.data.square.p->x, cmd.data.square.p->y,
-                        cmd.data.square.size);
+                        cmd->data.square.p->x, cmd->data.square.p->y,
+                        cmd->data.square.size);
                 break;
             case CMD_DRAW_CIRCLE:
                 fprintf(output, "commands.append(('DRAW_CIRCLE', (%d, %d), %d))\n",
-                        cmd.data.circle.p->x, cmd.data.circle.p->y,
-                        cmd.data.circle.radius);
+                        cmd->data.circle.p->x, cmd->data.circle.p->y,
+                        cmd->data.circle.radius);
                 break;
             default:
                 break;
         }
+        current = current->suivant;
     }
 }

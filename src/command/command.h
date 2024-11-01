@@ -13,6 +13,7 @@
 #include "../line/line.h"
 #include "../color/color.h"
 
+#include "../linkedList/linkedList.h"
 
 /* Command types */
  typedef enum {
@@ -24,17 +25,6 @@
     CMD_DRAW_CIRCLE
 } CommandType;
 
-// typedef struct {
-//     CommandType type;
-//     union {
-//         struct { int r, g, b; } color;
-//         int line_width; //? 
-//         struct { Point *p1, *p2; } line;
-//         struct { Point *p; int width, height; } rectangle;
-//         struct { Point *p; int size; } square;
-//         struct { Point *p; int radius; } circle;
-//     } data;
-// } Command;
 typedef struct {
     CommandType type;
     union {
@@ -47,9 +37,8 @@ typedef struct {
     } data;
 } Command;
 
-/* External variables (defined in command.c) */
-extern Command command_list[1000];
-extern int command_count;
+/* Use a linked list to store commands */
+extern LinkedList command_list;
 
 void add_command(Command cmd);
 

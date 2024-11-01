@@ -7,14 +7,15 @@
 #include "command.h"
 
 /* Command list */
-Command command_list[1000];
-int command_count = 0;
+LinkedList command_list = NULL;
 
 /* Add a command to the command list */
 void add_command(Command cmd) {
-    if (command_count >= 1000) {
-        fprintf(stderr, "Too many commands\n");
-        exit(1);
+    Command *cmd_ptr = malloc(sizeof(Command));
+    if (!cmd_ptr) {
+        fprintf(stderr, "Memory allocation failed in add_command.\n");
+        exit(EXIT_FAILURE);
     }
-    command_list[command_count++] = cmd;
+    *cmd_ptr = cmd;
+    command_list = addInBack(command_list, cmd_ptr);
 }
