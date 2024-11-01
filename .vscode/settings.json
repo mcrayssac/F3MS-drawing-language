@@ -16,6 +16,8 @@
         "optional": "c",
         "ratio": "c",
         "vector": "c",
-        "linkedlist.h": "c"
+        "linkedlist.h": "c",
+        "line.h": "c",
+        "stdlib.h": "c"
     }
 }

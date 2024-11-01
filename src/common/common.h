@@ -6,6 +6,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include "../figure/figure.h"
 #include "../command/command.h"
 
 /* Function prototype for error handling */

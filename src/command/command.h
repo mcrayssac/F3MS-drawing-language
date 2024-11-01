@@ -19,6 +19,7 @@
  typedef enum {
     CMD_SET_COLOR,
     CMD_SET_LINE_WIDTH,
+    CMD_DRAW_POINT, // Add this line
     CMD_DRAW_LINE,
     CMD_DRAW_RECTANGLE,
     CMD_DRAW_SQUARE,
@@ -30,10 +31,11 @@ typedef struct {
     union {
         Color color;
         int line_width;
-        Line line;
-        Rectangle rectangle;
-        Square square;
-        Circle circle;
+        Point *point;
+        Line *line;
+        Rectangle *rectangle;
+        Square *square;
+        Circle *circle;
     } data;
 } Command;
 

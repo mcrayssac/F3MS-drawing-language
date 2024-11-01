@@ -18,10 +18,10 @@ LDLIBS = -ll
 LEXER_SRC = ../src/lexer/lexer.l
 PARSER_SRC = ../src/parser/parser.y
 MAIN_SRC = ../src/main.c
-POINT_SRC = ../src/point/point.c
 COMMON_SRC = ../src/common/common.c
 COMMAND_SRC = ../src/command/command.c
-LINKEDLIST_SRC = ../src/linkedList/linkedList.c  # Add this line
+LINKEDLIST_SRC = ../src/linkedList/linkedList.c  
+FIGURE_SRC = ../src/figure/figure.c    
 
 # Generated files
 LEXER_OBJ = ../src/temp/lex.yy.c
@@ -40,9 +40,9 @@ OUTPUT_PY ?= draw.py
 all: $(COMPILER)
 
 # Compile the compiler
-$(COMPILER): $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_SRC) $(POINT_SRC) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC)
+$(COMPILER): $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_SRC) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC)
 	@echo "Compiling the compiler..."
-	$(CC) $(CFLAGS) -o $(COMPILER) $(MAIN_SRC) $(PARSER_C_OBJ) $(LEXER_OBJ) $(POINT_SRC) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(LDLIBS)
+	$(CC) $(CFLAGS) -o $(COMPILER) $(MAIN_SRC) $(PARSER_C_OBJ) $(LEXER_OBJ) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC) $(LDLIBS)
 	@echo "draw_compiler generated"
 
 # Ensure temp directory exists
