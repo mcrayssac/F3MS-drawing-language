@@ -1,5 +1,8 @@
 # Makefile for the .draw compiler
 
+# Frames per second
+FRAME ?= 5
+
 # Compiler and tools
 CC = gcc
 FLEX = flex
@@ -15,6 +18,10 @@ LDLIBS = -ll
 LEXER_SRC = ../src/lexer/lexer.l
 PARSER_SRC = ../src/parser/parser.y
 MAIN_SRC = ../src/main.c
+COMMON_SRC = ../src/common/common.c
+COMMAND_SRC = ../src/command/command.c
+LINKEDLIST_SRC = ../src/linkedList/linkedList.c  
+FIGURE_SRC = ../src/figure/figure.c    
 
 # Generated files
 LEXER_OBJ = ../src/temp/lex.yy.c
@@ -33,9 +40,9 @@ OUTPUT_PY ?= draw.py
 all: $(COMPILER)
 
 # Compile the compiler
-$(COMPILER): $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_SRC)
+$(COMPILER): $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_SRC) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC)
 	@echo "Compiling the compiler..."
-	$(CC) $(CFLAGS) -o $(COMPILER) $(MAIN_SRC) $(PARSER_C_OBJ) $(LEXER_OBJ) $(LDLIBS)
+	$(CC) $(CFLAGS) -o $(COMPILER) $(MAIN_SRC) $(PARSER_C_OBJ) $(LEXER_OBJ) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC) $(LDLIBS)
 	@echo "draw_compiler generated"
 
 # Ensure temp directory exists
@@ -58,8 +65,8 @@ $(PARSER_C_OBJ) $(PARSER_H_OBJ): $(PARSER_SRC) | ../src/temp/
 
 # Generate output.py
 output: $(COMPILER)
-	@echo "Generating $(OUTPUT_PY) from $(DRAW_FILE)..."
-	$(COMPILER) $(DRAW_FILE) $(OUTPUT_PY)
+	@echo "Generating $(OUTPUT_PY) from $(DRAW_FILE) with $(FRAME) frames per second..."
+	$(COMPILER) $(DRAW_FILE) $(OUTPUT_PY) $(FRAME)
 
 # Clean generated files
 clean:
@@ -70,10 +77,10 @@ clean:
 .PHONY: all clean output
 
 # Compile the compiler and generate output.py
-# Usage: make [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py]
+# Usage: make [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py] [FRAME=5]
 
 # Generate output.py
-# Usage: make output [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py]
+# Usage: make output [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py] [FRAME=5]
 
 # Clean generated files
 # Usage: make clean
