@@ -12,4 +12,7 @@
 void yyerror(const char *s); 
 int yylex(void);
 
+/* External variables (defined in common.c) */
+extern FILE *output;
+
 #endif

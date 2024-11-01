@@ -3,9 +3,10 @@
 // Author: CRAYSSAC Maxime
 // Date: 2024-10-31
 
+#include "../external/external.h"
 #include "common.h"
-#include "../command/command.c"
-#include "../point/point.c"
+#include "../command/command.h"
+#include "../point/point.h"
 
 /* Output file */
 FILE *output; 

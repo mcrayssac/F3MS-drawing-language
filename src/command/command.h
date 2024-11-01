@@ -44,9 +44,12 @@ typedef struct {
         Rectangle rectangle;
         Square square;
         Circle circle;
-        //j'ai pas fait l'ellipse pck je sais pas si ca va créer des conflits 
     } data;
 } Command;
+
+/* External variables (defined in command.c) */
+extern Command command_list[1000];
+extern int command_count;
 
 void add_command(Command cmd);
 

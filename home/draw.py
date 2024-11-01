@@ -8,12 +8,12 @@ line_width = 1
 commands = []
 
 commands.append(('SET_COLOR', (0, 0, 0)))
-commands.append(('DRAW_LINE', (100, 500), (500, 100)))
+commands.append(('DRAW_LINE', (200, 300), (400, 400)))
 commands.append(('SET_LINE_WIDTH', 5))
 commands.append(('SET_COLOR', (255, 0, 0)))
-commands.append(('DRAW_LINE', (100, 500), (500, 100)))
+commands.append(('DRAW_LINE', (600, 600), (100, 600)))
 commands.append(('SET_COLOR', (0, 100, 0)))
-commands.append(('DRAW_LINE', (100, 500), (500, 100)))
+commands.append(('DRAW_LINE', (150, 500), (500, 100)))
 commands.append(('SET_COLOR', (0, 0, 255)))
 commands.append(('DRAW_RECTANGLE', (100, 500), 100, 200))
 commands.append(('SET_LINE_WIDTH', 1))

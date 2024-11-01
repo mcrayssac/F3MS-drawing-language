@@ -9,8 +9,9 @@
 */
 %{
 
+#include "../external/external.h"
 #include "../common/common.h"
-#include "../common/common.c"
+#include "../command/command.h"
 
 /* Function prototypes */
 void generate_python_code();
@@ -96,9 +97,13 @@ set_color_call:
 line_call:
     LINE LPAREN expr COMMA expr RPAREN {
         Command cmd;
-        cmd.type = CMD_DRAW_LINE;
-        cmd.data.line.p1 = $3;
-        cmd.data.line.p2 = $5;
+        cmd.type = CMD_DRAW_LINE; 
+        cmd.data.line.p1 = malloc(sizeof(Point));
+        cmd.data.line.p1->x = $3->x;
+        cmd.data.line.p1->y = $3->y;
+        cmd.data.line.p2 = malloc(sizeof(Point));
+        cmd.data.line.p2->x = $5->x;
+        cmd.data.line.p2->y = $5->y;
         add_command(cmd);
     }
     ;
@@ -137,6 +142,10 @@ circle_call :
 point_expr:
     POINT LPAREN NUMBER COMMA NUMBER RPAREN {
         $$ = malloc(sizeof(Point));
+        if (!$$) {
+            yyerror("Memory allocation failed in point_expr.");
+            YYABORT;
+        }
         $$->x = $3;
         $$->y = $5;
     }
