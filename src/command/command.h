@@ -14,20 +14,25 @@
 #include "../color/color.h"
 
 #include "../linkedList/linkedList.h"
+#include "../figure/figure.h"
 
 /* Command types */
  typedef enum {
     CMD_SET_COLOR,
     CMD_SET_LINE_WIDTH,
-    CMD_DRAW_POINT, // Add this line
+    CMD_DRAW_POINT,
     CMD_DRAW_LINE,
     CMD_DRAW_RECTANGLE,
     CMD_DRAW_SQUARE,
-    CMD_DRAW_CIRCLE
+    CMD_DRAW_CIRCLE,
+    CMD_ROTATE
 } CommandType;
 
 typedef struct {
     CommandType type;
+    char *name; // Figure name
+    Color color; // Add this field to store color
+    int line_width; // Add this field to store line width
     union {
         Color color;
         int line_width;
@@ -36,6 +41,10 @@ typedef struct {
         Rectangle *rectangle;
         Square *square;
         Circle *circle;
+        struct {
+            Figure *figure;
+            int angle;
+        } rotate;
     } data;
 } Command;
 
