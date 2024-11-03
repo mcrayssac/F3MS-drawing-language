@@ -28,3 +28,8 @@ draw(circle1);
 set_line_width(5);
 square1 = square(point2, 100);
 draw(square1);
+
+rotate(line1, 45);
+rotate(rectangle1, 90);
+rotate(square1, 30);
+rotate(circle1, 60);

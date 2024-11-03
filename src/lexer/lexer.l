@@ -9,10 +9,7 @@
 */
 %{
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+#include "../external/external.h"
 #include "../common/common.h"
 
 #include "parser.tab.h"
@@ -49,6 +46,7 @@ COMMENT     "#".*
 "square"            { return SQUARE;}
 "circle"            { return CIRCLE; }
 "draw"              { return DRAW; }
+"rotate"            { return ROTATE; }
 
 {IDENTIFIER}        { yylval.strval = strdup(yytext); return IDENTIFIER; }
 {NUMBER}            { yylval.intval = atoi(yytext); return NUMBER; }

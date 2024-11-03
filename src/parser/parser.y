@@ -35,7 +35,7 @@
 */
 %token <intval> NUMBER
 %token <strval> IDENTIFIER
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 
 /* Section: Nonterminal Types
@@ -81,6 +81,7 @@ function_call:
     | square_call
     | circle_call
     | draw_call
+    | rotate_call
     ;
 
 set_line_width_call:
@@ -149,6 +150,21 @@ circle_call:
     }
     ;
 
+rotate_call:
+    ROTATE LPAREN IDENTIFIER COMMA NUMBER RPAREN {
+        Figure *figure = find_figure($3);
+        if (figure == NULL) {
+            yyerror("Undefined figure");
+            YYABORT;
+        }
+        Command cmd;
+        cmd.type = CMD_ROTATE;
+        cmd.data.rotate.figure = figure;
+        cmd.data.rotate.angle = $5;
+        add_command(cmd);
+    }
+    ;
+
 draw_call:
     DRAW LPAREN IDENTIFIER RPAREN {
         Figure *figure = find_figure($3);
@@ -157,6 +173,7 @@ draw_call:
             YYABORT;
         }
         Command cmd;
+        cmd.name = strdup($3);
         switch (figure->type) {
             case FIGURE_POINT:
                 cmd.type = CMD_DRAW_POINT;
@@ -405,42 +422,56 @@ void generate_python_code() {
                         cmd->data.line_width);
                 break;
             case CMD_DRAW_POINT:
-                printf("commands.append(('DRAW_POINT', (%d, %d)))\n",
-                        cmd->data.point->x, cmd->data.point->y);
-                fprintf(output, "commands.append(('DRAW_POINT', (%d, %d)))\n",
-                        cmd->data.point->x, cmd->data.point->y);
+                printf("commands.append(('DRAW_POINT', (%d, %d), '%s'))\n",
+                        cmd->data.point->x, cmd->data.point->y, cmd->name);
+                fprintf(output, "commands.append(('DRAW_POINT', (%d, %d), '%s'))\n",
+                        cmd->data.point->x, cmd->data.point->y, cmd->name);
                 break;
             case CMD_DRAW_LINE:
-                printf("commands.append(('DRAW_LINE', (%d, %d), (%d, %d)))\n",
+                printf("commands.append(('DRAW_LINE', (%d, %d), (%d, %d), '%s'))\n",
                         cmd->data.line->p1->x, cmd->data.line->p1->y,
-                        cmd->data.line->p2->x, cmd->data.line->p2->y);
-                fprintf(output, "commands.append(('DRAW_LINE', (%d, %d), (%d, %d)))\n",
+                        cmd->data.line->p2->x, cmd->data.line->p2->y,
+                        cmd->name);
+                fprintf(output, "commands.append(('DRAW_LINE', (%d, %d), (%d, %d), '%s'))\n",
                         cmd->data.line->p1->x, cmd->data.line->p1->y,
-                        cmd->data.line->p2->x, cmd->data.line->p2->y);
+                        cmd->data.line->p2->x, cmd->data.line->p2->y,
+                        cmd->name);
                 break;
             case CMD_DRAW_RECTANGLE:
-                printf("commands.append(('DRAW_RECTANGLE', (%d, %d), %d, %d))\n",
+                printf("commands.append(('DRAW_RECTANGLE', (%d, %d), %d, %d, '%s'))\n",
                         cmd->data.rectangle->p->x, cmd->data.rectangle->p->y,
-                        cmd->data.rectangle->width, cmd->data.rectangle->height);
-                fprintf(output, "commands.append(('DRAW_RECTANGLE', (%d, %d), %d, %d))\n",
+                        cmd->data.rectangle->width, cmd->data.rectangle->height,
+                        cmd->name);
+                fprintf(output, "commands.append(('DRAW_RECTANGLE', (%d, %d), %d, %d, '%s'))\n",
                         cmd->data.rectangle->p->x, cmd->data.rectangle->p->y,
-                        cmd->data.rectangle->width, cmd->data.rectangle->height);
+                        cmd->data.rectangle->width, cmd->data.rectangle->height,
+                        cmd->name);
                 break;
             case CMD_DRAW_SQUARE:
-                printf("commands.append(('DRAW_SQUARE', (%d, %d), %d))\n",
+                printf("commands.append(('DRAW_SQUARE', (%d, %d), %d, '%s'))\n",
                         cmd->data.square->p->x, cmd->data.square->p->y,
-                        cmd->data.square->size);
-                fprintf(output, "commands.append(('DRAW_SQUARE', (%d, %d), %d))\n",
+                        cmd->data.square->size,
+                        cmd->name);
+                fprintf(output, "commands.append(('DRAW_SQUARE', (%d, %d), %d, '%s'))\n",
                         cmd->data.square->p->x, cmd->data.square->p->y,
-                        cmd->data.square->size);
+                        cmd->data.square->size,
+                        cmd->name);
                 break;
             case CMD_DRAW_CIRCLE:
-                printf("commands.append(('DRAW_CIRCLE', (%d, %d), %d))\n",
+                printf("commands.append(('DRAW_CIRCLE', (%d, %d), %d, '%s'))\n",
                         cmd->data.circle->p->x, cmd->data.circle->p->y,
-                        cmd->data.circle->radius);
-                fprintf(output, "commands.append(('DRAW_CIRCLE', (%d, %d), %d))\n",
+                        cmd->data.circle->radius,
+                        cmd->name);
+                fprintf(output, "commands.append(('DRAW_CIRCLE', (%d, %d), %d, '%s'))\n",
                         cmd->data.circle->p->x, cmd->data.circle->p->y,
-                        cmd->data.circle->radius);
+                        cmd->data.circle->radius,
+                        cmd->name);
+                break;
+            case CMD_ROTATE:
+                printf("commands.append(('ROTATE', '%s', %d))\n",
+                       cmd->data.rotate.figure->name, cmd->data.rotate.angle);
+                fprintf(output, "commands.append(('ROTATE', '%s', %d))\n",
+                        cmd->data.rotate.figure->name, cmd->data.rotate.angle);
                 break;
             default:
                 break;
