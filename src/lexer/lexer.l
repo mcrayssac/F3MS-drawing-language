@@ -9,10 +9,7 @@
 */
 %{
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
+#include "../external/external.h"
 #include "../common/common.h"
 
 #include "parser.tab.h"

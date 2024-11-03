@@ -30,9 +30,7 @@
 
 typedef struct {
     CommandType type;
-    char *name; // Figure name
-    Color color; // Add this field to store color
-    int line_width; // Add this field to store line width
+    char *name; 
     union {
         Color color;
         int line_width;
@@ -51,6 +49,7 @@ typedef struct {
 /* Use a linked list to store commands */
 extern LinkedList command_list;
 
+/* Add a command to the list */
 void add_command(Command cmd);
 
 #endif

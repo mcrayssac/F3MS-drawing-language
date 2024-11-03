@@ -173,7 +173,7 @@ draw_call:
             YYABORT;
         }
         Command cmd;
-        cmd.name = strdup($3); // Store the figure's name
+        cmd.name = strdup($3);
         switch (figure->type) {
             case FIGURE_POINT:
                 cmd.type = CMD_DRAW_POINT;
