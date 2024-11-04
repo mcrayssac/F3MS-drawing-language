@@ -10,22 +10,8 @@ commands = []
 figures = {}
 
 commands.append(('SET_COLOR', (0, 0, 0)))
-commands.append(('DRAW_LINE', (200, 300), (400, 400), 'line1'))
-commands.append(('SET_LINE_WIDTH', 5))
-commands.append(('SET_COLOR', (255, 0, 0)))
-commands.append(('DRAW_LINE', (600, 600), (100, 600), 'line1'))
-commands.append(('SET_COLOR', (0, 100, 0)))
-commands.append(('DRAW_LINE', (150, 500), (500, 100), 'line1'))
-commands.append(('SET_COLOR', (0, 0, 255)))
-commands.append(('DRAW_RECTANGLE', (150, 500), 100, 200, 'rectangle1'))
-commands.append(('SET_LINE_WIDTH', 1))
-commands.append(('DRAW_CIRCLE', (500, 100), 100, 'circle1'))
-commands.append(('SET_LINE_WIDTH', 5))
-commands.append(('DRAW_SQUARE', (500, 100), 100, 'square1'))
-commands.append(('ROTATE', 'line1', 45))
-commands.append(('ROTATE', 'rectangle1', 90))
-commands.append(('ROTATE', 'square1', 30))
-commands.append(('ROTATE', 'circle1', 60))
+commands.append(('DRAW_LINE', (100, 100), (100, 0), 'lineX'))
+commands.append(('DRAW_LINE', (100, 100), (0, 100), 'lineY'))
 
 running = True
 index = 0
@@ -64,40 +50,23 @@ while running:
             name = cmd[3]
             figures[name] = {'type': 'circle', 'center': cmd[1], 'radius': cmd[2], 'color': color, 'line_width': line_width}
             pygame.draw.circle(screen, color, cmd[1], cmd[2], line_width)
-        elif cmd[0] == 'ROTATE':
+        elif cmd[0] == 'TRANSLATE':
             name = cmd[1]
-            angle = cmd[2]
+            dx = cmd[2]
+            dy = cmd[3]
             if name in figures:
                 figure = figures[name]
-                if figure['type'] == 'line':
-                    # Rotate line around its midpoint
-                    sx, sy = figure['start']
-                    ex, ey = figure['end']
-                    mx = (sx + ex) / 2
-                    my = (sy + ey) / 2
-                    def rotate_point(x, y):
-                        x -= mx
-                        y -= my
-                        radians = math.radians(angle)
-                        x_new = x * math.cos(radians) - y * math.sin(radians) + mx
-                        y_new = x * math.sin(radians) + y * math.cos(radians) + my
-                        return x_new, y_new
-                    figure['start'] = rotate_point(sx, sy)
-                    figure['end'] = rotate_point(ex, ey)
+                if figure['type'] == 'point':
+                    figure['position'] = (figure['position'][0] + dx, figure['position'][1] + dy)
+                elif figure['type'] == 'line':
+                    figure['start'] = (figure['start'][0] + dx, figure['start'][1] + dy)
+                    figure['end'] = (figure['end'][0] + dx, figure['end'][1] + dy)
                 elif figure['type'] == 'rectangle' or figure['type'] == 'square':
-                    # Rotate rectangle or square
                     rect = figure['rect']
-                    image = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
-                    pygame.draw.rect(image, color, pygame.Rect(0, 0, rect.width, rect.height), line_width)
-                    rotated_image = pygame.transform.rotate(image, angle)
-                    new_rect = rotated_image.get_rect(center=rect.center)
-                    figure['image'] = rotated_image
-                    figure['rect'] = new_rect
+                    rect.x += dx
+                    rect.y += dy
                 elif figure['type'] == 'circle':
-                    # Rotating a circle has no visual effect
-                    pass
-            else:
-                print('Figure not found:', name)
+                    figure['center'] = (figure['center'][0] + dx, figure['center'][1] + dy)
         # Redraw all figures
         for fig in figures.values():
             fig_color = fig.get('color', (0, 0, 0))
@@ -107,10 +76,7 @@ while running:
             elif fig['type'] == 'line':
                 pygame.draw.line(screen, fig_color, fig['start'], fig['end'], fig_line_width)
             elif fig['type'] == 'rectangle' or fig['type'] == 'square':
-                if 'image' in fig:
-                    screen.blit(fig['image'], fig['rect'])
-                else:
-                    pygame.draw.rect(screen, fig_color, fig['rect'], fig_line_width)
+                pygame.draw.rect(screen, fig_color, fig['rect'], fig_line_width)
             elif fig['type'] == 'circle':
                 pygame.draw.circle(screen, fig_color, fig['center'], fig['radius'], fig_line_width)
         index += 1

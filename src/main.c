@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
 
     // Write the Python script header
     fprintf(output, "import pygame\n");
-    fprintf(output, "import math\n"); // Import math module
+    fprintf(output, "import math\n");
     fprintf(output, "pygame.init()\n");
     fprintf(output, "screen = pygame.display.set_mode((1000, 800))\n");
     fprintf(output, "pygame.display.set_caption('Dynamic Drawing')\n");
@@ -62,68 +62,52 @@ int main(int argc, char *argv[]) {
     // Clear the screen before processing each command
     fprintf(output, "        screen.fill((255, 255, 255))\n");  // Clear the screen
 
+    // Process drawing commands
     fprintf(output, "        if cmd[0] == 'SET_COLOR':\n");
     fprintf(output, "            color = cmd[1]\n");
     fprintf(output, "        elif cmd[0] == 'SET_LINE_WIDTH':\n");
     fprintf(output, "            line_width = cmd[1]\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_POINT':\n");
-    fprintf(output, "            name = cmd[2]\n");  // Figure name
+    fprintf(output, "            name = cmd[2]\n");
     fprintf(output, "            figures[name] = {'type': 'point', 'position': cmd[1], 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.circle(screen, color, cmd[1], line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_LINE':\n");
-    fprintf(output, "            name = cmd[3]\n");  // Corrected index from cmd[4] to cmd[3]
+    fprintf(output, "            name = cmd[3]\n");
     fprintf(output, "            figures[name] = {'type': 'line', 'start': cmd[1], 'end': cmd[2], 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.line(screen, color, cmd[1], cmd[2], line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_RECTANGLE':\n");
-    fprintf(output, "            name = cmd[4]\n");  // Corrected index from cmd[5] to cmd[4]
+    fprintf(output, "            name = cmd[4]\n");
     fprintf(output, "            rect = pygame.Rect(cmd[1][0], cmd[1][1], cmd[2], cmd[3])\n");
     fprintf(output, "            figures[name] = {'type': 'rectangle', 'rect': rect, 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.rect(screen, color, rect, line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_SQUARE':\n");
-    fprintf(output, "            name = cmd[3]\n");  // Index remains the same
+    fprintf(output, "            name = cmd[3]\n");
     fprintf(output, "            rect = pygame.Rect(cmd[1][0], cmd[1][1], cmd[2], cmd[2])\n");
     fprintf(output, "            figures[name] = {'type': 'square', 'rect': rect, 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.rect(screen, color, rect, line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_CIRCLE':\n");
-    fprintf(output, "            name = cmd[3]\n");  // Index remains the same
+    fprintf(output, "            name = cmd[3]\n");
     fprintf(output, "            figures[name] = {'type': 'circle', 'center': cmd[1], 'radius': cmd[2], 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.circle(screen, color, cmd[1], cmd[2], line_width)\n");
-    fprintf(output, "        elif cmd[0] == 'ROTATE':\n");
+    fprintf(output, "        elif cmd[0] == 'TRANSLATE':\n"); // New command for translation
     fprintf(output, "            name = cmd[1]\n");
-    fprintf(output, "            angle = cmd[2]\n");
+    fprintf(output, "            dx = cmd[2]\n");
+    fprintf(output, "            dy = cmd[3]\n");
     fprintf(output, "            if name in figures:\n");
     fprintf(output, "                figure = figures[name]\n");
-    fprintf(output, "                if figure['type'] == 'line':\n");
-    fprintf(output, "                    # Rotate line around its midpoint\n");
-    fprintf(output, "                    sx, sy = figure['start']\n");
-    fprintf(output, "                    ex, ey = figure['end']\n");
-    fprintf(output, "                    mx = (sx + ex) / 2\n");
-    fprintf(output, "                    my = (sy + ey) / 2\n");
-    fprintf(output, "                    def rotate_point(x, y):\n");
-    fprintf(output, "                        x -= mx\n");
-    fprintf(output, "                        y -= my\n");
-    fprintf(output, "                        radians = math.radians(angle)\n");
-    fprintf(output, "                        x_new = x * math.cos(radians) - y * math.sin(radians) + mx\n");
-    fprintf(output, "                        y_new = x * math.sin(radians) + y * math.cos(radians) + my\n");
-    fprintf(output, "                        return x_new, y_new\n");
-    fprintf(output, "                    figure['start'] = rotate_point(sx, sy)\n");
-    fprintf(output, "                    figure['end'] = rotate_point(ex, ey)\n");
+    fprintf(output, "                if figure['type'] == 'point':\n");
+    fprintf(output, "                    figure['position'] = (figure['position'][0] + dx, figure['position'][1] + dy)\n");
+    fprintf(output, "                elif figure['type'] == 'line':\n");
+    fprintf(output, "                    figure['start'] = (figure['start'][0] + dx, figure['start'][1] + dy)\n");
+    fprintf(output, "                    figure['end'] = (figure['end'][0] + dx, figure['end'][1] + dy)\n");
     fprintf(output, "                elif figure['type'] == 'rectangle' or figure['type'] == 'square':\n");
-    fprintf(output, "                    # Rotate rectangle or square\n");
     fprintf(output, "                    rect = figure['rect']\n");
-    fprintf(output, "                    image = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)\n");
-    fprintf(output, "                    pygame.draw.rect(image, color, pygame.Rect(0, 0, rect.width, rect.height), line_width)\n");
-    fprintf(output, "                    rotated_image = pygame.transform.rotate(image, angle)\n");
-    fprintf(output, "                    new_rect = rotated_image.get_rect(center=rect.center)\n");
-    fprintf(output, "                    figure['image'] = rotated_image\n");
-    fprintf(output, "                    figure['rect'] = new_rect\n");
+    fprintf(output, "                    rect.x += dx\n");
+    fprintf(output, "                    rect.y += dy\n");
     fprintf(output, "                elif figure['type'] == 'circle':\n");
-    fprintf(output, "                    # Rotating a circle has no visual effect\n");
-    fprintf(output, "                    pass\n");
-    fprintf(output, "            else:\n");
-    fprintf(output, "                print('Figure not found:', name)\n");
+    fprintf(output, "                    figure['center'] = (figure['center'][0] + dx, figure['center'][1] + dy)\n");
 
-    // After processing the command, redraw all figures
+    // Redraw all figures after processing command
     fprintf(output, "        # Redraw all figures\n");
     fprintf(output, "        for fig in figures.values():\n");
     fprintf(output, "            fig_color = fig.get('color', (0, 0, 0))\n");
@@ -133,10 +117,7 @@ int main(int argc, char *argv[]) {
     fprintf(output, "            elif fig['type'] == 'line':\n");
     fprintf(output, "                pygame.draw.line(screen, fig_color, fig['start'], fig['end'], fig_line_width)\n");
     fprintf(output, "            elif fig['type'] == 'rectangle' or fig['type'] == 'square':\n");
-    fprintf(output, "                if 'image' in fig:\n");
-    fprintf(output, "                    screen.blit(fig['image'], fig['rect'])\n");
-    fprintf(output, "                else:\n");
-    fprintf(output, "                    pygame.draw.rect(screen, fig_color, fig['rect'], fig_line_width)\n");
+    fprintf(output, "                pygame.draw.rect(screen, fig_color, fig['rect'], fig_line_width)\n");
     fprintf(output, "            elif fig['type'] == 'circle':\n");
     fprintf(output, "                pygame.draw.circle(screen, fig_color, fig['center'], fig['radius'], fig_line_width)\n");
 

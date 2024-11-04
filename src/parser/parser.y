@@ -35,7 +35,7 @@
 */
 %token <intval> NUMBER
 %token <strval> IDENTIFIER
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 
 /* Section: Nonterminal Types
@@ -82,6 +82,7 @@ function_call:
     | circle_call
     | draw_call
     | rotate_call
+    | translate_call
     ;
 
 set_line_width_call:
@@ -164,6 +165,23 @@ rotate_call:
         add_command(cmd);
     }
     ;
+
+translate_call:
+    TRANSLATE LPAREN IDENTIFIER COMMA NUMBER COMMA NUMBER RPAREN {
+        Figure *figure = find_figure($3);
+        if (figure == NULL) {
+            yyerror("Undefined figure");
+            YYABORT;
+        }
+        Command cmd;
+        cmd.type = CMD_TRANSLATE;
+        cmd.data.translate.figure = figure;
+        cmd.data.translate.dx = $5;
+        cmd.data.translate.dy = $7;
+        add_command(cmd);
+    }
+    ;
+
 
 draw_call:
     DRAW LPAREN IDENTIFIER RPAREN {
@@ -472,6 +490,12 @@ void generate_python_code() {
                        cmd->data.rotate.figure->name, cmd->data.rotate.angle);
                 fprintf(output, "commands.append(('ROTATE', '%s', %d))\n",
                         cmd->data.rotate.figure->name, cmd->data.rotate.angle);
+                break;
+            case CMD_TRANSLATE:
+                printf("commands.append(('TRANSLATE', '%s', %d, %d))\n",
+                        cmd->data.translate.figure->name, cmd->data.translate.dx, cmd->data.translate.dy);
+                fprintf(output, "commands.append(('TRANSLATE', '%s', %d, %d))\n",
+                        cmd->data.translate.figure->name, cmd->data.translate.dx, cmd->data.translate.dy);
                 break;
             default:
                 break;
