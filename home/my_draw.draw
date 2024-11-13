@@ -21,3 +21,4 @@ square(point2, 100);
 point1 = point(400,500);
 set_color(225,10,0); 
 ellipse(point1,200,90);
+grid(point(0, 0));
