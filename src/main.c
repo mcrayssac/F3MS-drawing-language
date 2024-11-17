@@ -120,6 +120,8 @@ int main(int argc, char *argv[]) {
     fprintf(output, "                elif figure['type'] == 'circle':\n");
     fprintf(output, "                    # Rotating a circle has no visual effect\n");
     fprintf(output, "                    pass\n");
+    fprintf(output, "                else:\n");
+    fprintf(output, "                    print('Cannot rotate figure:', name)\n");
     fprintf(output, "        elif cmd[0] == 'TRANSLATE':\n");
     fprintf(output, "            name = cmd[1]\n");
     fprintf(output, "            dx = cmd[2]\n");

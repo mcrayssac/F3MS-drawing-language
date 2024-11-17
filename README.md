@@ -124,13 +124,13 @@ python draw.py
 
 ##### Description
 
-> Dessine un point dans un environnement 2D
+> Crée un point dans un environnement 2D
 > 
 
 ##### Syntaxe
 
 ```python
-point(x,y);
+point1 = point(x, y);
 ```
 
 ##### Paramètres
@@ -149,13 +149,13 @@ point(x,y);
 
 ##### Description
 
-> Dessine un ligne en indiquant ses deux extrémités
+> Crée une ligne en indiquant ses deux extrémités
 > 
 
 ##### Syntaxe
 
 ```python
-line(point1,point2);
+line1 = line(point1, point2);
 ```
 
 ##### Paramètres
@@ -174,12 +174,13 @@ line(point1,point2);
 
 ##### Description
 
-> Dessine un rectangle en indiquant son coin supérieur gauche et ses dimensions
+> Crée un rectangle en indiquant son coin supérieur gauche et ses dimensions
+>
 
 ##### Syntaxe
 
 ```python
-rectangle(point,width,height);
+rectangle1 = rectangle(point, width, height);
 ```
 
 ##### Paramètres
@@ -200,13 +201,13 @@ rectangle(point,width,height);
 
 ##### Description
 
-> Dessine un carré dans l’environnement en 2D, avec comme extrémité haut-gauche comme point de départ.
+> Crée un carré dans l’environnement en 2D, avec comme extrémité haut-gauche comme point de départ.
 > 
 
 ##### Syntaxe
 
 ```python
-square(point,size);
+square1 = square(point, size);
 ```
 
 ##### Paramètres
@@ -225,13 +226,13 @@ square(point,size);
 
 ##### Description
 
-> Dessine un cercle dans l’environnement en 2D, centré sur le point donné.
+> Crée un cercle dans l’environnement en 2D, centré sur le point donné.
 > 
 
 ##### Syntaxe
 
 ```python
-circle(point,radius);
+circle1 = circle(point, radius);
 ```
 
 ##### Paramètres
@@ -434,6 +435,54 @@ image(point,width,height,filepath);
 
 </details>
 
+### Variables et Assignations
+
+Les figures peuvent être assignées à des variables pour être réutilisées et manipulées ultérieurement.
+
+```python
+point1 = point(200, 300);
+point2 = point(400, 400);
+line1 = line(point1, point2);
+rectangle1 = rectangle(point1, 100, 200);
+circle1 = circle(point2, 100);
+square1 = square(point2, 100);
+```
+
+### Dessiner une Figure
+
+La commande `draw` permet de dessiner une figure précédemment définie.
+
+```python
+draw(line1);
+draw(rectangle1);
+draw(circle1);
+draw(square1);
+```
+
+### Transformations sur les Figures
+
+Les transformations peuvent être appliquées spécifiquement à une figure.
+
+- **rotate(figure, angle)**
+
+  Applique une rotation de `angle` degrés à la figure spécifiée.
+
+  ```python
+  rotate(line1, 45);
+  rotate(rectangle1, 90);
+  rotate(square1, 30);
+  rotate(circle1, 60);
+  ```
+
+- **translate(figure, dx, dy)**
+
+  Déplace la figure spécifiée de `dx` en abscisse et `dy` en ordonnée.
+
+  ```python
+  translate(circle1, 200, 100);
+  translate(rectangle1, 200, 100);
+  ```
+
 ### Transformations
 
 - **rotate angle**
@@ -486,9 +535,49 @@ image(point,width,height,filepath);
 
   ???
 
-### Exemples
+### Exemple Complet
 
-???
+```python
+set_color(0, 0, 0); 
+point1 = point(200, 300);
+point2 = point(400, 400);
+line1 = line(point1, point2);
+draw(line1);
+
+set_line_width(5);
+set_color(255, 0, 0); 
+point1 = point(600, 600);
+point2 = point(100, 600);
+line2 = line(point1, point2);
+draw(line2);
+
+set_color(0, 100, 0); 
+point1 = point(150, 500);
+point2 = point(500, 100);
+line3 = line(point1, point2);
+draw(line3);
+
+set_color(0, 0, 255);
+rectangle1 = rectangle(point1, 100, 200);
+draw(rectangle1);
+
+set_line_width(1);
+circle1 = circle(point2, 100);
+draw(circle1);
+
+set_line_width(5);
+square1 = square(point2, 100);
+draw(square1);
+
+rotate(line1, 45);
+rotate(rectangle1, 90);
+rotate(square1, 45);
+rotate(circle1, 60);
+
+translate(circle1, 500, 200);
+translate(rectangle1, 500, 200);
+translate(square1, 500, 200);
+```
 
 ## Gestion des Erreurs
 
