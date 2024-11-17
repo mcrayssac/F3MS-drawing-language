@@ -52,25 +52,56 @@ void open_file(GtkWidget *widget, gpointer window) {
 
 /* Fonction pour enregistrer un fichier */
 void save_file(GtkWidget *widget, gpointer window) {
+    if (filePath != NULL) {
+        /* Sauvegarde rapide dans le fichier existant */
+        GtkTextIter start, end;
+        gtk_text_buffer_get_bounds(text_buffer, &start, &end);
+        gchar *text = gtk_text_buffer_get_text(text_buffer, &start, &end, FALSE);
+
+        if (g_file_set_contents(filePath, text, -1, NULL)) {
+            /* Mise à jour du titre de la fenêtre si nécessaire */
+            update_window_title(window);
+        } else {
+            g_print("Erreur lors de la sauvegarde dans %s.\n", filePath);
+        }
+        g_free(text);
+        return;
+    }
+
+    /* Si aucun fichier n'est ouvert, ouvrir le dialogue pour choisir un chemin */
     GtkWidget *dialog = gtk_file_chooser_dialog_new("Enregistrer le fichier", GTK_WINDOW(window),
                                                     GTK_FILE_CHOOSER_ACTION_SAVE, "Annuler", GTK_RESPONSE_CANCEL,
                                                     "Enregistrer", GTK_RESPONSE_ACCEPT, NULL);
 
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
-        char *save_path;
         GtkFileChooser *chooser = GTK_FILE_CHOOSER(dialog);
-        save_path = gtk_file_chooser_get_filename(chooser);
+        gchar *save_path = gtk_file_chooser_get_filename(chooser);
 
         GtkTextIter start, end;
         gtk_text_buffer_get_bounds(text_buffer, &start, &end);
         gchar *text = gtk_text_buffer_get_text(text_buffer, &start, &end, FALSE);
 
-        g_file_set_contents(save_path, text, -1, NULL);
+        if (g_file_set_contents(save_path, text, -1, NULL)) {
+            /* Met à jour le fichier actuel */
+            g_free(filePath);
+            filePath = g_strdup(save_path);
+
+            /* Met à jour le nom du fichier */
+            g_free(filename);
+            filename = g_path_get_basename(filePath);
+
+            /* Met à jour le titre de la fenêtre */
+            update_window_title(window);
+        } else {
+            g_print("Erreur lors de la sauvegarde dans %s.\n", save_path);
+        }
+
         g_free(text);
         g_free(save_path);
     }
     gtk_widget_destroy(dialog);
 }
+
 
 /* Fonction pour vérifier si pygame est installé */
 int is_pygame_installed() {
@@ -134,9 +165,26 @@ void execute() {
     }
 }
 
+/* Fonction pour gérer les raccourcis clavier */
+gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
+    if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_KEY_s) {
+        /* Appelle la fonction save_file pour Ctrl+S */
+        save_file(widget, user_data);
+        return TRUE; // Empêche la propagation de l'événement
+    }
+    else if ((event->state & GDK_CONTROL_MASK) &&
+            (event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) {
+        execute();
+        return TRUE;
+    }
+    else if (event->keyval == GDK_KEY_Escape) {
+        gtk_main_quit(); // Cela termine le programme GTK
+        return TRUE;
+    }
+    return FALSE; // Permet la propagation de l'événement
+}
 
 /* Fonction pour initialiser l'interface de l'éditeur */
-//int start_text_editor(int argc, char *argv[]) {  // Changé de main à start_text_editor
 int main(int argc, char *argv[]) {
     gtk_init(&argc, &argv);
 
@@ -165,6 +213,9 @@ int main(int argc, char *argv[]) {
     GtkWidget *exec_button = gtk_button_new_with_label("Executer");
     g_signal_connect(exec_button, "clicked", G_CALLBACK(execute), window);
     gtk_box_pack_start(GTK_BOX(hbox), exec_button, FALSE, FALSE, 0);
+
+    /* Connecte l'événement pour gérer les Ctrl*/
+    g_signal_connect(window, "key-press-event", G_CALLBACK(on_key_press), window);
 
     /* Ajoute la hbox avec les boutons en haut du vbox */
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 5);
