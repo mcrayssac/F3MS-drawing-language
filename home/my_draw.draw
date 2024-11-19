@@ -23,7 +23,7 @@ set_color(225,10,0);
 ellipse(point1,200,90);
 grid(point(0, 0));
 
-# Définir les points pour le premier polygone (un pentagone)
+#points pour le premier polygone (pentagone)
 p1 = point(100, 100);
 p2 = point(150, 50);
 p3 = point(200, 100);
@@ -31,17 +31,17 @@ p4 = point(175, 150);
 p5 = point(125, 150);
 pentagon = [p1, p2, p3, p4, p5];
 
-# Dessiner le premier polygone en rouge
+#dessin du pentagone en rouge
 set_color(255, 0, 0);
 polygon(pentagon);
 
-# Définir les points pour le second polygone (un triangle)
+#points pour le second polygone (triangle)
 t1 = point(300, 300);
 t2 = point(350, 250);
 t3 = point(400, 300);
 triangle = [t1, t2, t3];
 
-# Dessiner le second polygone en vert
+#trangle en vert
 set_color(0, 255, 0);
 polygon(triangle);
 
