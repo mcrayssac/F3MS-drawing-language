@@ -50,6 +50,9 @@ COMMENT     "#".*
 "circle"            { return CIRCLE; }
 "ellipse"           { return ELLIPSE; }
 "grid"              { return GRID; }
+"polygon"           { return POLYGON; }
+"\["                { return LBRACKET; }
+"\]"                { return RBRACKET; }
 
 {IDENTIFIER}        { yylval.strval = strdup(yytext); return IDENTIFIER; }
 {NUMBER}            { yylval.intval = atoi(yytext); return NUMBER; }

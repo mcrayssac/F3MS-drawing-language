@@ -33,6 +33,7 @@ Point *find_point(char *name);
     int intval;
     char *strval;
     Point *pointval;
+    PointList *pointlistval;
 }
 
 /*  Section: Token Types
@@ -42,12 +43,17 @@ Point *find_point(char *name);
 %token <strval> IDENTIFIER
 %token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE ELLIPSE GRID
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
+%token POLYGON LBRACKET RBRACKET
+
 
 /* Section: Nonterminal Types
     Define the nonterminal types for the parser.
 */
 %type <pointval> point_expr
 %type <pointval> expr
+%type <pointlistval> point_list
+%type <pointlistval> point_expr_list
+
 
 %start program
 
@@ -64,6 +70,7 @@ program:
 
 statement:
     assignment SEMICOLON
+    | list_definition SEMICOLON
     | function_call SEMICOLON
     ;
 
@@ -82,6 +89,7 @@ function_call:
     |circle_call
     |ellipse_call
     |grid_call
+    |polygon_call
     ;
 
 set_line_width_call:
@@ -140,6 +148,21 @@ grid_call:
     }
     ;
 
+polygon_call:
+    POLYGON LPAREN IDENTIFIER RPAREN {
+        fprintf(output, "pygame.draw.polygon(screen, color, %s, line_width)\n", $3);
+    }
+    | POLYGON LPAREN point_list RPAREN {
+        fprintf(output, "pygame.draw.polygon(screen, color, [");
+        PointList *current = $3;
+        while (current != NULL) {
+            fprintf(output, "(%d, %d), ", current->point->x, current->point->y);
+            current = current->next;
+        }
+        fprintf(output, "], line_width)\n");
+    }
+    ;
+
 point_expr:
     POINT LPAREN NUMBER COMMA NUMBER RPAREN {
         $$ = malloc(sizeof(Point));
@@ -159,6 +182,43 @@ point_expr:
 
 expr:
     point_expr
+    ;
+point_list:
+    LBRACKET point_expr_list RBRACKET {
+        $$ = $2;
+    }
+    ;
+
+point_expr_list:
+    point_expr {
+        PointList *list = malloc(sizeof(PointList));
+        list->point = $1;
+        list->next = NULL;
+        $$ = list;
+    }
+    | point_expr_list COMMA point_expr {
+        PointList *new_node = malloc(sizeof(PointList));
+        new_node->point = $3;
+        new_node->next = NULL;
+
+        PointList *temp = $1;
+        while (temp->next != NULL) temp = temp->next;
+        temp->next = new_node;
+
+        $$ = $1;  /* $1 est la liste existante */
+    }
+    ;
+
+list_definition:
+    IDENTIFIER EQUALS point_list {
+        fprintf(output, "%s = [", $1);
+        PointList *current = $3;
+        while (current != NULL) {
+            fprintf(output, "(%d, %d), ", current->point->x, current->point->y);
+            current = current->next;
+        }
+        fprintf(output, "]\n");
+    }
     ;
 
 %%

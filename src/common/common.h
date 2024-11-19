@@ -7,4 +7,9 @@ typedef struct {
     int y;
 } Point;
 
+typedef struct PointList {
+    Point *point;
+    struct PointList *next;
+} PointList;
+
 #endif
