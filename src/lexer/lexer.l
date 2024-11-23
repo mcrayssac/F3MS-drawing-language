@@ -47,6 +47,7 @@ COMMENT     "#".*
 "circle"            { return CIRCLE; }
 "draw"              { return DRAW; }
 "rotate"            { return ROTATE; }
+"translate"         { return TRANSLATE; }
 
 {IDENTIFIER}        { yylval.strval = strdup(yytext); return IDENTIFIER; }
 {NUMBER}            { yylval.intval = atoi(yytext); return NUMBER; }

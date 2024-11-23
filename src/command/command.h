@@ -25,7 +25,8 @@
     CMD_DRAW_RECTANGLE,
     CMD_DRAW_SQUARE,
     CMD_DRAW_CIRCLE,
-    CMD_ROTATE
+    CMD_ROTATE,
+    CMD_TRANSLATE,
 } CommandType;
 
 typedef struct {
@@ -43,6 +44,11 @@ typedef struct {
             Figure *figure;
             int angle;
         } rotate;
+        struct {
+            Figure *figure;
+            int dx;
+            int dy;
+        } translate;
     } data;
 } Command;
 

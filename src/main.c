@@ -67,25 +67,25 @@ int main(int argc, char *argv[]) {
     fprintf(output, "        elif cmd[0] == 'SET_LINE_WIDTH':\n");
     fprintf(output, "            line_width = cmd[1]\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_POINT':\n");
-    fprintf(output, "            name = cmd[2]\n");  // Figure name
+    fprintf(output, "            name = cmd[2]\n"); 
     fprintf(output, "            figures[name] = {'type': 'point', 'position': cmd[1], 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.circle(screen, color, cmd[1], line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_LINE':\n");
-    fprintf(output, "            name = cmd[3]\n");  // Corrected index from cmd[4] to cmd[3]
+    fprintf(output, "            name = cmd[3]\n");
     fprintf(output, "            figures[name] = {'type': 'line', 'start': cmd[1], 'end': cmd[2], 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.line(screen, color, cmd[1], cmd[2], line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_RECTANGLE':\n");
-    fprintf(output, "            name = cmd[4]\n");  // Corrected index from cmd[5] to cmd[4]
+    fprintf(output, "            name = cmd[4]\n"); 
     fprintf(output, "            rect = pygame.Rect(cmd[1][0], cmd[1][1], cmd[2], cmd[3])\n");
     fprintf(output, "            figures[name] = {'type': 'rectangle', 'rect': rect, 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.rect(screen, color, rect, line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_SQUARE':\n");
-    fprintf(output, "            name = cmd[3]\n");  // Index remains the same
+    fprintf(output, "            name = cmd[3]\n"); 
     fprintf(output, "            rect = pygame.Rect(cmd[1][0], cmd[1][1], cmd[2], cmd[2])\n");
     fprintf(output, "            figures[name] = {'type': 'square', 'rect': rect, 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.rect(screen, color, rect, line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_CIRCLE':\n");
-    fprintf(output, "            name = cmd[3]\n");  // Index remains the same
+    fprintf(output, "            name = cmd[3]\n"); 
     fprintf(output, "            figures[name] = {'type': 'circle', 'center': cmd[1], 'radius': cmd[2], 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.circle(screen, color, cmd[1], cmd[2], line_width)\n");
     fprintf(output, "        elif cmd[0] == 'ROTATE':\n");
@@ -120,6 +120,25 @@ int main(int argc, char *argv[]) {
     fprintf(output, "                elif figure['type'] == 'circle':\n");
     fprintf(output, "                    # Rotating a circle has no visual effect\n");
     fprintf(output, "                    pass\n");
+    fprintf(output, "                else:\n");
+    fprintf(output, "                    print('Cannot rotate figure:', name)\n");
+    fprintf(output, "        elif cmd[0] == 'TRANSLATE':\n");
+    fprintf(output, "            name = cmd[1]\n");
+    fprintf(output, "            dx = cmd[2]\n");
+    fprintf(output, "            dy = cmd[3]\n");
+    fprintf(output, "            if name in figures:\n");
+    fprintf(output, "                figure = figures[name]\n");
+    fprintf(output, "                if figure['type'] == 'point':\n");
+    fprintf(output, "                    figure['position'] = (dx, dy)\n");
+    fprintf(output, "                elif figure['type'] == 'line':\n");
+    fprintf(output, "                    figure['start'] = (dx, dy)\n");
+    fprintf(output, "                    figure['end'] = (dx + (figure['end'][0] - figure['start'][0]), dy + (figure['end'][1] - figure['start'][1]))\n");
+    fprintf(output, "                elif figure['type'] == 'rectangle' or figure['type'] == 'square':\n");
+    fprintf(output, "                    rect = figure['rect']\n");
+    fprintf(output, "                    rect.x = dx\n");
+    fprintf(output, "                    rect.y = dy\n");
+    fprintf(output, "                elif figure['type'] == 'circle':\n");
+    fprintf(output, "                    figure['center'] = (dx, dy)\n");
     fprintf(output, "            else:\n");
     fprintf(output, "                print('Figure not found:', name)\n");
 
@@ -153,3 +172,4 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+// fin de notre partie 

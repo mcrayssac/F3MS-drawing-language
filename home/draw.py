@@ -24,8 +24,13 @@ commands.append(('SET_LINE_WIDTH', 5))
 commands.append(('DRAW_SQUARE', (500, 100), 100, 'square1'))
 commands.append(('ROTATE', 'line1', 45))
 commands.append(('ROTATE', 'rectangle1', 90))
-commands.append(('ROTATE', 'square1', 30))
+commands.append(('ROTATE', 'square1', 45))
 commands.append(('ROTATE', 'circle1', 60))
+commands.append(('DRAW_LINE', (500, 100), (1000, 300), 'line2'))
+commands.append(('TRANSLATE', 'circle1', 500, 200))
+commands.append(('TRANSLATE', 'rectangle1', 500, 200))
+commands.append(('TRANSLATE', 'square1', 500, 200))
+commands.append(('ROTATE', 'square1', 0))
 
 running = True
 index = 0
@@ -96,6 +101,23 @@ while running:
                 elif figure['type'] == 'circle':
                     # Rotating a circle has no visual effect
                     pass
+        elif cmd[0] == 'TRANSLATE':
+            name = cmd[1]
+            dx = cmd[2]
+            dy = cmd[3]
+            if name in figures:
+                figure = figures[name]
+                if figure['type'] == 'point':
+                    figure['position'] = (dx, dy)
+                elif figure['type'] == 'line':
+                    figure['start'] = (dx, dy)
+                    figure['end'] = (dx + (figure['end'][0] - figure['start'][0]), dy + (figure['end'][1] - figure['start'][1]))
+                elif figure['type'] == 'rectangle' or figure['type'] == 'square':
+                    rect = figure['rect']
+                    rect.x = dx
+                    rect.y = dy
+                elif figure['type'] == 'circle':
+                    figure['center'] = (dx, dy)
             else:
                 print('Figure not found:', name)
         # Redraw all figures

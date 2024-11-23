@@ -31,17 +31,8 @@ draw(square1);
 
 rotate(line1, 45);
 rotate(rectangle1, 90);
-rotate(square1, 45);
+rotate(square1, 30);
 rotate(circle1, 60);
 
-point3 = point(500, 100); 
-point4 = point(1000,300);
-line2 = line(point3, point4);
-draw(line2);
-
-
-translate(circle1, 500, 200);
-translate(rectangle1, 500, 200);
-translate(square1, 500, 200);
-
-rotate(square1, 0);
+translate(circle1, 200, 100); 
+translate(rectangle1, 200, 100);
