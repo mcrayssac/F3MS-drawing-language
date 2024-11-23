@@ -2,7 +2,9 @@
 
 > Compilateur `.draw` vers Python avec Pygame
 
-Ce projet consiste à développer un compilateur en C qui traduit un langage de dessin personnalisé. Il est défini dans des fichiers `.draw` avec un langage créé spécifiquement. Le compilateur génère des scripts Python utilisant la bibliothèque **Pygame** pour réaliser des dessins avancés et des animations.
+Ce projet consiste à développer un compilateur en C qui traduit un langage de dessin personnalisé. Il est défini dans
+des fichiers `.draw` avec un langage créé spécifiquement. Le compilateur génère des scripts Python utilisant la
+bibliothèque **Pygame** pour réaliser des dessins avancés et des animations.
 
 ## Table des matières
 
@@ -24,7 +26,9 @@ Ce projet consiste à développer un compilateur en C qui traduit un langage de 
 
 ## Introduction
 
-Ce compilateur permet aux utilisateurs de créer des dessins complexes et des animations en écrivant du code dans un langage simple et convivial ressemblant à Python. Les fichiers `.draw` sont ensuite compilés en scripts Python qui utilisent Pygame pour exécuter les instructions de dessin.
+Ce compilateur permet aux utilisateurs de créer des dessins complexes et des animations en écrivant du code dans un
+langage simple et convivial ressemblant à Python. Les fichiers `.draw` sont ensuite compilés en scripts Python qui
+utilisent Pygame pour exécuter les instructions de dessin.
 
 ## Fonctionnalités
 
@@ -44,7 +48,7 @@ Ce compilateur permet aux utilisateurs de créer des dessins complexes et des an
 - **GCC** : Compilateur C.
 - **Python 3** : Version 3.6 ou ultérieure.
 - **Pygame** : Bibliothèque Python pour le multimédia et les jeux.
-- **Gtk 3** : Librairies pour creer un IDE 
+- **Gtk 3** : Librairies pour creer un IDE
 
 ### Étapes d'Installation
 
@@ -61,7 +65,13 @@ Ce compilateur permet aux utilisateurs de créer des dessins complexes et des an
    pip install pygame
    ```
 
-3. **Etapes de Compilation**
+3. **Installer Gtk 3**
+
+   ```bash
+   sudo apt install libgtk-3-dev
+    ```
+
+4. **Etapes de Compilation**
 
 - Insérer le code dans un fichier `.draw` (dans le répertoire `home` avec exemple de nom `my_draw.draw`):
 
@@ -93,10 +103,17 @@ Ce compilateur permet aux utilisateurs de créer des dessins complexes et des an
     ```bash
     python draw.py
     ```
-    ou
+  ou
     ```bash
     python3 draw.py
     ```
+
+- Compiler et executer l'ide (etre dans le dossier ide):
+
+  ```bash
+  cd ide
+  gcc -o ide textEditor.c `pkg-config --cflags --libs gtk+-3.0` & ./ide
+  ```
 
 ## Usage
 
@@ -115,7 +132,6 @@ python draw.py
 ## Syntaxe du Langage `.draw`
 
 ### Primitives de Dessin
-
 
 <details>
   <summary>Point x y</summary>
@@ -215,7 +231,7 @@ square1 = square(point, size);
 > `point point` : coin supérieur gauche du carré
 >
 > `float size` : taille d'un côté du carré
-> 
+>
 
 </details>
 
@@ -240,7 +256,7 @@ circle1 = circle(point, radius);
 > `point point` : centre du cercle
 >
 > `float radius` : rayon du cercle
-> 
+>
 
 </details>
 
@@ -252,12 +268,12 @@ circle1 = circle(point, radius);
 ##### Description
 
 > Dessine une ellipse dans l’environnement en 2D, centrée sur le point donné.
-> 
+>
 
 ##### Syntaxe
 
 ```python
-ellipse(point,width,height);
+ellipse(point, width, height);
 ```
 
 ##### Paramètres
@@ -267,7 +283,7 @@ ellipse(point,width,height);
 > `float width` : largeur de l’ellipse
 >
 > `float height` : hauteur de l’ellipse
-> 
+>
 
 </details>
 
@@ -279,7 +295,7 @@ ellipse(point,width,height);
 ##### Description
 
 > Dessine un polygon dans l’environnement en 2D, à partir d’une liste de points donnés.
-> 
+>
 
 ##### Syntaxe
 
@@ -290,7 +306,7 @@ polygon(points);
 ##### Paramètres
 
 > `list points` : liste de points du polygon
-> 
+>
 
 </details>
 
@@ -302,12 +318,12 @@ polygon(points);
 ##### Description
 
 > Dessine un arc dans l’environnement en 2D, centré sur le point donné.
-> 
+>
 
 ##### Syntaxe
 
 ```python
-arc(point,radius,start_angle,end_angle);
+arc(point, radius, start_angle, end_angle);
 ```
 
 ##### Paramètres
@@ -319,7 +335,7 @@ arc(point,radius,start_angle,end_angle);
 > `int start_angle` : angle de début de l’arc
 >
 > `int end_angle` : angle de fin de l’arc
-> 
+>
 
 </details>
 
@@ -331,12 +347,12 @@ arc(point,radius,start_angle,end_angle);
 ##### Description
 
 > Dessine un polygone régulier dans l’environnement en 2D.
-> 
+>
 
 ##### Syntaxe
 
 ```python
-regular_polygon(point,sides,radius);
+regular_polygon(point, sides, radius);
 ```
 
 ##### Paramètres
@@ -346,7 +362,7 @@ regular_polygon(point,sides,radius);
 > `int sides` : nombre de côtés du polygone
 >
 > `float radius` : rayon du polygone par lesquels les sommets passent
-> 
+>
 
 </details>
 
@@ -358,12 +374,12 @@ regular_polygon(point,sides,radius);
 ##### Description
 
 > Dessine une étoile dans l’environnement en 2D.
-> 
+>
 
 ##### Syntaxe
 
 ```python
-star(point,points,outer_radius,inner_radius);
+star(point, points, outer_radius, inner_radius);
 ```
 
 ##### Paramètres
@@ -375,7 +391,7 @@ star(point,points,outer_radius,inner_radius);
 > `float outer_radius` : rayon extérieur de l’étoile
 >
 > `float inner_radius` : rayon intérieur de l’étoile
-> 
+>
 
 </details>
 
@@ -387,12 +403,12 @@ star(point,points,outer_radius,inner_radius);
 ##### Description
 
 > Dessine un texte dans l’environnement en 2D avec différents paramètres.
-> 
+>
 
 ##### Syntaxe
 
 ```python
-text(point,text,font_size);
+text(point, text, font_size);
 ```
 
 ##### Paramètres
@@ -402,7 +418,7 @@ text(point,text,font_size);
 > `string text` : texte à afficher
 >
 > `int font_size` : taille de la police du texte
-> 
+>
 
 </details>
 
@@ -414,12 +430,12 @@ text(point,text,font_size);
 ##### Description
 
 > Dessine une image dans l’environnement en 2D avec une certaine taille.
-> 
+>
 
 ##### Syntaxe
 
 ```python
-image(point,width,height,filepath);
+image(point, width, height, filepath);
 ```
 
 ##### Paramètres
@@ -431,7 +447,7 @@ image(point,width,height,filepath);
 > `float height` : hauteur de l’image
 >
 > `string filepath` : chemin du fichier image
-> 
+>
 
 </details>
 
@@ -601,7 +617,9 @@ Le compilateur fournit des messages d'erreur clairs avec des numéros de ligne p
 
 ## Crédits
 
-Développé par **CRAYSSAC Maxime, DELSUC Florian, AGUEL Fatima, AHMED Faïkidine et ???** dans le cadre du projet **Compilateur C de langage de dessin** pour le cours de **Complément algorithmique** à **CY Tech - Cergy Paris Université (ex EISTI)**.
+Développé par **CRAYSSAC Maxime, DELSUC Florian, AGUEL Fatima, AHMED Faïkidine et ???** dans le cadre du projet *
+*Compilateur C de langage de dessin** pour le cours de **Complément algorithmique** à **CY Tech - Cergy Paris
+Université (ex EISTI)**.
 
 ---
 
