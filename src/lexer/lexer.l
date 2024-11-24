@@ -51,6 +51,7 @@ COMMENT     "#".*
 "ellipse"           { return ELLIPSE; }
 "grid"              { return GRID; }
 "polygon"           { return POLYGON; }
+"arc"               { return ARC; }
 "\["                { return LBRACKET; }
 "\]"                { return RBRACKET; }
 
@@ -64,5 +65,4 @@ COMMENT     "#".*
 {WHITESPACE}        { /* Ignore whitespace */ }
 {COMMENT}           { /* Ignore comments */ }
 .                   { printf("Unknown character: %s\n", yytext); exit(1); }
-
 %%

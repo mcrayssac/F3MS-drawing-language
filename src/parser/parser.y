@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "../common/common.h"
 
@@ -41,7 +42,7 @@ Point *find_point(char *name);
 */
 %token <intval> NUMBER
 %token <strval> IDENTIFIER
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE ELLIPSE GRID
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE ELLIPSE GRID ARC
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 %token POLYGON LBRACKET RBRACKET
 
@@ -90,6 +91,7 @@ function_call:
     |ellipse_call
     |grid_call
     |polygon_call
+    |arc_call
     ;
 
 set_line_width_call:
@@ -160,6 +162,28 @@ polygon_call:
             current = current->next;
         }
         fprintf(output, "], line_width)\n");
+    }
+    ;
+
+arc_call:
+    ARC LPAREN expr COMMA expr COMMA NUMBER COMMA NUMBER RPAREN {
+        Point *p1 = $3;  // Premier point
+        Point *p2 = $5;  // Deuxième point
+        double angle_deg = $7;  // Angle en degrés
+        int epaisseur = $9;    // Épaisseur du trait
+
+        // Calculer le rayon (distance entre les deux points divisée par 2)
+        int radius = (int)sqrt(pow(p2->x - p1->x, 2) + pow(p2->y - p1->y, 2)) / 2;
+
+        // Générer le code Python pour dessiner l'arc
+        fprintf(output, "pygame.draw.arc(screen, color, pygame.Rect(%d, %d, %d, %d), 0, %f, %d)\n",
+                p1->x - radius,      // Rectangle x
+                p1->y - radius,      // Rectangle y
+                radius * 2,          // Rectangle width
+                radius * 2,          // Rectangle height
+                angle_deg * M_PI / 180.0,  // Angle en radians
+                epaisseur           // Épaisseur
+        );
     }
     ;
 

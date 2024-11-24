@@ -9,7 +9,7 @@ BISON = bison
 CFLAGS = -Wall -Wextra -std=c99 -I../src -Wno-sign-compare -D_GNU_SOURCE
 
 # Add -lm to link the math library if needed, and -ll or -lfl for Flex
-LDLIBS = -ll
+LDLIBS = -ll -lm
 
 # Source files
 LEXER_SRC = ../src/lexer/lexer.l

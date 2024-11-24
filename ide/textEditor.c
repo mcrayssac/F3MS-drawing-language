@@ -154,7 +154,7 @@ void execute() {
     }
 
     // Construire la commande pour exécuter draw.py avec l'interpréteur de l'environnement virtuel
-    snprintf(command, sizeof(command), "./myenv/bin/python3 ../home/draw.py");
+    snprintf(command, sizeof(command), "./myenv/bin/python3 ../home/draw.py &");
 
     // Exécuter le fichier draw.py
     result = system(command);
@@ -204,26 +204,32 @@ int main(int argc, char *argv[]) {
     /* Boutons d'ouverture et d'enregistrement */
     GtkWidget *open_button = gtk_button_new_with_label("Ouvrir");
     g_signal_connect(open_button, "clicked", G_CALLBACK(open_file), window);
-    gtk_box_pack_start(GTK_BOX(hbox), open_button, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), open_button, FALSE, FALSE, 7);
 
     GtkWidget *save_button = gtk_button_new_with_label("Enregistrer");
     g_signal_connect(save_button, "clicked", G_CALLBACK(save_file), window);
-    gtk_box_pack_start(GTK_BOX(hbox), save_button, FALSE, FALSE, 5);
+    gtk_box_pack_start(GTK_BOX(hbox), save_button, FALSE, FALSE, 2);
 
     GtkWidget *exec_button = gtk_button_new_with_label("Executer");
     g_signal_connect(exec_button, "clicked", G_CALLBACK(execute), window);
-    gtk_box_pack_start(GTK_BOX(hbox), exec_button, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), exec_button, FALSE, FALSE, 5);
 
     /* Connecte l'événement pour gérer les Ctrl*/
     g_signal_connect(window, "key-press-event", G_CALLBACK(on_key_press), window);
 
     /* Ajoute la hbox avec les boutons en haut du vbox */
-    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 5);
+    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 7);
+
+    /* ScrolledWindow pour permettre le défilement vertical */
+    GtkWidget *scrolled_window = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
 
     /* TextView pour éditer du texte */
     text_view = gtk_text_view_new();
+    gtk_text_view_set_left_margin(GTK_TEXT_VIEW(text_view), 5);
     text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
-    gtk_box_pack_start(GTK_BOX(vbox), text_view, TRUE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(scrolled_window), text_view);
 
     /* Signal pour fermer la fenêtre */
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);

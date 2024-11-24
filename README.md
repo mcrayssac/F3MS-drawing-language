@@ -112,7 +112,7 @@ utilisent Pygame pour exécuter les instructions de dessin.
 
   ```bash
   cd ide
-  gcc -o ide textEditor.c `pkg-config --cflags --libs gtk+-3.0` & ./ide
+  gcc -o ide textEditor.c `pkg-config --cflags --libs gtk+-3.0` && ./ide
   ```
 
 ## Usage
@@ -446,6 +446,75 @@ image(point, width, height, filepath);
 > `float height` : hauteur de l’image
 >
 > `string filepath` : chemin du fichier image
+>
+
+</details>
+
+<details>
+  <summary>Grid</summary>
+
+#### ** **
+
+##### Description
+
+> Dessine une grid dans l'environnement 2D
+>
+
+##### Syntaxe
+
+```python
+grid(point(0, 0));
+```
+
+##### Paramètres
+
+> `float x` : abscisse
+>
+> `float y` : ordonnée
+>
+
+</details>
+
+
+<details>
+  <summary>Arc</summary>
+
+#### **Arc**
+
+##### Description
+
+> Dessine un arc de cercle dans l'environnement 2D avec une épaisseur et un angle spécifiés.
+>
+
+##### Syntaxe
+
+```python
+arc(point1, point2, angle, thickness);
+```
+
+##### Paramètres
+
+> `point point1` : point de départ de l'arc (centre)
+>
+> `point point2` : point définissant le rayon de l'arc
+>
+> `float angle` : angle de l'arc en degrés
+>
+> `int thickness` : épaisseur du trait de l'arc
+>
+
+##### Exemple
+
+```python
+p1 = point(200, 200);  // Centre de l'arc
+p2 = point(300, 200);  // Point pour définir le rayon
+arc(p1, p2, 90, 5);    // Arc de 90 degrés avec une épaisseur de 5
+```
+
+##### Note
+
+> Le rayon de l'arc est calculé automatiquement comme la moitié de la distance entre les deux points.
+> L'angle est mesuré à partir de l'axe horizontal dans le sens trigonométrique.
 >
 
 </details>
