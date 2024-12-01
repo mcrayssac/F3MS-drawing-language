@@ -24,19 +24,26 @@ PARSER_OBJ = $(PARSER_C_OBJ) $(PARSER_H_OBJ)
 
 # Output executable
 COMPILER = ../src/temp/draw_compiler
+EDITOR = ../ide/ide
 
 # Input and output files (can be overridden)
 DRAW_FILE ?= my_draw.draw
 OUTPUT_PY ?= draw.py
 
 # Default target
-all: $(COMPILER)
+all: $(COMPILER) $(EDITOR)
 
 # Compile the compiler
 $(COMPILER): $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_SRC)
 	@echo "Compiling the compiler..."
 	$(CC) $(CFLAGS) -o $(COMPILER) $(MAIN_SRC) $(PARSER_C_OBJ) $(LEXER_OBJ) $(LDLIBS)
 	@echo "draw_compiler generated"
+
+# Compile the text editor
+$(EDITOR): ../ide/textEditor.c
+	@echo "Compiling the text editor..."
+	$(CC) -o $(EDITOR) ../ide/textEditor.c `pkg-config --cflags --libs gtk+-3.0`
+	@echo "Text editor 'ide' generated"
 
 # Ensure temp directory exists
 ../src/temp/:
@@ -64,7 +71,7 @@ output: $(COMPILER)
 # Clean generated files
 clean:
 	@echo "Cleaning up..."
-	rm -f $(LEXER_OBJ) $(PARSER_C_OBJ) $(PARSER_H_OBJ) $(COMPILER) $(OUTPUT_PY) parser.output
+	rm -f $(LEXER_OBJ) $(PARSER_C_OBJ) $(PARSER_H_OBJ) $(COMPILER) $(EDITOR) $(OUTPUT_PY) parser.output
 
 # Phony targets
 .PHONY: all clean output

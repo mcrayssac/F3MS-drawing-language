@@ -1,4 +1,3 @@
-
 set_color(0,0,0); 
 point1 = point(200,300);
 point2 = point(400,400);
@@ -17,9 +16,12 @@ point1 = point(100,500);
 #rectangle
 set_color(0,0,255);
 rectangle(point1, 100, 200);
+
 #line
 set_line_width(1);
+
 #circle
+set_line_width(3);
 circle(point2, 100);
 set_line_width(5);
 square(point2, 100);
@@ -28,7 +30,7 @@ point1 = point(400,500);
 #elipse
 set_color(225,10,0); 
 ellipse(point1,200,90);
-grid(point(0, 0));
+grid();
 
 #points pour le premier polygone (pentagone)
 p1 = point(100, 100);
@@ -52,12 +54,11 @@ triangle = [t1, t2, t3];
 set_color(0, 255, 0); 
 polygon(triangle);
 
-#ARC
+#arc
 t1 = point(700, 400);
 t2 = point(800, 600);
 set_color(250, 0, 255);
 arc(t1, t2, 120, 10);
 
-
-
-
+#image
+image("../home/image/image.png", 400, 600, 0.8);

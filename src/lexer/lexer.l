@@ -52,8 +52,11 @@ COMMENT     "#".*
 "grid"              { return GRID; }
 "polygon"           { return POLYGON; }
 "arc"               { return ARC; }
+"image"             { return IMAGE; }
 "\["                { return LBRACKET; }
 "\]"                { return RBRACKET; }
+\"([^\\"]|\\.)*\"   { yylval.strval = strdup(yytext); return STRING; }
+[0-9]*"."[0-9]+     { yylval.fval = atof(yytext); return FLOAT; }
 
 {IDENTIFIER}        { yylval.strval = strdup(yytext); return IDENTIFIER; }
 {NUMBER}            { yylval.intval = atoi(yytext); return NUMBER; }

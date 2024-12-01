@@ -181,6 +181,11 @@ gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
         gtk_main_quit(); // Cela termine le programme GTK
         return TRUE;
     }
+    // Raccourci pour exécuter directement le script draw.py
+    else if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_KEY_x) {
+        system("../src/temp/draw_compiler ../home/my_draw.draw ../home/draw.py && ./myenv/bin/python3 ../home/draw.py &");
+        return TRUE;
+    }
     return FALSE; // Permet la propagation de l'événement
 }
 

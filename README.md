@@ -519,6 +519,50 @@ arc(p1, p2, 90, 5);    // Arc de 90 degrés avec une épaisseur de 5
 
 </details>
 
+<details>
+  <summary>Image</summary>
+
+#### **Image**
+
+##### Description
+
+> Charge et affiche une image dans l'environnement 2D à une position donnée, avec une échelle spécifiée.
+>
+
+##### Syntaxe
+
+```python
+image("chemin/vers/image.png", x, y, scale);
+```
+
+##### Paramètres
+
+> `string chemin` : chemin vers l'image à afficher (fichier image supporté par Pygame, comme `.png` ou `.jpg`).
+>
+> `int x` : position en **abscisse** (coordonnée horizontale) où l'image sera affichée.
+>
+> `int y` : position en **ordonnée** (coordonnée verticale) où l'image sera affichée.
+>
+> `float scale` : facteur d'échelle pour redimensionner l'image (valeur comprise entre 0 et 1).
+
+##### Exemple
+
+```python
+image("../home/image/image.png", 400, 600, 0.8);
+```
+
+Dans cet exemple :
+- L'image est chargée depuis le chemin `"../home/image/image.png"`.
+- Elle est affichée à la position `(400, 600)` sur l'écran.
+- Elle est redimensionnée à **80%** de sa taille originale grâce au facteur d'échelle `0.8`.
+
+##### Note
+
+> L'échelle (`scale`) est une valeur flottante entre `0` et `1`.  
+> Une échelle de `1` conserve la taille originale de l'image, tandis qu'une échelle de `0.5` réduit la largeur et la hauteur de l'image à 50% de leur taille originale.
+
+</details>
+
 ### Transformations
 
 - **rotate angle**
