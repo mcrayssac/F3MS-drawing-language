@@ -62,3 +62,13 @@ arc(t1, t2, 120, 10);
 
 #image
 image("../home/image/image.png", 400, 600, 0.8);
+
+#text
+set_color(0, 0, 255); 
+text("Bonjour", 100, 200 , 36);
+set_color(180, 100, 180); 
+text("à", 207, 200 , 36);
+set_color(255, 0, 0); 
+text("tous", 232, 200 , 36);
+set_color(0, 0, 0); 
+text(" !!!", 285, 200 , 36);

@@ -53,6 +53,7 @@ COMMENT     "#".*
 "polygon"           { return POLYGON; }
 "arc"               { return ARC; }
 "image"             { return IMAGE; }
+"text"              { return TEXT; }
 "\["                { return LBRACKET; }
 "\]"                { return RBRACKET; }
 \"([^\\"]|\\.)*\"   { yylval.strval = strdup(yytext); return STRING; }

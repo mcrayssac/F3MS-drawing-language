@@ -43,7 +43,7 @@ Point *find_point(char *name);
 */
 %token <intval> NUMBER
 %token <strval> IDENTIFIER
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE ELLIPSE GRID ARC IMAGE
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE ELLIPSE GRID ARC IMAGE TEXT
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 %token POLYGON LBRACKET RBRACKET
 %token <strval> STRING
@@ -95,6 +95,7 @@ function_call:
     |polygon_call
     |arc_call
     |image_call
+    |text_call
     ;
 
 set_line_width_call:
@@ -192,12 +193,23 @@ arc_call:
 image_call:
     IMAGE LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA FLOAT RPAREN {
         fprintf(output,
-            "image = pygame.image.load(%s).convert_alpha();\n"
-            "image_width, image_height = image.get_size();\n"
-            "scaled_image = pygame.transform.scale(image, (int(image_width * %f), int(image_height * %f)));\n"
-            "screen.blit(scaled_image, (%d, %d));\n"
-            "pygame.display.flip();\n",
+            "image = pygame.image.load(%s).convert_alpha()\n"
+            "image_width, image_height = image.get_size()\n"
+            "scaled_image = pygame.transform.scale(image, (int(image_width * %f), int(image_height * %f)))\n"
+            "screen.blit(scaled_image, (%d, %d))\n"
+            "pygame.display.flip()\n",
             $3, $9, $9, $5, $7);
+    }
+    ;
+
+text_call:
+    TEXT LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA NUMBER RPAREN {
+        fprintf(output,
+        "font = pygame.font.Font(None, %d)\n"
+        "text_surface = font.render(%s, True, color)\n"
+        "screen.blit(text_surface, (%d, %d))\n"
+        "pygame.display.flip()\n",
+        $9, $3, $5, $7);
     }
     ;
 

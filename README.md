@@ -563,6 +563,39 @@ Dans cet exemple :
 
 </details>
 
+
+<details>
+  <summary>Text</summary>
+
+#### **Text**
+
+##### Description
+
+> Permet d'afficher du texte dans l'environnement 2D à une position donnée, avec une taille de police spécifiée. La couleur du texte doit être définie au préalable à l'aide de `set_color`.
+
+##### Paramètres
+
+> **Pour `set_color`**  
+> `int r` : intensité du **rouge** (valeur comprise entre 0 et 255).  
+> `int g` : intensité du **vert** (valeur comprise entre 0 et 255).  
+> `int b` : intensité du **bleu** (valeur comprise entre 0 et 255).
+
+> **Pour `text`**  
+> `string contenu` : texte à afficher.  
+> `int x` : position en **abscisse** (coordonnée horizontale).  
+> `int y` : position en **ordonnée** (coordonnée verticale).  
+> `int size` : taille de la police.
+
+##### Syntaxe
+
+```python
+set_color(255, 255, 255);  // Définit la couleur blanche
+text("Monde", 150, 250, 48);  // Affiche "Monde" en blanc à (150, 250) avec une police taille 48
+```
+
+</details>
+
+
 ### Transformations
 
 - **rotate angle**
