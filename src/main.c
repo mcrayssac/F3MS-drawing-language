@@ -41,7 +41,12 @@ int main(int argc, char *argv[]) {
     fprintf(output, "\n");
 
     // Parse the input file
-    yyparse();
+    if (yyparse() != 0) {
+        fprintf(stderr, "Parsing failed due to errors.\n");
+        fclose(yyin);
+        fclose(output);
+        return 1;
+    }
 
     // Generate the Python code after parsing
     generate_python_code();
@@ -172,4 +177,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-// fin de notre partie 

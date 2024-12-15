@@ -45,3 +45,4 @@ translate(rectangle1, 500, 200);
 translate(square1, 500, 200);
 
 rotate(square1, 0);
+set_line_width(10.0);
