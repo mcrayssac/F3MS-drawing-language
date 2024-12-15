@@ -46,6 +46,7 @@ Point *find_point(char *name);
 %token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE ELLIPSE GRID ARC IMAGE TEXT
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 %token POLYGON LBRACKET RBRACKET
+%token REGULAR_POLYGON
 %token <strval> STRING
 %token <fval> FLOAT
 
@@ -93,6 +94,7 @@ function_call:
     |ellipse_call
     |grid_call
     |polygon_call
+    |regular_polygon_call
     |arc_call
     |image_call
     |text_call
@@ -166,6 +168,67 @@ polygon_call:
             current = current->next;
         }
         fprintf(output, "], line_width)\n");
+    }
+    ;
+
+regular_polygon_call:
+    /*cas où le rayon est un FLOAT */
+    REGULAR_POLYGON LPAREN IDENTIFIER COMMA NUMBER COMMA FLOAT RPAREN {
+        Point *center = find_point($3); /* Trouve le centre défini */
+        if (center == NULL) {
+            yyerror("Undefined point for regular_polygon.");
+            YYABORT;
+        }
+        fprintf(output, "points = []\n");
+        fprintf(output, "cx, cy = %d, %d\n", center->x, center->y);
+        fprintf(output, "sides, radius = %d, %f\n", $5, $7); /* $5 = côtés, $7 = rayon */
+        fprintf(output, "for i in range(sides):\n");
+        fprintf(output, "    angle = 2 * 3.14159 * i / sides\n");
+        fprintf(output, "    x = cx + radius * math.cos(angle)\n");
+        fprintf(output, "    y = cy + radius * math.sin(angle)\n");
+        fprintf(output, "    points.append((x, y))\n");
+        fprintf(output, "pygame.draw.polygon(screen, color, points, line_width)\n");
+    }
+    /*cas où le rayon est un NUMBER (on converti en FLOAT) */
+    | REGULAR_POLYGON LPAREN IDENTIFIER COMMA NUMBER COMMA NUMBER RPAREN {
+        Point *center = find_point($3); /* Trouve le centre défini */
+        if (center == NULL) {
+            yyerror("Undefined point for regular_polygon.");
+            YYABORT;
+        }
+        fprintf(output, "points = []\n");
+        fprintf(output, "cx, cy = %d, %d\n", center->x, center->y);
+        fprintf(output, "sides, radius = %d, %f\n", $5, (float)$7); /* Conversion explicite de $7 en FLOAT */
+        fprintf(output, "for i in range(sides):\n");
+        fprintf(output, "    angle = 2 * 3.14159 * i / sides\n");
+        fprintf(output, "    x = cx + radius * math.cos(angle)\n");
+        fprintf(output, "    y = cy + radius * math.sin(angle)\n");
+        fprintf(output, "    points.append((x, y))\n");
+        fprintf(output, "pygame.draw.polygon(screen, color, points, line_width)\n");
+    }
+    /*cas où le centre est défini par des coordonnées inline + float */
+    | REGULAR_POLYGON LPAREN LBRACKET NUMBER COMMA NUMBER RBRACKET COMMA NUMBER COMMA FLOAT RPAREN {
+        fprintf(output, "points = []\n");
+        fprintf(output, "cx, cy = %d, %d\n", $4, $6);
+        fprintf(output, "sides, radius = %d, %f\n", $9, $11);
+        fprintf(output, "for i in range(sides):\n");
+        fprintf(output, "    angle = 2 * 3.14159 * i / sides\n");
+        fprintf(output, "    x = cx + radius * math.cos(angle)\n");
+        fprintf(output, "    y = cy + radius * math.sin(angle)\n");
+        fprintf(output, "    points.append((x, y))\n");
+        fprintf(output, "pygame.draw.polygon(screen, color, points, line_width)\n");
+    }
+    /*cas où le centre est défini par des coordonnées inline + number */
+    | REGULAR_POLYGON LPAREN LBRACKET NUMBER COMMA NUMBER RBRACKET COMMA NUMBER COMMA NUMBER RPAREN {
+        fprintf(output, "points = []\n");
+        fprintf(output, "cx, cy = %d, %d\n", $4, $6);
+        fprintf(output, "sides, radius = %d, %f\n", $9, (float)$11);
+        fprintf(output, "for i in range(sides):\n");
+        fprintf(output, "    angle = 2 * 3.14159 * i / sides\n");
+        fprintf(output, "    x = cx + radius * math.cos(angle)\n");
+        fprintf(output, "    y = cy + radius * math.sin(angle)\n");
+        fprintf(output, "    points.append((x, y))\n");
+        fprintf(output, "pygame.draw.polygon(screen, color, points, line_width)\n");
     }
     ;
 

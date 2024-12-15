@@ -51,6 +51,7 @@ COMMENT     "#".*
 "ellipse"           { return ELLIPSE; }
 "grid"              { return GRID; }
 "polygon"           { return POLYGON; }
+"regular_polygon"   { return REGULAR_POLYGON; }
 "arc"               { return ARC; }
 "image"             { return IMAGE; }
 "text"              { return TEXT; }

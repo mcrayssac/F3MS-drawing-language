@@ -71,4 +71,18 @@ text("à", 207, 200 , 36);
 set_color(255, 0, 0); 
 text("tous", 232, 200 , 36);
 set_color(0, 0, 0); 
-text(" !!!", 285, 200 , 36);
+text(" !!!", 285, 200 , 36);
+
+#hexagone centré en un point défini
+centrehex = point(850, 300);
+set_color(0, 0, 0);
+regular_polygon(centrehex, 6, 50.141888);
+
+#triangle régulier avec un centre défini inline (directement dans l'appel)
+set_color(0, 0, 0);
+regular_polygon([850, 200], 3, 74.8462);
+
+#octogone avec un autre centre défini
+centreoct = point(850, 400);
+set_color(0, 0, 0);
+regular_polygon(centreoct, 8, 38.784);

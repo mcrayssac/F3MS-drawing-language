@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
 
     // Write the header of the Python script
     fprintf(output, "import pygame\n");
+    fprintf(output, "import math\n");
     fprintf(output, "pygame.init()\n");
     fprintf(output, "screen = pygame.display.set_mode((1000, 800))\n");
     fprintf(output, "pygame.display.set_caption('Draw Line')\n");
