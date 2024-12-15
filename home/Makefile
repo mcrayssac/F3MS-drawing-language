@@ -9,7 +9,7 @@ FLEX = flex
 BISON = bison
 
 # Flags
-CFLAGS = -Wall -Wextra -std=c99 -I../src -Wno-sign-compare -D_GNU_SOURCE
+CFLAGS = -Wall -Wextra -std=c99 -I../src -I../src/temp -Wno-sign-compare -D_GNU_SOURCE
 
 # Add -lm to link the math library if needed, and -ll or -lfl for Flex
 LDLIBS = -ll
@@ -44,6 +44,12 @@ $(COMPILER): $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_SRC) $(COMMON_SRC) $(COMMAND_SRC)
 	@echo "Compiling the compiler..."
 	$(CC) $(CFLAGS) -o $(COMPILER) $(MAIN_SRC) $(PARSER_C_OBJ) $(LEXER_OBJ) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC) $(LDLIBS)
 	@echo "draw_compiler generated"
+
+# Add dependencies to ensure correct build order
+$(MAIN_SRC) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC): $(PARSER_H_OBJ)
+
+# Ensure that sources depending on parser.tab.h are compiled after it's generated
+$(COMMON_SRC): $(PARSER_H_OBJ)
 
 # Ensure temp directory exists
 ../src/temp/:

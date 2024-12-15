@@ -9,9 +9,18 @@
 #include "../point/point.h"
 
 /* Output file */
-FILE *output; 
+FILE *output;
 
-/* Error handling function */
-void yyerror(const char *s) {
-    fprintf(stderr, "Error: %s\n", s);
+/* Error handling functions */
+void yyerror(const char *msg) {
+    fprintf(stderr, "Error: %s\n", msg);
+}
+
+void error_at_line(int line, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    fprintf(stderr, "\033[1;31mError at line %d:\033[0m ", line);
+    vfprintf(stderr, fmt, args);
+    fprintf(stderr, "\n");
+    va_end(args);
 }
