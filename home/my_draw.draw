@@ -1,12 +1,14 @@
-set_color(0,0,0); 
+#set_color(0,0,0); 
 point1 = point(200,300);
 point2 = point(400,400);
 line(point1,point2);
 set_line_width(5);
+
 set_color(255,0,0); 
 point1 = point(600,600);
 point2 = point(100,600);
 line(point(200,300), point(400,400));
+
 set_color(0,100,0); 
 point1 = point(150,500);
 point2 = point(500,100);
@@ -75,14 +77,14 @@ text(" !!!", 285, 200 , 36);
 
 #hexagone centré en un point défini
 centrehex = point(850, 300);
-set_color(0, 0, 0);
+set_color(150, 85, 189);
 regular_polygon(centrehex, 6, 50.141888);
 
 #triangle régulier avec un centre défini inline (directement dans l'appel)
-set_color(0, 0, 0);
-regular_polygon([850, 200], 3, 74.8462);
+set_color(185, 100, 105); 
+regular_polygon([850, 150], 3, 74.8462);
 
 #octogone avec un autre centre défini
 centreoct = point(850, 400);
-set_color(0, 0, 0);
+set_color(0, 0, 255); 
 regular_polygon(centreoct, 8, 38.784);

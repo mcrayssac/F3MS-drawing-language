@@ -65,10 +65,10 @@ utilisent Pygame pour exécuter les instructions de dessin.
    pip install pygame
    ```
 
-3. **Installer Gtk 3**
+3. **Installer Gtk 3 et VTE**
 
    ```bash
-   sudo apt install libgtk-3-dev
+   sudo apt install libgtk-3-dev libvte-2.91-dev
     ```
 
 4. **Etapes de Compilation**

@@ -7,7 +7,6 @@ screen.fill((255, 255, 255))
 color = (0, 0, 0)
 line_width = 1
 
-color = [0, 0, 0]
 pygame.draw.line(screen, color, (200, 300), (400, 400), line_width)
 line_width = 5
 color = [255, 0, 0]
@@ -60,7 +59,7 @@ font = pygame.font.Font(None, 36)
 text_surface = font.render(" !!!", True, color)
 screen.blit(text_surface, (285, 200))
 pygame.display.flip()
-color = [0, 0, 0]
+color = [150, 85, 189]
 points = []
 cx, cy = 850, 300
 sides, radius = 6, 50.141888
@@ -70,9 +69,9 @@ for i in range(sides):
     y = cy + radius * math.sin(angle)
     points.append((x, y))
 pygame.draw.polygon(screen, color, points, line_width)
-color = [0, 0, 0]
+color = [185, 100, 105]
 points = []
-cx, cy = 850, 200
+cx, cy = 850, 150
 sides, radius = 3, 74.846199
 for i in range(sides):
     angle = 2 * 3.14159 * i / sides
@@ -80,7 +79,7 @@ for i in range(sides):
     y = cy + radius * math.sin(angle)
     points.append((x, y))
 pygame.draw.polygon(screen, color, points, line_width)
-color = [0, 0, 0]
+color = [0, 0, 255]
 points = []
 cx, cy = 850, 400
 sides, radius = 8, 38.784000

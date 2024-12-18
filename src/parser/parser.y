@@ -268,10 +268,10 @@ image_call:
 text_call:
     TEXT LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA NUMBER RPAREN {
         fprintf(output,
-        "font = pygame.font.Font(None, %d)\n"
-        "text_surface = font.render(%s, True, color)\n"
-        "screen.blit(text_surface, (%d, %d))\n"
-        "pygame.display.flip()\n",
+            "font = pygame.font.Font(None, %d)\n"
+            "text_surface = font.render(%s, True, color)\n"
+            "screen.blit(text_surface, (%d, %d))\n"
+            "pygame.display.flip()\n",
         $9, $3, $5, $7);
     }
     ;

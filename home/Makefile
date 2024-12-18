@@ -42,7 +42,7 @@ $(COMPILER): $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_SRC)
 # Compile the text editor
 $(EDITOR): ../ide/textEditor.c
 	@echo "Compiling the text editor..."
-	$(CC) -o $(EDITOR) ../ide/textEditor.c `pkg-config --cflags --libs gtk+-3.0`
+	$(CC) -o $(EDITOR) ../ide/textEditor.c `pkg-config --cflags --libs gtk+-3.0 vte-2.91`
 	@echo "Text editor 'ide' generated"
 
 # Ensure temp directory exists
