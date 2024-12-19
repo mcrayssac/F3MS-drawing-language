@@ -32,7 +32,9 @@ point1 = point(400,500);
 #elipse
 set_color(225,10,0); 
 ellipse(point1,200,90);
-grid();
+
+#grid
+grid(100);
 
 #points pour le premier polygone (pentagone)
 p1 = point(100, 100);

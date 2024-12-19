@@ -453,25 +453,32 @@ image(point, width, height, filepath);
 <details>
   <summary>Grid</summary>
 
-#### ** **
+#### **Grid**
 
 ##### Description
 
-> Dessine une grid dans l'environnement 2D
->
+> Dessine une grille dans l'environnement 2D avec un espacement spécifié entre les lignes.
 
 ##### Syntaxe
 
 ```python
-grid(point(0, 0));
+grid(espacement);
 ```
 
 ##### Paramètres
 
-> `float x` : abscisse
->
-> `float y` : ordonnée
->
+> `int espacement` : Espacement en pixels entre les lignes de la grille.
+
+##### Exemple
+
+```python
+grid(50);  // Dessine une grille avec des lignes espacées de 50 pixels
+```
+
+##### Note
+
+> L'espacement définit la distance entre chaque ligne verticale et horizontale de la grille.
+> Une valeur plus petite pour l'espacement crée une grille plus dense, tandis qu'une valeur plus grande crée une grille plus espacée.
 
 </details>
 

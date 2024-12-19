@@ -148,10 +148,10 @@ ellipse_call:
     ;
 
 grid_call:
-    GRID LPAREN RPAREN {
-        fprintf(output, "for x in range(0, 1000, 50):\n");
+    GRID LPAREN NUMBER RPAREN {
+        fprintf(output, "for x in range(0, 1000, %d):\n", $3);
         fprintf(output, "    pygame.draw.line(screen, (0, 0, 0), (x, 0), (x, 800), 1)\n");
-        fprintf(output, "for y in range(0, 800, 50):\n");
+        fprintf(output, "for y in range(0, 800, %d):\n", $3);
         fprintf(output, "    pygame.draw.line(screen, (0, 0, 0), (0, y), (1000, y), 1)\n");
     }
     ;

@@ -123,7 +123,6 @@ void execute() {
 
     char command[512];
     char command2[512];
-    char output[1024];
 
     // Commande pour compiler
     snprintf(command, sizeof(command), "../src/temp/draw_compiler ../home/%s ../home/draw.py\n", filename);
@@ -146,27 +145,24 @@ void execute() {
 }
 
 /* Fonction pour gérer les raccourcis clavier */
-gboolean on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
+void on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_KEY_s) {
         /* Appelle la fonction save_file pour Ctrl+S */
         save_file(widget, user_data);
-        return TRUE; // Empêche la propagation de l'événement
     }
     else if ((event->state & GDK_CONTROL_MASK) &&
             (event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) {
         execute();
-        return TRUE;
     }
     else if (event->keyval == GDK_KEY_Escape) {
         gtk_main_quit(); // Cela termine le programme GTK
-        return TRUE;
     }
     // Raccourci pour exécuter directement le script draw.py
     else if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_KEY_x) {
-        system("../src/temp/draw_compiler ../home/my_draw.draw ../home/draw.py && ./myenv/bin/python3 ../home/draw.py &");
-        return TRUE;
+        char commandX[512];
+        snprintf(commandX, sizeof(commandX), "../src/temp/draw_compiler ../home/my_draw.draw ../home/draw.py && ./myenv/bin/python3 ../home/draw.py & \n");
+        vte_terminal_feed_child(VTE_TERMINAL(terminal), commandX, strlen(commandX));
     }
-    return FALSE; // Permet la propagation de l'événement
 }
 
 /* Fonction pour colorer les lignes commençant par '#' */
