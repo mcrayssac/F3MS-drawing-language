@@ -12,7 +12,7 @@ BISON = bison
 CFLAGS = -Wall -Wextra -std=c99 -I../src -I../src/temp -Wno-sign-compare -D_GNU_SOURCE
 
 # Add -lm to link the math library if needed, and -ll or -lfl for Flex
-LDLIBS = -ll
+LDLIBS = -ll -lm
 
 # Source files
 LEXER_SRC = ../src/lexer/lexer.l
@@ -31,19 +31,26 @@ PARSER_OBJ = $(PARSER_C_OBJ) $(PARSER_H_OBJ)
 
 # Output executable
 COMPILER = ../src/temp/draw_compiler
+EDITOR = ../ide/ide
 
 # Input and output files (can be overridden)
 DRAW_FILE ?= my_draw.draw
 OUTPUT_PY ?= draw.py
 
 # Default target
-all: $(COMPILER)
+all: $(COMPILER) $(EDITOR)
 
 # Compile the compiler
 $(COMPILER): $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_SRC) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC)
 	@echo "Compiling the compiler..."
 	$(CC) $(CFLAGS) -o $(COMPILER) $(MAIN_SRC) $(PARSER_C_OBJ) $(LEXER_OBJ) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC) $(LDLIBS)
 	@echo "draw_compiler generated"
+
+# Compile the text editor
+$(EDITOR): ../ide/textEditor.c
+	@echo "Compiling the text editor..."
+	$(CC) -o $(EDITOR) ../ide/textEditor.c `pkg-config --cflags --libs gtk+-3.0 vte-2.91`
+	@echo "Text editor 'ide' generated"
 
 # Add dependencies to ensure correct build order
 $(MAIN_SRC) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC): $(PARSER_H_OBJ)

@@ -12,6 +12,7 @@
 #include "../square/square.h"
 #include "../line/line.h"
 #include "../color/color.h"
+#include "../ellipse/ellipse.h"
 
 #include "../linkedList/linkedList.h"
 #include "../figure/figure.h"
@@ -27,6 +28,7 @@
     CMD_DRAW_CIRCLE,
     CMD_ROTATE,
     CMD_TRANSLATE,
+    CMD_DRAW_ELLIPSE,
 } CommandType;
 
 typedef struct {
@@ -40,6 +42,7 @@ typedef struct {
         Rectangle *rectangle;
         Square *square;
         Circle *circle;
+        Ellipse *ellipse;
         struct {
             Figure *figure;
             int angle;
@@ -49,6 +52,11 @@ typedef struct {
             int dx;
             int dy;
         } translate;
+        struct {
+            Point *p;
+            int width;
+            int height;
+        } Ellipse;
     } data;
 } Command;
 

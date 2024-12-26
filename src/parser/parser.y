@@ -38,6 +38,7 @@
     Square *squareval;
     Circle *circleval;
     Figure *figureval;
+    Ellipse *ellipseval;
 }
 
 /*  Section: Token Types
@@ -45,7 +46,7 @@
 */
 %token <intval> NUMBER
 %token <strval> IDENTIFIER
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE ELLIPSE
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 
 /* Section: Nonterminal Types
@@ -58,6 +59,7 @@
 %type <circleval> circle_expr
 %type <figureval> figure_expr
 %type <figureval> expr
+%type <ellipseval> ellipse_expr
 
 %start program
 
@@ -137,6 +139,7 @@ function_call:
     | draw_call
     | rotate_call
     | translate_call
+    | ellipse_call
     ;
 
 set_line_width_call:
@@ -272,6 +275,23 @@ circle_call:
         add_command(cmd);
     }
     ;
+
+ellipse_call:
+    ELLIPSE LPAREN expr COMMA NUMBER COMMA NUMBER RPAREN {
+        Command cmd;
+        cmd.type = CMD_DRAW_ELLIPSE;
+        cmd.data.ellipse = malloc(sizeof(Ellipse));
+        if (!cmd.data.ellipse) {
+            error_at_line(@$.first_line, "Memory allocation failed in ellipse_call.");
+            YYABORT;
+        }
+        cmd.data.ellipse->p = $3->data.point;
+        cmd.data.ellipse->width = $5;
+        cmd.data.ellipse->height = $7;
+        add_command(cmd);
+    }
+    ;
+
 
 rotate_call:
     ROTATE LPAREN IDENTIFIER COMMA NUMBER RPAREN {
@@ -422,6 +442,24 @@ draw_call:
                 cmd.data.circle->radius = figure->data.circle->radius;
                 break;
 
+            case FIGURE_ELLIPSE:
+   	 			cmd.type = CMD_DRAW_ELLIPSE;
+    			cmd.data.ellipse = malloc(sizeof(Ellipse));
+    			if (!cmd.data.ellipse) {
+        			error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+        			YYABORT;
+    			}
+    			cmd.data.ellipse->p = malloc(sizeof(Point));
+    			if (!cmd.data.ellipse->p) {
+        			error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+        			YYABORT;
+    			}
+    			cmd.data.ellipse->p->x = figure->data.ellipse->p->x;
+    			cmd.data.ellipse->p->y = figure->data.ellipse->p->y;
+    			cmd.data.ellipse->width = figure->data.ellipse->width;
+    			cmd.data.ellipse->height = figure->data.ellipse->height;
+    			break;
+
             default:
                 error_at_line(@$.first_line, "Unknown figure type");
                 YYABORT;
@@ -502,6 +540,16 @@ figure_expr:
         figure->data.circle = $1;
         $$ = figure;
     }
+	| ellipse_expr {
+        Figure *figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+            YYABORT;
+        }
+        figure->type = FIGURE_ELLIPSE;
+        figure->data.ellipse = $1;
+        $$ = figure;
+    }
     | IDENTIFIER {
         Figure *figure = find_figure($1);
         if (figure == NULL) {
@@ -529,6 +577,9 @@ figure_expr:
             "5. Circle:\n"
             "   circle(point, radius)\n"
             "   Example: circle(point(300,300), 75)\n\n"
+			"6. Ellipse:\n"
+			"   elipse(point, width, height)\n"
+			"   Example: elipse(point(100,100), 100, 150)\n"
             "You can also use previously defined variables.\n"
             "Example: line(p1, p2) where p1 and p2 are point variables");
         YYABORT;
@@ -666,6 +717,35 @@ circle_expr:
     }
     ;
 
+ellipse_expr:
+    ELLIPSE LPAREN expr COMMA NUMBER COMMA NUMBER RPAREN {
+        Ellipse *ellipse = malloc(sizeof(Ellipse));
+        if (!ellipse) {
+            error_at_line(@$.first_line, "Memory allocation failed in ellipse_expr.");
+            YYABORT;
+        }
+        ellipse->p = $3->data.point;
+        ellipse->width = $5;
+        ellipse->height = $7;
+        $$ = ellipse;
+    }
+    | ELLIPSE LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid ellipse expression. Usage:\n"
+            "ellipse(point, width, height) where:\n"
+            "- point: center point of the ellipse\n"
+            "- width: width of the ellipse\n"
+            "- height: height of the ellipse\n"
+            "\nExamples:\n"
+            "myellipse = ellipse(point(100,100), 150, 100);  // Ellipse with width 150px and height 100px\n"
+            "\nCommon mistakes:\n"
+            "❌ ellipse(100,100, 150, 100)  // Missing point constructor\n"
+            "❌ ellipse(point, 150)         // Missing height\n"
+            "✅ ellipse(point(100,100), 150, 100)");
+        YYABORT;
+    }
+    ;
+
 %%
 
 /*  Section: Function Definitions
@@ -742,6 +822,18 @@ void generate_python_code() {
                         cmd->data.circle->radius,
                         cmd->name);
                 break;
+
+			case CMD_DRAW_ELLIPSE:
+    			printf("commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
+    			    cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
+    			    cmd->data.ellipse->width, cmd->data.ellipse->height,
+    			    cmd->name);
+    			fprintf(output, "commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
+    				    cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
+    				    cmd->data.ellipse->width, cmd->data.ellipse->height,
+				        cmd->name);
+    			break;
+
             case CMD_ROTATE:
                 printf("commands.append(('ROTATE', '%s', %d))\n",
                        cmd->data.rotate.figure->name, cmd->data.rotate.angle);

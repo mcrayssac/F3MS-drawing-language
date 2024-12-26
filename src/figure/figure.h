@@ -13,13 +13,15 @@
 #include "../line/line.h"
 #include "../color/color.h"
 #include "../linkedList/linkedList.h"
+#include "../ellipse/ellipse.h"
 
 typedef enum {
     FIGURE_POINT,
     FIGURE_LINE,
     FIGURE_RECTANGLE,
     FIGURE_SQUARE,
-    FIGURE_CIRCLE
+    FIGURE_CIRCLE,
+    FIGURE_ELLIPSE
 } FigureType;
 
 typedef struct {
@@ -31,6 +33,7 @@ typedef struct {
         Rectangle *rectangle;
         Square *square;
         Circle *circle;
+        Ellipse *ellipse;
     } data;
 } Figure;
 
