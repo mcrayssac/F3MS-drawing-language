@@ -4,3 +4,10 @@ set_line_width(5);
 myellipse = ellipse(point(400,250), 150, 200);
 draw(myellipse);
 
+
+#grid
+set_color(150,180,0);
+set_line_width(5);
+grid(50);
+
+

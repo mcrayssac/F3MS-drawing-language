@@ -161,7 +161,7 @@ void on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     // Raccourci pour exécuter directement le script draw.py
     else if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_KEY_x) {
         char commandX[512];
-        snprintf(commandX, sizeof(commandX), "../src/temp/draw_compiler ../home/my_draw.draw ../home/draw.py && ./myenv/bin/python3 ../home/draw.py & \n");
+        snprintf(commandX, sizeof(commandX), "../src/temp/draw_compiler ../home/my_draw.draw ../home/draw.py 10 && ./myenv/bin/python3 ../home/draw.py &\n");
         vte_terminal_feed_child(VTE_TERMINAL(terminal), commandX, strlen(commandX));
     }
 }

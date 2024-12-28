@@ -46,7 +46,7 @@
 */
 %token <intval> NUMBER
 %token <strval> IDENTIFIER
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE ELLIPSE
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE ELLIPSE GRID
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 
 /* Section: Nonterminal Types
@@ -140,6 +140,7 @@ function_call:
     | rotate_call
     | translate_call
     | ellipse_call
+    | grid_call
     ;
 
 set_line_width_call:
@@ -292,6 +293,14 @@ ellipse_call:
     }
     ;
 
+grid_call:
+    GRID LPAREN NUMBER RPAREN {
+        Command cmd;
+        cmd.type = CMD_DRAW_GRID;
+        cmd.data.grid.spacing = $3;
+        add_command(cmd);
+    }
+    ;
 
 rotate_call:
     ROTATE LPAREN IDENTIFIER COMMA NUMBER RPAREN {
@@ -823,16 +832,21 @@ void generate_python_code() {
                         cmd->name);
                 break;
 
-			case CMD_DRAW_ELLIPSE:
-    			printf("commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
-    			    cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
-    			    cmd->data.ellipse->width, cmd->data.ellipse->height,
-    			    cmd->name);
-    			fprintf(output, "commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
-    				    cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
-    				    cmd->data.ellipse->width, cmd->data.ellipse->height,
-				        cmd->name);
-    			break;
+	    case CMD_DRAW_ELLIPSE:
+		printf("commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
+		    cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
+		    cmd->data.ellipse->width, cmd->data.ellipse->height,
+		    cmd->name);
+		fprintf(output, "commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
+			    cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
+			    cmd->data.ellipse->width, cmd->data.ellipse->height,
+				cmd->name);
+		break;
+
+	    case CMD_DRAW_GRID:
+	         printf("commands.append(('DRAW_GRID', %d))\n", cmd->data.grid.spacing);
+	         fprintf(output, "commands.append(('DRAW_GRID', %d))\n", cmd->data.grid.spacing);
+	         break;
 
             case CMD_ROTATE:
                 printf("commands.append(('ROTATE', '%s', %d))\n",
