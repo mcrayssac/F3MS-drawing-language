@@ -58,6 +58,7 @@ INVALID_NUM {DIGIT}*\.{DIGIT}+
 "translate"         { return TRANSLATE; }
 "ellipse"           { return ELLIPSE; }
 "grid"              { return GRID;}
+"arc"               { return ARC;}
 
 {IDENTIFIER}        { yylval.strval = strdup(yytext); return IDENTIFIER; }
 {NUMBER}            { yylval.intval = atoi(yytext); return NUMBER; }

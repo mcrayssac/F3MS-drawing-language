@@ -14,6 +14,8 @@
 #include "../color/color.h"
 #include "../linkedList/linkedList.h"
 #include "../ellipse/ellipse.h"
+#include "../grid/grid.h"
+#include "../arc/arc.h"
 
 typedef enum {
     FIGURE_POINT,
@@ -21,7 +23,9 @@ typedef enum {
     FIGURE_RECTANGLE,
     FIGURE_SQUARE,
     FIGURE_CIRCLE,
-    FIGURE_ELLIPSE
+    FIGURE_ELLIPSE,
+    FIGURE_GRID,
+    FIGURE_ARC
 } FigureType;
 
 typedef struct {
@@ -34,6 +38,8 @@ typedef struct {
         Square *square;
         Circle *circle;
         Ellipse *ellipse;
+        Grid *grid;
+        Arc *arc;
     } data;
 } Figure;
 

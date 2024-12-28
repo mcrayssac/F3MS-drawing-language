@@ -39,6 +39,8 @@
     Circle *circleval;
     Figure *figureval;
     Ellipse *ellipseval;
+    Grid *gridval;
+    Arc *arcval;
 }
 
 /*  Section: Token Types
@@ -46,7 +48,7 @@
 */
 %token <intval> NUMBER
 %token <strval> IDENTIFIER
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE ELLIPSE GRID
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE ELLIPSE GRID ARC
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 
 /* Section: Nonterminal Types
@@ -60,6 +62,8 @@
 %type <figureval> figure_expr
 %type <figureval> expr
 %type <ellipseval> ellipse_expr
+%type <gridval> grid_expr
+%type <arcval> arc_expr
 
 %start program
 
@@ -141,6 +145,7 @@ function_call:
     | translate_call
     | ellipse_call
     | grid_call
+    | arc_call
     ;
 
 set_line_width_call:
@@ -297,7 +302,29 @@ grid_call:
     GRID LPAREN NUMBER RPAREN {
         Command cmd;
         cmd.type = CMD_DRAW_GRID;
-        cmd.data.grid.spacing = $3;
+        cmd.data.grid = malloc(sizeof(Grid));
+        if (!cmd.data.grid) {
+            error_at_line(@$.first_line, "Memory allocation failed in grid_call.");
+            YYABORT;
+        }
+        cmd.data.grid->spacing = $3;
+        add_command(cmd);
+    }
+    ;
+
+arc_call:
+    ARC LPAREN expr COMMA expr COMMA NUMBER COMMA NUMBER RPAREN {
+        Command cmd;
+        cmd.type = CMD_DRAW_ARC;
+        cmd.data.arc = malloc(sizeof(Arc));
+        if (!cmd.data.arc) {
+            error_at_line(@$.first_line, "Memory allocation failed in arc_call.");
+            YYABORT;
+        }
+        cmd.data.arc->p1 = $3->data.point;
+        cmd.data.arc->p2 = $5->data.point;
+        cmd.data.arc->angle = $7;
+        cmd.data.arc->thickness = $9;
         add_command(cmd);
     }
     ;
@@ -452,22 +479,49 @@ draw_call:
                 break;
 
             case FIGURE_ELLIPSE:
-   	 			cmd.type = CMD_DRAW_ELLIPSE;
-    			cmd.data.ellipse = malloc(sizeof(Ellipse));
-    			if (!cmd.data.ellipse) {
-        			error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
-        			YYABORT;
-    			}
-    			cmd.data.ellipse->p = malloc(sizeof(Point));
-    			if (!cmd.data.ellipse->p) {
-        			error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
-        			YYABORT;
-    			}
-    			cmd.data.ellipse->p->x = figure->data.ellipse->p->x;
-    			cmd.data.ellipse->p->y = figure->data.ellipse->p->y;
-    			cmd.data.ellipse->width = figure->data.ellipse->width;
-    			cmd.data.ellipse->height = figure->data.ellipse->height;
-    			break;
+                cmd.type = CMD_DRAW_ELLIPSE;
+                cmd.data.ellipse = malloc(sizeof(Ellipse));
+                if (!cmd.data.ellipse) {
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+                cmd.data.ellipse->p = malloc(sizeof(Point));
+                if (!cmd.data.ellipse->p) {
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+                cmd.data.ellipse->p->x = figure->data.ellipse->p->x;
+                cmd.data.ellipse->p->y = figure->data.ellipse->p->y;
+                cmd.data.ellipse->width = figure->data.ellipse->width;
+                cmd.data.ellipse->height = figure->data.ellipse->height;
+                break;
+
+            case FIGURE_ARC:
+                fprintf(output, "p1 = (%d, %d)\n",
+                    figure->data.arc->p1->x,
+                    figure->data.arc->p1->y);
+                fprintf(output, "p2 = (%d, %d)\n",
+                    figure->data.arc->p2->x,
+                    figure->data.arc->p2->y);
+
+                fprintf(output, "radius = int(((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)**0.5 / 2)\n");
+                fprintf(output, "rect = pygame.Rect(p1[0] - radius, p1[1] - radius, radius * 2, radius * 2)\n");
+
+                fprintf(output, "pygame.draw.arc(screen, color, rect, 0, math.radians(%f), %d)\n",
+                    figure->data.arc->angle,
+                    figure->data.arc->thickness);
+
+                if (figure->name != NULL) {
+                fprintf(output, "figures['%s'] = {\n", figure->name);
+                fprintf(output, "    'type': 'arc',\n");
+                fprintf(output, "    'rect': rect,\n");
+                fprintf(output, "    'start_angle': 0,\n");
+                fprintf(output, "    'end_angle': math.radians(%f),\n", figure->data.arc->angle);
+                fprintf(output, "    'thickness': %d,\n", figure->data.arc->thickness);
+                fprintf(output, "    'color': color\n");
+                fprintf(output, "}\n");
+                }
+                break;
 
             default:
                 error_at_line(@$.first_line, "Unknown figure type");
@@ -549,7 +603,7 @@ figure_expr:
         figure->data.circle = $1;
         $$ = figure;
     }
-	| ellipse_expr {
+    | ellipse_expr {
         Figure *figure = malloc(sizeof(Figure));
         if (!figure) {
             error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
@@ -558,6 +612,26 @@ figure_expr:
         figure->type = FIGURE_ELLIPSE;
         figure->data.ellipse = $1;
         $$ = figure;
+    }
+    | grid_expr {
+            Figure *figure = malloc(sizeof(Figure));
+            if (!figure) {
+                error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+                YYABORT;
+            }
+            figure->type = FIGURE_GRID;
+            figure->data.grid = $1;
+            $$ = figure;
+    }
+    | arc_expr {
+            Figure *figure = malloc(sizeof(Figure));
+            if (!figure) {
+                error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+                YYABORT;
+            }
+            figure->type = FIGURE_ARC;
+            figure->data.arc = $1;
+            $$ = figure;
     }
     | IDENTIFIER {
         Figure *figure = find_figure($1);
@@ -755,6 +829,64 @@ ellipse_expr:
     }
     ;
 
+grid_expr:
+    GRID LPAREN NUMBER RPAREN {
+        Grid *grid = malloc(sizeof(Grid));
+        if (!grid) {
+            error_at_line(@$.first_line, "Memory allocation failed in grid_expr.");
+            YYABORT;
+        }
+        grid->spacing = $3;
+        $$ = grid;
+    }
+    | GRID LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid grid expression. Usage:\n"
+            "grid(spacing) where:\n"
+            "- spacing: distance between grid lines in pixels\n"
+            "\nExamples:\n"
+            "grid(50);  // Creates a grid with 50px spacing\n"
+            "grid(100); // Creates a grid with 100px spacing\n"
+            "\nCommon mistakes:\n"
+            "❌ grid();        // Missing spacing value\n"
+            "❌ grid(0);       // Spacing must be positive\n"
+            "❌ grid(50, 100); // Too many arguments\n"
+            "✅ grid(50)");
+        YYABORT;
+    }
+    ;
+
+arc_expr:
+    ARC LPAREN expr COMMA expr COMMA NUMBER COMMA NUMBER RPAREN {
+        Arc *arc = malloc(sizeof(Arc));
+        if (!arc) {
+            error_at_line(@$.first_line, "Memory allocation failed in arc_expr.");
+            YYABORT;
+        }
+        arc->p1 = $3->data.point;
+        arc->p2 = $5->data.point;
+        arc->angle = $7;
+        arc->thickness = $9;
+        $$ = arc;
+    }
+    | ARC LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid arc expression. Usage:\n"
+            "arc(point1, point2, angle, thickness) where:\n"
+            "- point1: starting point\n"
+            "- point2: ending point\n"
+            "- angle: angle in degrees (0-360)\n"
+            "- thickness: line thickness\n"
+            "\nExample:\n"
+            "myarc = arc(point(100,100), point(200,200), 90, 2);\n"
+            "\nCommon mistakes:\n"
+            "❌ arc(100,100, 200,200, 90)  // Missing point constructor\n"
+            "❌ arc(p1, p2, 90)            // Missing thickness\n"
+            "✅ arc(point(100,100), point(200,200), 90, 2)");
+        YYABORT;
+    }
+    ;
+
 %%
 
 /*  Section: Function Definitions
@@ -844,9 +976,22 @@ void generate_python_code() {
 		break;
 
 	    case CMD_DRAW_GRID:
-	         printf("commands.append(('DRAW_GRID', %d))\n", cmd->data.grid.spacing);
-	         fprintf(output, "commands.append(('DRAW_GRID', %d))\n", cmd->data.grid.spacing);
-	         break;
+                printf("commands.append(('DRAW_GRID', %d))\n", cmd->data.grid->spacing);
+                fprintf(output, "commands.append(('DRAW_GRID', %d))\n", cmd->data.grid->spacing);
+                break;
+
+            case CMD_DRAW_ARC:
+                printf("commands.append(('DRAW_ARC', (%d, %d), (%d, %d), %f, %d, '%s'))\n",
+                       cmd->data.arc->p1->x, cmd->data.arc->p1->y,
+                       cmd->data.arc->p2->x, cmd->data.arc->p2->y,
+                       cmd->data.arc->angle, cmd->data.arc->thickness,
+                       cmd->name);
+                fprintf(output, "commands.append(('DRAW_ARC', (%d, %d), (%d, %d), %f, %d, '%s'))\n",
+                       cmd->data.arc->p1->x, cmd->data.arc->p1->y,
+                       cmd->data.arc->p2->x, cmd->data.arc->p2->y,
+                       cmd->data.arc->angle, cmd->data.arc->thickness,
+                       cmd->name);
+                break;
 
             case CMD_ROTATE:
                 printf("commands.append(('ROTATE', '%s', %d))\n",

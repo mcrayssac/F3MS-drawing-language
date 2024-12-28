@@ -105,6 +105,14 @@ int main(int argc, char *argv[]) {
     fprintf(output, "                pygame.draw.line(screen, (200, 200, 200), (x, 0), (x, 800), 1)\n");
     fprintf(output, "            for y in range(0, 800, spacing):\n");
     fprintf(output, "                pygame.draw.line(screen, (200, 200, 200), (0, y), (1000, y), 1)\n");
+    fprintf(output, "        elif cmd[0] == 'DRAW_ARC':\n");
+    fprintf(output, "            p1, p2 = cmd[1], cmd[2]\n");
+    fprintf(output, "            angle_deg, thickness = cmd[3], cmd[4]\n");
+    fprintf(output, "            radius = int(((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)**0.5) // 2\n");
+    fprintf(output, "            rect = pygame.Rect(p1[0] - radius, p1[1] - radius, radius * 2, radius * 2)\n");
+    fprintf(output, "            name = cmd[5]\n");
+    fprintf(output, "            figures[name] = {'type': 'arc', 'rect': rect, 'start_angle': 0, 'end_angle': math.radians(angle_deg), 'thickness': thickness, 'color': color}\n");
+    fprintf(output, "            pygame.draw.arc(screen, color, rect, 0, math.radians(angle_deg), thickness)\n");
     fprintf(output, "        elif cmd[0] == 'ROTATE':\n");
     fprintf(output, "            name = cmd[1]\n");
     fprintf(output, "            angle = cmd[2]\n");
@@ -183,7 +191,8 @@ int main(int argc, char *argv[]) {
     fprintf(output, "                pygame.draw.circle(screen, fig_color, fig['center'], fig['radius'], fig_line_width)\n");
     fprintf(output, "            elif fig['type'] == 'ellipse':\n");
     fprintf(output, "                pygame.draw.ellipse(screen, fig_color, fig['rect'], fig_line_width)\n");
-
+    fprintf(output, "            elif fig['type'] == 'arc':\n");
+    fprintf(output, "                pygame.draw.arc(screen, fig_color, fig['rect'], fig['start_angle'], fig['end_angle'], fig['thickness'])\n");
     fprintf(output, "        index += 1\n");
 
     fprintf(output, "\n");

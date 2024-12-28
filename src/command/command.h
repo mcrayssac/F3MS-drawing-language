@@ -14,6 +14,7 @@
 #include "../color/color.h"
 #include "../ellipse/ellipse.h"
 #include "../grid/grid.h"
+#include "../arc/arc.h"
 
 #include "../linkedList/linkedList.h"
 #include "../figure/figure.h"
@@ -32,6 +33,7 @@ typedef enum
     CMD_TRANSLATE,
     CMD_DRAW_ELLIPSE,
     CMD_DRAW_GRID,
+    CMD_DRAW_ARC,
 } CommandType;
 
 typedef struct
@@ -49,11 +51,8 @@ typedef struct
         Square* square;
         Circle* circle;
         Ellipse* ellipse;
-
-        struct
-        {
-            int spacing;
-        } grid;
+        Grid* grid;
+        Arc* arc;
 
         struct
         {
@@ -67,13 +66,6 @@ typedef struct
             int dx;
             int dy;
         } translate;
-
-        struct
-        {
-            Point* p;
-            int width;
-            int height;
-        } Ellipse;
     } data;
 } Command;
 
