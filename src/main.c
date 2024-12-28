@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     fprintf(output, "        elif cmd[0] == 'SET_LINE_WIDTH':\n");
     fprintf(output, "            line_width = cmd[1]\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_POINT':\n");
-    fprintf(output, "            name = cmd[2]\n"); 
+    fprintf(output, "            name = cmd[2]\n");
     fprintf(output, "            figures[name] = {'type': 'point', 'position': cmd[1], 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.circle(screen, color, cmd[1], line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_LINE':\n");
@@ -80,19 +80,23 @@ int main(int argc, char *argv[]) {
     fprintf(output, "            figures[name] = {'type': 'line', 'start': cmd[1], 'end': cmd[2], 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.line(screen, color, cmd[1], cmd[2], line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_RECTANGLE':\n");
-    fprintf(output, "            name = cmd[4]\n"); 
+    fprintf(output, "            name = cmd[4]\n");
     fprintf(output, "            rect = pygame.Rect(cmd[1][0], cmd[1][1], cmd[2], cmd[3])\n");
     fprintf(output, "            figures[name] = {'type': 'rectangle', 'rect': rect, 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.rect(screen, color, rect, line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_SQUARE':\n");
-    fprintf(output, "            name = cmd[3]\n"); 
+    fprintf(output, "            name = cmd[3]\n");
     fprintf(output, "            rect = pygame.Rect(cmd[1][0], cmd[1][1], cmd[2], cmd[2])\n");
     fprintf(output, "            figures[name] = {'type': 'square', 'rect': rect, 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.rect(screen, color, rect, line_width)\n");
     fprintf(output, "        elif cmd[0] == 'DRAW_CIRCLE':\n");
-    fprintf(output, "            name = cmd[3]\n"); 
+    fprintf(output, "            name = cmd[3]\n");
     fprintf(output, "            figures[name] = {'type': 'circle', 'center': cmd[1], 'radius': cmd[2], 'color': color, 'line_width': line_width}\n");
     fprintf(output, "            pygame.draw.circle(screen, color, cmd[1], cmd[2], line_width)\n");
+    fprintf(output, "        elif cmd[0] == 'DRAW_ELLIPSE':\n");
+    fprintf(output, "            name = cmd[4]\n");
+    fprintf(output, "            rect = pygame.Rect(cmd[1][0] - cmd[2]//2, cmd[1][1] - cmd[3]//2, cmd[2], cmd[3])\n");
+    fprintf(output, "            pygame.draw.ellipse(screen, color, rect, line_width)\n");
     fprintf(output, "        elif cmd[0] == 'ROTATE':\n");
     fprintf(output, "            name = cmd[1]\n");
     fprintf(output, "            angle = cmd[2]\n");
@@ -163,6 +167,8 @@ int main(int argc, char *argv[]) {
     fprintf(output, "                    pygame.draw.rect(screen, fig_color, fig['rect'], fig_line_width)\n");
     fprintf(output, "            elif fig['type'] == 'circle':\n");
     fprintf(output, "                pygame.draw.circle(screen, fig_color, fig['center'], fig['radius'], fig_line_width)\n");
+    fprintf(output, "            elif fig['type'] == 'ellipse':\n");
+    fprintf(output, "                pygame.draw.ellipse(screen, fig_color, fig['rect'], fig_line_width)\n");
 
     fprintf(output, "        index += 1\n");
 

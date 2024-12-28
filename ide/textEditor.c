@@ -153,6 +153,7 @@ void on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     else if ((event->state & GDK_CONTROL_MASK) &&
             (event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) {
         execute();
+        g_signal_stop_emission_by_name(widget, "key-press-event"); // Empêche l'action par défaut de sauter une ligne !
     }
     else if (event->keyval == GDK_KEY_Escape) {
         gtk_main_quit(); // Cela termine le programme GTK
