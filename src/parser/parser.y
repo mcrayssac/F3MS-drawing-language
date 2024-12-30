@@ -296,6 +296,21 @@ ellipse_call:
         cmd.data.ellipse->height = $7;
         add_command(cmd);
     }
+    | ELLIPSE LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid ellipse command. Usage:\n"
+            "ellipse(point, width, height) where:\n"
+            "- point: center point of the ellipse\n"
+            "- width: width of the ellipse\n"
+            "- height: height of the ellipse\n"
+            "\nExamples:\n"
+            "ellipse(point(100,100), 150, 100);  // Ellipse with width 150px and height 100px\n"
+            "\nCommon mistakes:\n"
+            "❌ ellipse(100,100, 150, 100)  // Missing point constructor\n"
+            "❌ ellipse(point, 150)         // Missing height\n"
+            "✅ ellipse(point(100,100), 150, 100)");
+        YYABORT;
+    }
     ;
 
 grid_call:
@@ -309,6 +324,21 @@ grid_call:
         }
         cmd.data.grid->spacing = $3;
         add_command(cmd);
+    }
+    | GRID LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid grid command. Usage:\n"
+            "grid(spacing) where:\n"
+            "- spacing: distance between grid lines in pixels\n"
+            "\nExamples:\n"
+            "grid(50);  // Creates a grid with 50px spacing\n"
+            "grid(100); // Creates a grid with 100px spacing\n"
+            "\nCommon mistakes:\n"
+            "❌ grid();        // Missing spacing value\n"
+            "❌ grid(0);       // Spacing must be positive\n"
+            "❌ grid(50, 100); // Too many arguments\n"
+            "✅ grid(50)");
+        YYABORT;
     }
     ;
 
@@ -326,6 +356,22 @@ arc_call:
         cmd.data.arc->angle = $7;
         cmd.data.arc->thickness = $9;
         add_command(cmd);
+    }
+    | ARC LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid arc command. Usage:\n"
+            "arc(point1, point2, angle, thickness) where:\n"
+            "- point1: starting point\n"
+            "- point2: ending point\n"
+            "- angle: angle in degrees (0-360)\n"
+            "- thickness: line thickness\n"
+            "\nExample:\n"
+            "arc(point(100,100), point(200,200), 90, 2);\n"
+            "\nCommon mistakes:\n"
+            "❌ arc(100,100, 200,200, 90)  // Missing point constructor\n"
+            "❌ arc(p1, p2, 90)            // Missing thickness\n"
+            "✅ arc(point(100,100), point(200,200), 90, 2)");
+        YYABORT;
     }
     ;
 
@@ -663,6 +709,12 @@ figure_expr:
 			"6. Ellipse:\n"
 			"   elipse(point, width, height)\n"
 			"   Example: elipse(point(100,100), 100, 150)\n"
+			"7. Grid:\n"
+            "   Grid(point, radius)\n"
+            "   Example: \n\n"
+            "8. Arc:\n"
+            "   arc()\n"
+            "   Example: \n\n"
             "You can also use previously defined variables.\n"
             "Example: line(p1, p2) where p1 and p2 are point variables");
         YYABORT;
@@ -814,17 +866,7 @@ ellipse_expr:
     }
     | ELLIPSE LPAREN error {
         error_at_line(@3.first_line,
-            "Invalid ellipse expression. Usage:\n"
-            "ellipse(point, width, height) where:\n"
-            "- point: center point of the ellipse\n"
-            "- width: width of the ellipse\n"
-            "- height: height of the ellipse\n"
-            "\nExamples:\n"
-            "myellipse = ellipse(point(100,100), 150, 100);  // Ellipse with width 150px and height 100px\n"
-            "\nCommon mistakes:\n"
-            "❌ ellipse(100,100, 150, 100)  // Missing point constructor\n"
-            "❌ ellipse(point, 150)         // Missing height\n"
-            "✅ ellipse(point(100,100), 150, 100)");
+            "Invalid ellipse expression. Expected: ellipse(point, width, height). Example: ellipse(point(0,0), 100, 200)");
         YYABORT;
     }
     ;
@@ -841,17 +883,7 @@ grid_expr:
     }
     | GRID LPAREN error {
         error_at_line(@3.first_line,
-            "Invalid grid expression. Usage:\n"
-            "grid(spacing) where:\n"
-            "- spacing: distance between grid lines in pixels\n"
-            "\nExamples:\n"
-            "grid(50);  // Creates a grid with 50px spacing\n"
-            "grid(100); // Creates a grid with 100px spacing\n"
-            "\nCommon mistakes:\n"
-            "❌ grid();        // Missing spacing value\n"
-            "❌ grid(0);       // Spacing must be positive\n"
-            "❌ grid(50, 100); // Too many arguments\n"
-            "✅ grid(50)");
+            "Invalid grid expression. Expected: grid(spacing). Example: grid(50)");
         YYABORT;
     }
     ;
@@ -871,18 +903,7 @@ arc_expr:
     }
     | ARC LPAREN error {
         error_at_line(@3.first_line,
-            "Invalid arc expression. Usage:\n"
-            "arc(point1, point2, angle, thickness) where:\n"
-            "- point1: starting point\n"
-            "- point2: ending point\n"
-            "- angle: angle in degrees (0-360)\n"
-            "- thickness: line thickness\n"
-            "\nExample:\n"
-            "myarc = arc(point(100,100), point(200,200), 90, 2);\n"
-            "\nCommon mistakes:\n"
-            "❌ arc(100,100, 200,200, 90)  // Missing point constructor\n"
-            "❌ arc(p1, p2, 90)            // Missing thickness\n"
-            "✅ arc(point(100,100), point(200,200), 90, 2)");
+            "Invalid arc expression. Expected: arc(point1, point2, angle, thickness). Example: arc(point(0,0), point(100,100), 90, 2)");
         YYABORT;
     }
     ;
