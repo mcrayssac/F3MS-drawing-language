@@ -1,24 +1,4 @@
-# Grid
-grid(80);
-
-# Ellipse
-set_color(150,180,0);
-set_line_width(5);
-myellipse = ellipse(point(400,300), 100, 150);
-draw(myellipse);
-
-# Arc
-p1 = point(600, 150);
-p2 = point(700, 250);  
-set_color(55, 160, 10); 
-set_line_width(15);
-myarc = arc(p1, p2, 180, 7);
-draw(myarc);
-
-# Picture dans le coin supérieur gauche
-picture("../home/image/logo.png", 100, 100, 1.0);
-
-# Drapeau français
+# Drapeau français (plus petit et plus bas)
 # Fond blanc
 set_color(255, 255, 255);
 rectanglefond = rectangle(point(300, 500), 200, 150);

@@ -32,6 +32,7 @@
 %union {
     int intval;
     char *strval;
+    float floatval;
     Point *pointval;
     Line *lineval;
     Rectangle *rectangleval;
@@ -41,15 +42,17 @@
     Ellipse *ellipseval;
     Grid *gridval;
     Arc *arcval;
+    Picture *pictureval;
 }
 
 /*  Section: Token Types
     Define the token types for the parser.
 */
 %token <intval> NUMBER
-%token <strval> IDENTIFIER
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE ELLIPSE GRID ARC
+%token <strval> IDENTIFIER STRING
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE ELLIPSE GRID ARC PICTURE
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
+%token <floatval> FLOAT
 
 /* Section: Nonterminal Types
     Define the nonterminal types for the parser.
@@ -64,6 +67,7 @@
 %type <ellipseval> ellipse_expr
 %type <gridval> grid_expr
 %type <arcval> arc_expr
+%type <pictureval> picture_expr
 
 %start program
 
@@ -146,6 +150,7 @@ function_call:
     | ellipse_call
     | grid_call
     | arc_call
+    | picture_call
     ;
 
 set_line_width_call:
@@ -375,6 +380,36 @@ arc_call:
     }
     ;
 
+picture_call:
+    PICTURE LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA FLOAT RPAREN {
+        Command cmd;
+        cmd.type = CMD_DRAW_PICTURE;
+        cmd.data.picture = create_picture($3, $5, $7, $9);
+        if (!cmd.data.picture) {
+            error_at_line(@$.first_line, "Memory allocation failed in picture_call.");
+            YYABORT;
+        }
+        add_command(cmd);
+    }
+    | PICTURE LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid picture command. Usage:\n"
+            "picture(path, x, y, scale) where:\n"
+            "- path: string path to the image file\n"
+            "- x: x-coordinate position\n"
+            "- y: y-coordinate position\n"
+            "- scale: scaling factor (float)\n"
+            "\nExamples:\n"
+            "pic1 = picture(\"image.png\", 100, 100, 1.0);    // Normal size\n"
+            "pic2 = picture(\"logo.jpg\", 0, 0, 2.5);         // Scaled up\n"
+            "\nCommon mistakes:\n"
+            "❌ picture(image.png, 100, 100, 1.0)     // Missing quotes\n"
+            "❌ picture(\"image.png\", 100, 100)      // Missing scale\n"
+            "✅ picture(\"image.png\", 100, 100, 1.0)");
+        YYABORT;
+    }
+    ;
+
 rotate_call:
     ROTATE LPAREN IDENTIFIER COMMA NUMBER RPAREN {
         Figure *figure = find_figure($3);
@@ -569,6 +604,16 @@ draw_call:
                 }
                 break;
 
+            case FIGURE_PICTURE:
+                cmd.type = CMD_DRAW_PICTURE;
+                cmd.data.picture = copy_picture(figure->data.picture);
+                if (!cmd.data.picture) {
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+                add_command(cmd);
+                break;
+
             default:
                 error_at_line(@$.first_line, "Unknown figure type");
                 YYABORT;
@@ -660,24 +705,34 @@ figure_expr:
         $$ = figure;
     }
     | grid_expr {
-            Figure *figure = malloc(sizeof(Figure));
-            if (!figure) {
-                error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
-                YYABORT;
-            }
-            figure->type = FIGURE_GRID;
-            figure->data.grid = $1;
-            $$ = figure;
+        Figure *figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+            YYABORT;
+        }
+        figure->type = FIGURE_GRID;
+        figure->data.grid = $1;
+        $$ = figure;
     }
     | arc_expr {
-            Figure *figure = malloc(sizeof(Figure));
-            if (!figure) {
-                error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
-                YYABORT;
-            }
-            figure->type = FIGURE_ARC;
-            figure->data.arc = $1;
-            $$ = figure;
+        Figure *figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+            YYABORT;
+        }
+        figure->type = FIGURE_ARC;
+        figure->data.arc = $1;
+        $$ = figure;
+    }
+    | picture_expr {
+        Figure *figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+            YYABORT;
+        }
+        figure->type = FIGURE_PICTURE;
+        figure->data.picture = $1;
+        $$ = figure;
     }
     | IDENTIFIER {
         Figure *figure = find_figure($1);
@@ -689,7 +744,7 @@ figure_expr:
         }
     }
     | error {
-        error_at_line(@1.first_line, 
+        error_at_line(@1.first_line,
             "Invalid figure expression. Available figures:\n\n"
             "1. Point:\n"
             "   point(x, y)\n"
@@ -706,15 +761,18 @@ figure_expr:
             "5. Circle:\n"
             "   circle(point, radius)\n"
             "   Example: circle(point(300,300), 75)\n\n"
-			"6. Ellipse:\n"
-			"   elipse(point, width, height)\n"
-			"   Example: elipse(point(100,100), 100, 150)\n"
-			"7. Grid:\n"
-            "   Grid(point, radius)\n"
-            "   Example: \n\n"
+            "6. Ellipse:\n"
+            "   elipse(point, width, height)\n"
+            "   Example: elipse(point(100,100), 100, 150)\n\n"
+            "7. Grid:\n"
+            "   grid(spacing)\n"
+            "   Example: grid(50)\n\n"
             "8. Arc:\n"
-            "   arc()\n"
-            "   Example: \n\n"
+            "   arc(point1, point2, angle, thickness)\n"
+            "   Example: arc(point(0,0), point(100,100), 90, 2)\n\n"
+            "9. Picture:\n"
+            "   picture(path, x, y, scale)\n"
+            "   Example: picture(\"image.png\", 100, 100, 1.0)\n\n"
             "You can also use previously defined variables.\n"
             "Example: line(p1, p2) where p1 and p2 are point variables");
         YYABORT;
@@ -908,6 +966,22 @@ arc_expr:
     }
     ;
 
+picture_expr:
+    PICTURE LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA FLOAT RPAREN {
+        Picture *pic = create_picture($3, $5, $7, $9);
+        if (!pic) {
+            error_at_line(@$.first_line, "Memory allocation failed in picture_expr.");
+            YYABORT;
+        }
+        $$ = pic;
+    }
+    | PICTURE LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid picture expression. Expected: picture(path, x, y, scale). Example: picture(\"image.png\", 100, 100, 1.0)");
+        YYABORT;
+    }
+    ;
+
 %%
 
 /*  Section: Function Definitions
@@ -985,18 +1059,18 @@ void generate_python_code() {
                         cmd->name);
                 break;
 
-	    case CMD_DRAW_ELLIPSE:
-		printf("commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
-		    cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
-		    cmd->data.ellipse->width, cmd->data.ellipse->height,
-		    cmd->name);
-		fprintf(output, "commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
-			    cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
-			    cmd->data.ellipse->width, cmd->data.ellipse->height,
-				cmd->name);
-		break;
+            case CMD_DRAW_ELLIPSE:
+                printf("commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
+                    cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
+                    cmd->data.ellipse->width, cmd->data.ellipse->height,
+                    cmd->name);
+                fprintf(output, "commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
+                        cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
+                        cmd->data.ellipse->width, cmd->data.ellipse->height,
+                        cmd->name);
+                break;
 
-	    case CMD_DRAW_GRID:
+            case CMD_DRAW_GRID:
                 printf("commands.append(('DRAW_GRID', %d))\n", cmd->data.grid->spacing);
                 fprintf(output, "commands.append(('DRAW_GRID', %d))\n", cmd->data.grid->spacing);
                 break;
@@ -1012,6 +1086,19 @@ void generate_python_code() {
                        cmd->data.arc->p2->x, cmd->data.arc->p2->y,
                        cmd->data.arc->angle, cmd->data.arc->thickness,
                        cmd->name);
+                break;
+
+            case CMD_DRAW_PICTURE:
+                printf("commands.append(('DRAW_PICTURE', %s, %d, %d, %f))\n",
+                       cmd->data.picture->path,
+                       cmd->data.picture->x,
+                       cmd->data.picture->y,
+                       cmd->data.picture->scale);
+                fprintf(output, "commands.append(('DRAW_PICTURE', %s, %d, %d, %f))\n",
+                       cmd->data.picture->path,
+                       cmd->data.picture->x,
+                       cmd->data.picture->y,
+                       cmd->data.picture->scale);
                 break;
 
             case CMD_ROTATE:

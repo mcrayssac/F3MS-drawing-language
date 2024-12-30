@@ -16,6 +16,7 @@
 #include "../ellipse/ellipse.h"
 #include "../grid/grid.h"
 #include "../arc/arc.h"
+#include "../picture/picture.h"
 
 typedef enum {
     FIGURE_POINT,
@@ -25,7 +26,8 @@ typedef enum {
     FIGURE_CIRCLE,
     FIGURE_ELLIPSE,
     FIGURE_GRID,
-    FIGURE_ARC
+    FIGURE_ARC,
+    FIGURE_PICTURE,
 } FigureType;
 
 typedef struct {
@@ -40,6 +42,7 @@ typedef struct {
         Ellipse *ellipse;
         Grid *grid;
         Arc *arc;
+        Picture *picture;
     } data;
 } Figure;
 

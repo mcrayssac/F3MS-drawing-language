@@ -10,8 +10,4 @@ typedef struct {
     int height;
 } Ellipse;
 
-// Fonctions pour l'ellipse si nécessaire
-// void draw_ellipse(Ellipse *e);
-// etc.
-
 #endif

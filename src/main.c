@@ -113,6 +113,16 @@ int main(int argc, char *argv[]) {
     fprintf(output, "            name = cmd[5]\n");
     fprintf(output, "            figures[name] = {'type': 'arc', 'rect': rect, 'start_angle': 0, 'end_angle': math.radians(angle_deg), 'thickness': thickness, 'color': color}\n");
     fprintf(output, "            pygame.draw.arc(screen, color, rect, 0, math.radians(angle_deg), thickness)\n");
+    fprintf(output, "        elif cmd[0] == 'DRAW_PICTURE':\n");
+    fprintf(output, "            path, x, y, scale = cmd[1], cmd[2], cmd[3], cmd[4]\n");
+    fprintf(output, "            try:\n");
+    fprintf(output, "                image = pygame.image.load(path).convert_alpha()\n");
+    fprintf(output, "                image_width, image_height = image.get_size()\n");
+    fprintf(output, "                scaled_image = pygame.transform.scale(image, (int(image_width * scale), int(image_height * scale)))\n");
+    fprintf(output, "                screen.blit(scaled_image, (x, y))\n");
+    fprintf(output, "                figures[f'picture_{path}'] = {'type': 'picture', 'path': path, 'x': x, 'y': y, 'scale': scale}\n");
+    fprintf(output, "            except pygame.error as e:\n");
+    fprintf(output, "                print(f\"Error loading image: {e}\")\n");
     fprintf(output, "        elif cmd[0] == 'ROTATE':\n");
     fprintf(output, "            name = cmd[1]\n");
     fprintf(output, "            angle = cmd[2]\n");
@@ -193,6 +203,14 @@ int main(int argc, char *argv[]) {
     fprintf(output, "                pygame.draw.ellipse(screen, fig_color, fig['rect'], fig_line_width)\n");
     fprintf(output, "            elif fig['type'] == 'arc':\n");
     fprintf(output, "                pygame.draw.arc(screen, fig_color, fig['rect'], fig['start_angle'], fig['end_angle'], fig['thickness'])\n");
+    fprintf(output, "            elif fig['type'] == 'picture':\n");
+    fprintf(output, "                try:\n");
+    fprintf(output, "                    image = pygame.image.load(fig['path']).convert_alpha()\n");
+    fprintf(output, "                    image_width, image_height = image.get_size()\n");
+    fprintf(output, "                    scaled_image = pygame.transform.scale(image, (int(image_width * fig['scale']), int(image_height * fig['scale'])))\n");
+    fprintf(output, "                    screen.blit(scaled_image, (fig['x'], fig['y']))\n");
+    fprintf(output, "                except pygame.error as e:\n");
+    fprintf(output, "                    print(f\"Error loading image: {e}\")\n");
     fprintf(output, "        index += 1\n");
 
     fprintf(output, "\n");
