@@ -23,6 +23,7 @@ COMMAND_SRC = ../src/command/command.c
 LINKEDLIST_SRC = ../src/linkedList/linkedList.c  
 FIGURE_SRC = ../src/figure/figure.c
 PICTURE_SRC = ../src/picture/picture.c
+TEXT_SRC = ../src/text/text.c
 
 # Generated files
 LEXER_OBJ = ../src/temp/lex.yy.c
@@ -44,7 +45,7 @@ all: $(COMPILER) $(EDITOR)
 # Compile the compiler
 $(COMPILER): $(LEXER_OBJ) $(PARSER_OBJ) $(MAIN_SRC) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC) $(PICTURE_SRC)
 	@echo "Compiling the compiler..."
-	$(CC) $(CFLAGS) -o $(COMPILER) $(MAIN_SRC) $(PARSER_C_OBJ) $(LEXER_OBJ) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC) $(PICTURE_SRC) $(LDLIBS)
+	$(CC) $(CFLAGS) -o $(COMPILER) $(MAIN_SRC) $(PARSER_C_OBJ) $(LEXER_OBJ) $(COMMON_SRC) $(COMMAND_SRC) $(LINKEDLIST_SRC) $(FIGURE_SRC) $(PICTURE_SRC) $(TEXT_SRC) $(LDLIBS)
 	@echo "draw_compiler generated"
 
 # Compile the text editor

@@ -1,62 +1,26 @@
-# Drapeau français (plus petit et plus bas)
-# Fond blanc
-set_color(255, 255, 255);
-rectanglefond = rectangle(point(300, 500), 200, 150);
-draw(rectanglefond);
-
+grid(100);
+#rect
+set_color(0, 0, 0);
+set_line_width(5);
+rect = rectangle(point(345,195),310, 210);
+draw(rect);
+# Drapeau français
+set_line_width(50);
 # Bande bleue
 set_color(0, 85, 164);
-set_line_width(15);
-# Rectangles bleus
-rectbleu1 = rectangle(point(300, 630), 66, 20);
-draw(rectbleu1);
-rectbleu2 = rectangle(point(300, 610), 66, 20);
-draw(rectbleu2);
-rectbleu3 = rectangle(point(300, 590), 66, 20);
-draw(rectbleu3);
-rectbleu4 = rectangle(point(300, 570), 66, 20);
-draw(rectbleu4);
-rectbleu5 = rectangle(point(300, 550), 66, 20);
-draw(rectbleu5);
-rectbleu6 = rectangle(point(300, 530), 66, 20);
-draw(rectbleu6);
-rectbleu7 = rectangle(point(300, 510), 66, 20);
-draw(rectbleu7);
+rectanglebleu = rectangle(point(350, 200), 100, 200);
+draw(rectanglebleu);
 
 # Bande blanche
 set_color(255, 255, 255);
-set_line_width(15);
-# Rectangles blancs
-rectblanc1 = rectangle(point(366, 630), 68, 20);
-draw(rectblanc1);
-rectblanc2 = rectangle(point(366, 610), 68, 20);
-draw(rectblanc2);
-rectblanc3 = rectangle(point(366, 590), 68, 20);
-draw(rectblanc3);
-rectblanc4 = rectangle(point(366, 570), 68, 20);
-draw(rectblanc4);
-rectblanc5 = rectangle(point(366, 550), 68, 20);
-draw(rectblanc5);
-rectblanc6 = rectangle(point(366, 530), 68, 20);
-draw(rectblanc6);
-rectblanc7 = rectangle(point(366, 510), 68, 20);
-draw(rectblanc7);
+rectangleblanc = rectangle(point(450, 200), 100, 200);
+draw(rectangleblanc);
 
 # Bande rouge
 set_color(239, 65, 53);
-set_line_width(15);
-# Rectangles rouges
-rectrouge1 = rectangle(point(434, 630), 66, 20);
-draw(rectrouge1);
-rectrouge2 = rectangle(point(434, 610), 66, 20);
-draw(rectrouge2);
-rectrouge3 = rectangle(point(434, 590), 66, 20);
-draw(rectrouge3);
-rectrouge4 = rectangle(point(434, 570), 66, 20);
-draw(rectrouge4);
-rectrouge5 = rectangle(point(434, 550), 66, 20);
-draw(rectrouge5);
-rectrouge6 = rectangle(point(434, 530), 66, 20);
-draw(rectrouge6);
-rectrouge7 = rectangle(point(434, 510), 66, 20);
-draw(rectrouge7);
+rectanglerouge = rectangle(point(550, 200), 100, 200);
+draw(rectanglerouge);
+
+#text
+set_color(0, 85, 164);
+text("Vive la France", 385 , 450 , 50);

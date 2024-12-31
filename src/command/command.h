@@ -16,6 +16,7 @@
 #include "../grid/grid.h"
 #include "../arc/arc.h"
 #include "../picture/picture.h"
+#include "../text/text.h"
 
 #include "../linkedList/linkedList.h"
 #include "../figure/figure.h"
@@ -36,6 +37,7 @@ typedef enum
     CMD_DRAW_GRID,
     CMD_DRAW_ARC,
     CMD_DRAW_PICTURE,
+    CMD_DRAW_TEXT,
 } CommandType;
 
 typedef struct
@@ -56,6 +58,7 @@ typedef struct
         Grid* grid;
         Arc* arc;
         Picture* picture;
+        Text* text;
 
         struct
         {

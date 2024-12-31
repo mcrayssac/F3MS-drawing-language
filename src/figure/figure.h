@@ -17,6 +17,7 @@
 #include "../grid/grid.h"
 #include "../arc/arc.h"
 #include "../picture/picture.h"
+#include "../text/text.h"
 
 typedef enum {
     FIGURE_POINT,
@@ -28,6 +29,7 @@ typedef enum {
     FIGURE_GRID,
     FIGURE_ARC,
     FIGURE_PICTURE,
+    FIGURE_TEXT,
 } FigureType;
 
 typedef struct {
@@ -43,6 +45,7 @@ typedef struct {
         Grid *grid;
         Arc *arc;
         Picture *picture;
+        Text *text;
     } data;
 } Figure;
 

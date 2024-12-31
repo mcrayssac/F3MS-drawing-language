@@ -34,6 +34,7 @@ int main(int argc, char *argv[]) {
     fprintf(output, "screen = pygame.display.set_mode((1000, 800))\n");
     fprintf(output, "pygame.display.set_caption('Dynamic Drawing')\n");
     fprintf(output, "clock = pygame.time.Clock()\n");
+    fprintf(output, "pygame.font.init()\n");
     fprintf(output, "color = (0, 0, 0)\n"); // Default color
     fprintf(output, "line_width = 1\n"); // Default line width
     fprintf(output, "commands = []\n"); // List to store commands
@@ -123,7 +124,18 @@ int main(int argc, char *argv[]) {
     fprintf(output, "                figures[f'picture_{path}'] = {'type': 'picture', 'path': path, 'x': x, 'y': y, 'scale': scale}\n");
     fprintf(output, "            except pygame.error as e:\n");
     fprintf(output, "                print(f\"Error loading image: {e}\")\n");
-    fprintf(output, "        elif cmd[0] == 'ROTATE':\n");
+    fprintf(output, "        elif cmd[0] == 'DRAW_TEXT':\n");
+    fprintf(output, "            font = pygame.font.Font(None, cmd[4])\n");
+    fprintf(output, "            text_surface = font.render(cmd[1], True, color)\n");
+    fprintf(output, "            screen.blit(text_surface, (cmd[2], cmd[3]))\n");
+    fprintf(output, "            figures[f\"text_{cmd[1]}\"] = {\n");
+    fprintf(output, "                'type': 'text',\n");
+    fprintf(output, "                'text': cmd[1],\n");
+    fprintf(output, "                'x': cmd[2],\n");
+    fprintf(output, "                'y': cmd[3],\n");
+    fprintf(output, "                'size': cmd[4],\n");
+    fprintf(output, "                'color': color\n");
+    fprintf(output, "            }\n");
     fprintf(output, "            name = cmd[1]\n");
     fprintf(output, "            angle = cmd[2]\n");
     fprintf(output, "            if name in figures:\n");
@@ -211,6 +223,10 @@ int main(int argc, char *argv[]) {
     fprintf(output, "                    screen.blit(scaled_image, (fig['x'], fig['y']))\n");
     fprintf(output, "                except pygame.error as e:\n");
     fprintf(output, "                    print(f\"Error loading image: {e}\")\n");
+    fprintf(output, "            elif fig['type'] == 'text':\n");
+    fprintf(output, "                font = pygame.font.Font(None, fig['size'])\n");
+    fprintf(output, "                text_surface = font.render(fig['text'], True, fig_color)\n");
+    fprintf(output, "                screen.blit(text_surface, (fig['x'], fig['y']))\n");
     fprintf(output, "        index += 1\n");
 
     fprintf(output, "\n");

@@ -18,7 +18,7 @@
     extern int yylineno;
 %}
 
-%error-verbose
+%define parse.error verbose
 %locations
 
 %{
@@ -43,6 +43,7 @@
     Grid *gridval;
     Arc *arcval;
     Picture *pictureval;
+    Text *textval;
 }
 
 /*  Section: Token Types
@@ -50,7 +51,7 @@
 */
 %token <intval> NUMBER
 %token <strval> IDENTIFIER STRING
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE ELLIPSE GRID ARC PICTURE
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE ELLIPSE GRID ARC PICTURE TEXT
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
 %token <floatval> FLOAT
 
@@ -68,6 +69,7 @@
 %type <gridval> grid_expr
 %type <arcval> arc_expr
 %type <pictureval> picture_expr
+%type <textval> text_expr
 
 %start program
 
@@ -151,6 +153,7 @@ function_call:
     | grid_call
     | arc_call
     | picture_call
+    | text_call
     ;
 
 set_line_width_call:
@@ -406,6 +409,41 @@ picture_call:
             "❌ picture(image.png, 100, 100, 1.0)     // Missing quotes\n"
             "❌ picture(\"image.png\", 100, 100)      // Missing scale\n"
             "✅ picture(\"image.png\", 100, 100, 1.0)");
+        YYABORT;
+    }
+    ;
+text_call:
+    TEXT LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA NUMBER RPAREN {
+        Command cmd;
+        cmd.type = CMD_DRAW_TEXT;
+        cmd.data.text = malloc(sizeof(Text));
+        if (!cmd.data.text) {
+            error_at_line(@$.first_line, "Memory allocation failed in text_call.");
+            YYABORT;
+        }
+        cmd.data.text->text = $3;
+        cmd.data.text->position = malloc(sizeof(Point));
+        if (!cmd.data.text->position) {
+            free(cmd.data.text->text);
+            free(cmd.data.text);
+            error_at_line(@$.first_line, "Memory allocation failed in text_call.");
+            YYABORT;
+        }
+        cmd.data.text->position->x = $5;
+        cmd.data.text->position->y = $7;
+        cmd.data.text->size = $9;
+        add_command(cmd);
+    }
+    | TEXT LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid text command. Usage:\n"
+            "text(text, x, y, size) where:\n"
+            "- text: the text to display\n"
+            "- x: the x-coordinate of the text\n"
+            "- y: the y-coordinate of the text\n"
+            "- size: the font size of the text\n"
+            "\nExample:\n"
+            "text(\"Hello World\", 100, 100, 50)");
         YYABORT;
     }
     ;
@@ -734,6 +772,16 @@ figure_expr:
         figure->data.picture = $1;
         $$ = figure;
     }
+    | text_expr {
+        Figure* figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+            YYABORT;
+        }
+        figure->type = FIGURE_TEXT;
+        figure->data.text = $1;
+        $$ = figure;
+    }
     | IDENTIFIER {
         Figure *figure = find_figure($1);
         if (figure == NULL) {
@@ -773,6 +821,9 @@ figure_expr:
             "9. Picture:\n"
             "   picture(path, x, y, scale)\n"
             "   Example: picture(\"image.png\", 100, 100, 1.0)\n\n"
+            "10. Text:\n"
+            "   text(content, x, y, size)\n"
+            "   Example: text(\"Hello World\", 100, 100, 24)\n\n"
             "You can also use previously defined variables.\n"
             "Example: line(p1, p2) where p1 and p2 are point variables");
         YYABORT;
@@ -982,6 +1033,32 @@ picture_expr:
     }
     ;
 
+text_expr:
+    TEXT LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA NUMBER RPAREN {
+        Point* point = malloc(sizeof(Point));
+        if (!point) {
+            error_at_line(@$.first_line, "Memory allocation failed in text_expr.");
+            YYABORT;
+        }
+        point->x = $5;
+        point->y = $7;
+        Text* text = create_text($3, point, $9);
+        $$ = text;
+    }
+    | TEXT LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid text expression. Usage:\n"
+            "text(text, x, y, size) where:\n"
+            "- text: the text to display\n"
+            "- x: the x-coordinate of the text\n"
+            "- y: the y-coordinate of the text\n"
+            "- size: the font size of the text\n"
+            "\nExample:\n"
+            "text(\"Hello World\", 100, 100, 50)");
+        YYABORT;
+    }
+    ;
+
 %%
 
 /*  Section: Function Definitions
@@ -1099,6 +1176,13 @@ void generate_python_code() {
                        cmd->data.picture->x,
                        cmd->data.picture->y,
                        cmd->data.picture->scale);
+                break;
+
+            case CMD_DRAW_TEXT:
+                printf("commands.append(('DRAW_TEXT', %s, %d, %d, %d))\n",
+                       cmd->data.text->text, cmd->data.text->position->x, cmd->data.text->position->y, cmd->data.text->size);
+                fprintf(output, "commands.append(('DRAW_TEXT', %s, %d, %d, %d))\n",
+                       cmd->data.text->text, cmd->data.text->position->x, cmd->data.text->position->y, cmd->data.text->size);
                 break;
 
             case CMD_ROTATE:

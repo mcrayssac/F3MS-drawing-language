@@ -57,9 +57,10 @@ INVALID_NUM {DIGIT}*\.{DIGIT}+
 "rotate"            { return ROTATE; }
 "translate"         { return TRANSLATE; }
 "ellipse"           { return ELLIPSE; }
-"grid"              { return GRID;}
-"arc"               { return ARC;}
-"picture"           { return PICTURE;}
+"grid"              { return GRID; }
+"arc"               { return ARC; }
+"picture"           { return PICTURE; }
+"text"              { return TEXT; }
 
 \"[^\"]*\"          { yylval.strval = strdup(yytext); return STRING; }
 [0-9]+\.[0-9]+      { yylval.floatval = atof(yytext); return FLOAT; }
