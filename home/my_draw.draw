@@ -7,6 +7,10 @@ set_line_width(4);
 myellipse = ellipse(point(400,300), 120, 180);
 draw(myellipse);
 
+#TextEllipse
+set_color(150,180,0);
+text("Ellipse", 360, 288, 38);
+
 # Arc
 p1 = point(600, 150);
 p2 = point(700, 250);  
@@ -19,28 +23,22 @@ draw(myarc);
 set_color(250, 120, 10);
 text("Arc", 580, 120, 35);
 
-#TextEllipse
-set_color(150,180,0);
-text("Ellipse", 360, 288, 38);
-
 # Picture
 picture("../home/image/logo.png", 100, 100, 0.75);
 
-#TextPolygone
-set_color(66, 144, 70);
-text("Ploygone", 122, 380, 20);
-
-#polygone irreg test triangle
+#polygone irreg triangle
+set_line_width(6);
 p1 = point(100,400);
-p2 = point(200,400);
-myPoints = [ p1, point(150,350), p2 ];
+p2 = point(180,300);
+p3 = point(260,400);
+myPoints = [ p1, p2, p3 ];
 myPoly = polygon(myPoints);
 set_color(66, 144, 70);
 draw(myPoly);
 
-#TextPolygone2
-set_color(39, 182, 171);
-text("Ploygone2", 660, 270, 25);
+#TextPolygone
+set_color(66, 144, 70);
+text("Polygone", 137, 365, 28);
 
 #polygon regulier 1
 set_line_width(10);
@@ -49,14 +47,18 @@ myRegPoly1 = regular_polygon(moncentre, 5, 60.0);
 set_color(39, 182, 171);
 draw(myRegPoly1);
 
-#TextPolygone3
-set_color(171, 22, 191);
-text("Ploygone3", 740, 488, 38);
+#TextPolygone2
+set_color(39, 182, 171);
+text("Polygone 2", 658, 270, 25);
 
 #polygone regulier 2
 set_color(171, 22, 191);
 myRegPoly2 = regular_polygon(point(800,500), 4, 100);
 draw(myRegPoly2);
+
+#TextPolygone3
+set_color(171, 22, 191);
+text("Polygone 3", 732, 488, 38);
 
 #TextFrench
 set_color(8, 105, 154);
