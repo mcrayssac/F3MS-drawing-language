@@ -180,6 +180,42 @@ while running:
                     pass
                 else:
                     print('Cannot rotate figure:', name)
+        elif cmd[0] == 'DRAW_POLYGON':
+            # cmd = ('DRAW_POLYGON', [(x1,y1), (x2,y2), ...], 'figureName')
+            points = cmd[1]
+            # Convertir les points en entiers
+            int_points = [(int(x), int(y)) for (x, y) in points]
+            figure_name = cmd[2]
+            figures[figure_name] = {
+                'type': 'polygon',
+                'points': int_points,
+                'color': color,
+                'line_width': line_width
+            }
+            pygame.draw.polygon(screen, color, int_points, line_width)
+        elif cmd[0] == 'DRAW_REGULAR_POLYGON':
+            # cmd = ('DRAW_REGULAR_POLYGON', (cx, cy), sides, radius, 'figureName')
+            center = cmd[1]
+            sides = cmd[2]
+            radius = cmd[3]
+            figure_name = cmd[4]
+            cx, cy = center
+            reg_points = []
+            for i in range(sides):
+                angle = 2 * math.pi * i / sides
+                x = cx + radius * math.cos(angle)
+                y = cy + radius * math.sin(angle)
+                reg_points.append((int(x), int(y)))
+            figures[figure_name] = {
+                'type': 'regular_polygon',
+                'center': center,
+                'sides': sides,
+                'radius': radius,
+                'points': reg_points,
+                'color': color,
+                'line_width': line_width
+            }
+            pygame.draw.polygon(screen, color, reg_points, line_width)
         elif cmd[0] == 'TRANSLATE':
             name = cmd[1]
             dx = cmd[2]
@@ -236,6 +272,10 @@ while running:
                 font = pygame.font.Font(None, fig['size'])
                 text_surface = font.render(fig['text'], True, fig_color)
                 screen.blit(text_surface, (fig['x'], fig['y']))
+            elif fig['type'] == 'polygon':
+                pygame.draw.polygon(screen, fig_color, fig['points'], fig_line_width)
+            elif fig['type'] == 'regular_polygon':
+                pygame.draw.polygon(screen, fig_color, fig['points'], fig_line_width)
         index += 1
 
     pygame.display.flip()

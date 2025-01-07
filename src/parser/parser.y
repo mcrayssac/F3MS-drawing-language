@@ -19,7 +19,7 @@
     extern int yylineno;
 %}
 
-%define parse.error verbose
+%error-verbose
 
 %locations
 
