@@ -10,26 +10,57 @@ draw(myellipse);
 # Arc
 p1 = point(600, 150);
 p2 = point(700, 250);  
-set_color(55, 160, 10);
+set_color(250, 120, 10);
 set_line_width(5);
 myarc = arc(p1, p2, 180, 7);
 draw(myarc);
 
 #TextArc
-set_color(55, 160, 10);
+set_color(250, 120, 10);
 text("Arc", 580, 120, 35);
 
 #TextEllipse
 set_color(150,180,0);
 text("Ellipse", 360, 288, 38);
 
+# Picture
+picture("../home/image/logo.png", 100, 100, 0.75);
+
+#TextPolygone
+set_color(66, 144, 70);
+text("Ploygone", 122, 380, 20);
+
+#polygone irreg test triangle
+p1 = point(100,400);
+p2 = point(200,400);
+myPoints = [ p1, point(150,350), p2 ];
+myPoly = polygon(myPoints);
+set_color(66, 144, 70);
+draw(myPoly);
+
+#TextPolygone2
+set_color(39, 182, 171);
+text("Ploygone2", 660, 270, 25);
+
+#polygon regulier 1
+set_line_width(10);
+moncentre = point(700,280);
+myRegPoly1 = regular_polygon(moncentre, 5, 60.0);
+set_color(39, 182, 171);
+draw(myRegPoly1);
+
+#TextPolygone3
+set_color(171, 22, 191);
+text("Ploygone3", 740, 488, 38);
+
+#polygone regulier 2
+set_color(171, 22, 191);
+myRegPoly2 = regular_polygon(point(800,500), 4, 100);
+draw(myRegPoly2);
+
 #TextFrench
 set_color(8, 105, 154);
 text("France", 350, 680, 45);
-
-
-# Picture
-picture("../home/image/logo.png", 100, 100, 0.75);
 
 # Drapeau français
 # Fond blanc
@@ -37,25 +68,6 @@ set_color(255, 255, 255);
 set_line_width(150);
 rectanglefond = rectangle(point(300, 510), 200, 140);
 draw(rectanglefond);
-
-#polygone irreg test triangle
-p1 = point(100,100);
-p2 = point(200,100);
-myPoints = [ p1, point(150,50), p2 ];
-myPoly = polygon(myPoints);
-set_color(66, 144, 70);
-draw(myPoly);
-
-#polygon regulier 1
-moncentre = point(100,100);
-myRegPoly1 = regular_polygon(moncentre, 5, 60.0);
-set_color(39, 182, 171);
-draw(myRegPoly1);
-
-#polygone regulier 2
-myRegPoly2 = regular_polygon(point(300,300), 4, 100);
-set_color(171, 22, 191);
-draw(myRegPoly2);
 
 # Bande bleue
 set_color(0, 85, 164);

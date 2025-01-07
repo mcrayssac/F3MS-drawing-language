@@ -894,30 +894,35 @@ draw_call:
                 break;
 
             case FIGURE_ARC:
-                fprintf(output, "p1 = (%d, %d)\n",
-                    figure->data.arc->p1->x,
-                    figure->data.arc->p1->y);
-                fprintf(output, "p2 = (%d, %d)\n",
-                    figure->data.arc->p2->x,
-                    figure->data.arc->p2->y);
-
-                fprintf(output, "radius = int(((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)**0.5 / 2)\n");
-                fprintf(output, "rect = pygame.Rect(p1[0] - radius, p1[1] - radius, radius * 2, radius * 2)\n");
-
-                fprintf(output, "pygame.draw.arc(screen, color, rect, 0, math.radians(%f), %d)\n",
-                    figure->data.arc->angle,
-                    figure->data.arc->thickness);
-
-                if (figure->name != NULL) {
-                fprintf(output, "figures['%s'] = {\n", figure->name);
-                fprintf(output, "    'type': 'arc',\n");
-                fprintf(output, "    'rect': rect,\n");
-                fprintf(output, "    'start_angle': 0,\n");
-                fprintf(output, "    'end_angle': math.radians(%f),\n", figure->data.arc->angle);
-                fprintf(output, "    'thickness': %d,\n", figure->data.arc->thickness);
-                fprintf(output, "    'color': color\n");
-                fprintf(output, "}\n");
+                cmd.type = CMD_DRAW_ARC;
+                cmd.data.arc = malloc(sizeof(Arc));
+                if (!cmd.data.arc) {
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
                 }
+
+                cmd.data.arc->p1 = malloc(sizeof(Point));
+                if (!cmd.data.arc->p1) {
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+
+                cmd.data.arc->p2 = malloc(sizeof(Point));
+                if (!cmd.data.arc->p2) {
+                    free(cmd.data.arc->p1);
+                    free(cmd.data.arc);
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+
+                // Copie des données
+                cmd.data.arc->p1->x = figure->data.arc->p1->x;
+                cmd.data.arc->p1->y = figure->data.arc->p1->y;
+                cmd.data.arc->p2->x = figure->data.arc->p2->x;
+                cmd.data.arc->p2->y = figure->data.arc->p2->y;
+                cmd.data.arc->angle = figure->data.arc->angle;
+                cmd.data.arc->thickness = figure->data.arc->thickness;
+
                 break;
 
             case FIGURE_PICTURE:
