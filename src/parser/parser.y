@@ -19,7 +19,7 @@
     extern int yylineno;
 %}
 
-%error-verbose
+%define parse.error verbose
 
 %locations
 
@@ -1173,7 +1173,7 @@ point_expr:
         point->y = $5;
         $$ = point;
     }
-    
+
     /* ici on autorise un identifiant qui fait réf à un point */
     | IDENTIFIER
     {
