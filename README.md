@@ -43,8 +43,8 @@ utilisent Pygame pour exécuter les instructions de dessin.
 
 ### Prérequis
 
-- **Flex** : Générateur d'analyseur lexical.
-- **Bison** : Générateur d'analyseur syntaxique.
+- **Flex** : Version 2.6.4. Générateur d'analyseur lexical.
+- **Bison** : Version 2.3. Générateur d'analyseur syntaxique.
 - **GCC** : Compilateur C.
 - **Python 3** : Version 3.6 ou ultérieure.
 - **Pygame** : Bibliothèque Python pour le multimédia et les jeux.
