@@ -112,7 +112,7 @@ utilisent Pygame pour exécuter les instructions de dessin.
 
   ```bash
   cd ide
-  gcc -o ide textEditor.c `pkg-config --cflags --libs gtk+-3.0` && ./ide
+  gcc -o ide textEditor.c `pkg-config --cflags --libs gtk+-3.0 gtksourceview-3.0 vte-2.91` & ./ide
   ```
 
 ## Usage

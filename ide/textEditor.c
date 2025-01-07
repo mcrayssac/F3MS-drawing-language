@@ -6,9 +6,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "textEditor.h"
+#include <gtksourceview/gtksource.h>
 
 /* Variables globales pour stocker les widgets */
-GtkWidget *text_view;
+GtkSourceView *text_view;  // Au lieu de GtkWidget *text_view
 GtkTextBuffer *text_buffer;
 GtkWidget *terminal;
 char *filePath = NULL; // Utilisé pour stocker le chemin complet du fichier
@@ -153,6 +154,7 @@ void on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     else if ((event->state & GDK_CONTROL_MASK) &&
             (event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) {
         execute();
+        g_signal_stop_emission_by_name(widget, "key-press-event"); // Empêche l'action par défaut de sauter une ligne !
     }
     else if (event->keyval == GDK_KEY_Escape) {
         gtk_main_quit(); // Cela termine le programme GTK
@@ -160,7 +162,7 @@ void on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
     // Raccourci pour exécuter directement le script draw.py
     else if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_KEY_x) {
         char commandX[512];
-        snprintf(commandX, sizeof(commandX), "../src/temp/draw_compiler ../home/my_draw.draw ../home/draw.py && ./myenv/bin/python3 ../home/draw.py & \n");
+        snprintf(commandX, sizeof(commandX), "../src/temp/draw_compiler ../home/my_draw.draw ../home/draw.py && ./myenv/bin/python3 ../home/draw.py &\n");
         vte_terminal_feed_child(VTE_TERMINAL(terminal), commandX, strlen(commandX));
     }
 }
@@ -263,10 +265,12 @@ int main(int argc, char *argv[]) {
     gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
 
     /* TextView pour éditer du texte */
-    text_view = gtk_text_view_new();
+    text_view = GTK_SOURCE_VIEW(gtk_source_view_new());
+    gtk_source_view_set_show_line_numbers(text_view, TRUE);
+    gtk_source_view_set_show_line_marks(text_view, TRUE);
     gtk_text_view_set_left_margin(GTK_TEXT_VIEW(text_view), 5);
     text_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
-    gtk_container_add(GTK_CONTAINER(scrolled_window), text_view);
+    gtk_container_add(GTK_CONTAINER(scrolled_window), GTK_WIDGET(text_view));
 
     /* Initialiser les tags et activer le surlignage */
     setup_highlighting();
