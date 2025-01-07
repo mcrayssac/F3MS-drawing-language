@@ -61,6 +61,8 @@ INVALID_NUM {DIGIT}*\.{DIGIT}+
 "arc"               { return ARC; }
 "picture"           { return PICTURE; }
 "text"              { return TEXT; }
+"polygon"           { return POLYGON; }
+"regular_polygon"   { return REGULAR_POLYGON; }
 
 \"[^\"]*\"          { yylval.strval = strdup(yytext); return STRING; }
 [0-9]+\.[0-9]+      { yylval.floatval = atof(yytext); return FLOAT; }
@@ -71,6 +73,9 @@ INVALID_NUM {DIGIT}*\.{DIGIT}+
 ","                 { return COMMA; }
 ";"                 { return SEMICOLON; }
 "="                 { return EQUALS; }
+"["                 { return LBRACKET; }
+"]"                 { return RBRACKET; }
+
 {WHITESPACE}        { /* Ignore whitespace */ }
 {COMMENT}           { /* Ignore comments */ }
 

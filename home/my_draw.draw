@@ -38,6 +38,25 @@ set_line_width(150);
 rectanglefond = rectangle(point(300, 510), 200, 140);
 draw(rectanglefond);
 
+#polygone irreg test triangle
+p1 = point(100,100);
+p2 = point(200,100);
+myPoints = [ p1, point(150,50), p2 ];
+myPoly = polygon(myPoints);
+set_color(66, 144, 70);
+draw(myPoly);
+
+#polygon regulier 1
+moncentre = point(100,100);
+myRegPoly1 = regular_polygon(moncentre, 5, 60.0);
+set_color(39, 182, 171);
+draw(myRegPoly1);
+
+#polygone regulier 2
+myRegPoly2 = regular_polygon(point(300,300), 4, 100);
+set_color(171, 22, 191);
+draw(myRegPoly2);
+
 # Bande bleue
 set_color(0, 85, 164);
 set_line_width(15);

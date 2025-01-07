@@ -169,6 +169,44 @@ int main(int argc, char *argv[]) {
     fprintf(output, "                    pass\n");
     fprintf(output, "                else:\n");
     fprintf(output, "                    print('Cannot rotate figure:', name)\n");
+
+    fprintf(output, "        elif cmd[0] == 'DRAW_POLYGON':\n");
+    fprintf(output, "            # cmd = ('DRAW_POLYGON', [(x1,y1), (x2,y2), ...], 'figureName')\n");
+    fprintf(output, "            points = cmd[1]\n");
+    fprintf(output, "            figure_name = cmd[2]\n");
+    fprintf(output, "            figures[figure_name] = {\n");
+    fprintf(output, "                'type': 'polygon',\n");
+    fprintf(output, "                'points': points,\n");
+    fprintf(output, "                'color': color,\n");
+    fprintf(output, "                'line_width': line_width\n");
+    fprintf(output, "            }\n");
+    fprintf(output, "            pygame.draw.polygon(screen, color, points, line_width)\n");
+
+    fprintf(output, "        elif cmd[0] == 'DRAW_REGULAR_POLYGON':\n");
+    fprintf(output, "            # cmd = ('DRAW_REGULAR_POLYGON', (cx, cy), sides, radius, 'figureName')\n");
+    fprintf(output, "            center = cmd[1]\n");
+    fprintf(output, "            sides = cmd[2]\n");
+    fprintf(output, "            radius = cmd[3]\n");
+    fprintf(output, "            figure_name = cmd[4]\n");
+    fprintf(output, "            cx, cy = center\n");
+    fprintf(output, "            import math\n");
+    fprintf(output, "            reg_points = []\n");
+    fprintf(output, "            for i in range(sides):\n");
+    fprintf(output, "                angle = 2 * math.pi * i / sides\n");
+    fprintf(output, "                x = cx + radius * math.cos(angle)\n");
+    fprintf(output, "                y = cy + radius * math.sin(angle)\n");
+    fprintf(output, "                reg_points.append((x, y))\n");
+    fprintf(output, "            figures[figure_name] = {\n");
+    fprintf(output, "                'type': 'regular_polygon',\n");
+    fprintf(output, "                'center': center,\n");
+    fprintf(output, "                'sides': sides,\n");
+    fprintf(output, "                'radius': radius,\n");
+    fprintf(output, "                'points': reg_points,\n");
+    fprintf(output, "                'color': color,\n");
+    fprintf(output, "                'line_width': line_width\n");
+    fprintf(output, "            }\n");
+    fprintf(output, "            pygame.draw.polygon(screen, color, reg_points, line_width)\n");
+
     fprintf(output, "        elif cmd[0] == 'TRANSLATE':\n");
     fprintf(output, "            name = cmd[1]\n");
     fprintf(output, "            dx = cmd[2]\n");

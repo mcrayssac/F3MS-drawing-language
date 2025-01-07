@@ -17,6 +17,8 @@
 #include "../arc/arc.h"
 #include "../picture/picture.h"
 #include "../text/text.h"
+#include "../polygon/polygon.h"
+#include "../regular_polygon/regular_polygon.h"
 
 #include "../linkedList/linkedList.h"
 #include "../figure/figure.h"
@@ -38,6 +40,8 @@ typedef enum
     CMD_DRAW_ARC,
     CMD_DRAW_PICTURE,
     CMD_DRAW_TEXT,
+    CMD_DRAW_POLYGON,
+    CMD_DRAW_REGULAR_POLYGON,
 } CommandType;
 
 typedef struct
@@ -59,6 +63,8 @@ typedef struct
         Arc* arc;
         Picture* picture;
         Text* text;
+        Polygon* polygon;
+        RegularPolygon* regular_polygon;
 
         struct
         {
