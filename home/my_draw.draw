@@ -1,5 +1,5 @@
-# Grid
-grid(80);
+#Grid
+grid(100);
 
 # Ellipse
 set_color(150,180,0);
@@ -23,9 +23,6 @@ draw(myarc);
 set_color(250, 120, 10);
 text("Arc", 580, 120, 35);
 
-# Picture
-picture("../home/image/logo.png", 100, 100, 0.75);
-
 #polygone irreg triangle
 set_line_width(6);
 p1 = point(100,400);
@@ -41,7 +38,7 @@ set_color(66, 144, 70);
 text("Polygone", 137, 365, 28);
 
 #polygon regulier 1
-set_line_width(10);
+set_line_width(5);
 moncentre = point(700,280);
 myRegPoly1 = regular_polygon(moncentre, 5, 60.0);
 set_color(39, 182, 171);
@@ -52,6 +49,7 @@ set_color(39, 182, 171);
 text("Polygone 2", 658, 270, 25);
 
 #polygone regulier 2
+set_line_width(10);
 set_color(171, 22, 191);
 myRegPoly2 = regular_polygon(point(800,500), 4, 100);
 draw(myRegPoly2);
@@ -60,51 +58,99 @@ draw(myRegPoly2);
 set_color(171, 22, 191);
 text("Polygone 3", 732, 488, 38);
 
-#TextFrench
-set_color(8, 105, 154);
-text("France", 350, 680, 45);
+#line
+set_color(0,100,0); 
+set_line_width(6);
+point1 = point(900,125);
+point2 = point(900,360);
+line1 = line(point1, point2);
+draw(line1);
+
+#TextLine
+set_color(0,100,0); 
+text("Line", 875, 85, 38);
+
+#Rectangle
+set_line_width(4);
+set_color(0,0,255);
+point3 = point(300, 92);
+rectangle1 = rectangle(point3, 150, 70);
+draw(rectangle1);
+
+#TextRectangle
+set_color(0,0,255);
+text("Rectangle", 325, 117, 30);
+
+#Circle
+set_line_width(5);
+set_color(150,120,129);
+point3 = point(150,130);
+circle1 = circle(point3, 75);
+draw(circle1);
+
+#TextCircle
+set_color(150,120,129);
+text("Circle", 120, 122, 31);
+
+#Square
+set_color(225,5,15); 
+set_line_width(5);
+p2 = point(500,400);
+square1 = square(p2, 100);
+draw(square1);
+
+# Picture
+picture("../home/image/logo.png", 100, 600, 0.75);
+
+#TextSquare
+set_color(225,5,15); 
+text("Square", 515, 442, 28);
+
+rotate(line1, 45);
+#translate(circle1, 200, 150); 
 
 # Drapeau français
-# Fond blanc
-set_color(255, 255, 255);
-set_line_width(150);
-rectanglefond = rectangle(point(300, 510), 200, 140);
-draw(rectanglefond);
 
 # Bande bleue
 set_color(0, 85, 164);
 set_line_width(15);
 # Rectangles bleus
-rectbleu1 = rectangle(point(300, 630), 66, 20);
+rectbleu1 = rectangle(point(350, 680), 66, 20);
 draw(rectbleu1);
-rectbleu2 = rectangle(point(300, 610), 66, 20);
+rectbleu2 = rectangle(point(350, 660), 66, 20);
 draw(rectbleu2);
-rectbleu3 = rectangle(point(300, 590), 66, 20);
+rectbleu3 = rectangle(point(350, 640), 66, 20);
 draw(rectbleu3);
-rectbleu4 = rectangle(point(300, 570), 66, 20);
+rectbleu4 = rectangle(point(350, 620), 66, 20);
 draw(rectbleu4);
-rectbleu5 = rectangle(point(300, 550), 66, 20);
+rectbleu5 = rectangle(point(350, 600), 66, 20);
 draw(rectbleu5);
-rectbleu6 = rectangle(point(300, 530), 66, 20);
+rectbleu6 = rectangle(point(350, 580), 66, 20);
 draw(rectbleu6);
-rectbleu7 = rectangle(point(300, 510), 66, 20);
+rectbleu7 = rectangle(point(350, 560), 66, 20);
 draw(rectbleu7);
+
+# Fond blanc
+set_color(255, 255, 255);
+set_line_width(40);
+rectanglefond = rectangle(point(416, 560), 69, 140);
+draw(rectanglefond);
 
 # Bande rouge
 set_color(239, 65, 53);
 set_line_width(15);
 # Rectangles rouges
-rectrouge1 = rectangle(point(434, 630), 66, 20);
+rectrouge1 = rectangle(point(484, 680), 66, 20);
 draw(rectrouge1);
-rectrouge2 = rectangle(point(434, 610), 66, 20);
+rectrouge2 = rectangle(point(484, 660), 66, 20);
 draw(rectrouge2);
-rectrouge3 = rectangle(point(434, 590), 66, 20);
+rectrouge3 = rectangle(point(484, 640), 66, 20);
 draw(rectrouge3);
-rectrouge4 = rectangle(point(434, 570), 66, 20);
+rectrouge4 = rectangle(point(484, 620), 66, 20);
 draw(rectrouge4);
-rectrouge5 = rectangle(point(434, 550), 66, 20);
+rectrouge5 = rectangle(point(484, 600), 66, 20);
 draw(rectrouge5);
-rectrouge6 = rectangle(point(434, 530), 66, 20);
+rectrouge6 = rectangle(point(484, 580), 66, 20);
 draw(rectrouge6);
-rectrouge7 = rectangle(point(434, 510), 66, 20);
+rectrouge7 = rectangle(point(484, 560), 66, 20);
 draw(rectrouge7);
