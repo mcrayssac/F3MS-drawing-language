@@ -6,6 +6,10 @@ Ce projet consiste à développer un compilateur en C qui traduit un langage de 
 des fichiers `.draw` avec un langage créé spécifiquement. Le compilateur génère des scripts Python utilisant la
 bibliothèque **Pygame** pour réaliser des dessins avancés et des animations.
 
+## Demo
+
+https://github.com/mcrayssac/F3MS-drawing-language/blob/main/ProjetC.mp4
+
 ## Table des matières
 
 - [Introduction](#introduction)
