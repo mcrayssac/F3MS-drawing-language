@@ -10,6 +10,7 @@
 %{
 
 #include "../external/external.h"
+#include "../external/external.h"
 #include "../common/common.h"
 
 extern int yylineno;
@@ -24,7 +25,8 @@ extern int yylineno;
 /*  Section: Options
     Define options for the lexer.
 */
-%option noyywrap
+
+/* %option noyywrap */
 %option nounput
 %option noinput
 %option yylineno  
@@ -65,7 +67,20 @@ INVALID_NUM {DIGIT}*\.{DIGIT}+
 "regular_polygon"   { return REGULAR_POLYGON; }
 
 \"[^\"]*\"          { yylval.strval = strdup(yytext); return STRING; }
-[0-9]+\.[0-9]+      { yylval.floatval = atof(yytext); return FLOAT; }
+[0-9]+\.[0-9]+      { yylval.floatval = atof(yytext); return FLOAT; }"draw"              { return DRAW; }
+"rotate"            { return ROTATE; }
+"translate"         { return TRANSLATE; }
+"for"               { return FOR; }
+"while"             { return WHILE; }
+"if"                { return IF; }
+"else"              { return ELSE; }
+"to"                { return TO; }
+"in"                { return IN; }
+"or"                { return OR; }
+"and"               { return AND; }
+
+
+
 {IDENTIFIER}        { yylval.strval = strdup(yytext); return IDENTIFIER; }
 {NUMBER}            { yylval.intval = atoi(yytext); return NUMBER; }
 "("                 { return LPAREN; }
@@ -131,3 +146,8 @@ INVALID_NUM {DIGIT}*\.{DIGIT}+
 }
 
 %%
+
+int yywrap() {
+    return 1;
+}
+

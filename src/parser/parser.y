@@ -35,6 +35,9 @@
     int intval;
     char *strval;
     float floatval;
+    struct block {             // Pour les blocs de code
+        char *code;
+    } blockval;
     Point *pointval;
     Line *lineval;
     Rectangle *rectangleval;
@@ -61,10 +64,13 @@
 %token LBRACKET RBRACKET
 
 %token <floatval> FLOAT
+%token FOR WHILE IF ELSE TO IN OR AND
+
 
 /* Section: Nonterminal Types
     Define the nonterminal types for the parser.
 */
+
 %type <pointval> point_expr
 %type <lineval> line_expr
 %type <rectangleval> rectangle_expr
@@ -289,6 +295,7 @@ square_call:
     }
     ;
 
+circle_call:
 circle_call:
     CIRCLE LPAREN expr COMMA NUMBER RPAREN {
         Command cmd;
@@ -1417,6 +1424,133 @@ text_expr:
     ;
 
 %%
+
+
+/* boucles & conditions */
+stmt:
+    loop_stmt {
+        $$ = $1;  // Le code du loop_stmt est déjà préparé et passe sans modification
+    }
+| if_stmt {
+        $$ = $1;  // Le code du if_stmt passe également sans modification
+    }
+| function_call SEMICOLON {
+        $$ = (struct block){ .code = malloc(strlen($1.code) + 2) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in stmt.");
+            YYABORT;
+        }
+        sprintf($$.code, "%s;", $1.code); // Ajouter un ';' à la fin de la fonction
+    }
+;
+
+stmt_list:
+    stmt_list stmt {
+        $$ = (struct block){ .code = malloc(strlen($1.code) + strlen($2.code) + 2) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in stmt_list.");
+            YYABORT;
+        }
+        sprintf($$.code, "%s\n%s", $1.code, $2.code);  // Concaténer le code des deux règles
+    }
+| stmt {
+        $$ = (struct block){ .code = strdup($1.code) };  // Copie directe du code
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in stmt_list.");
+            YYABORT;
+        }
+    }
+;
+
+stmt_block:
+    stmt_list {
+        $$ = (struct block){ .code = strdup($1.code) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in stmt_block.");
+            YYABORT;
+        }
+    }
+;
+
+loop_stmt:
+    FOR IDENTIFIER IN "range" '(' NUMBER TO NUMBER ')' '{' stmt_block '}' {
+        $$ = (struct block){ .code = malloc(1024) };  // Allocation de mémoire pour un bloc de code
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in loop_stmt.");
+            YYABORT;
+        }
+        sprintf($$.code, "for (int %s = %d; %s < %d; %s++) {\n%s\n}", $2, $6, $2, $8, $2, $10.code);
+    }
+| WHILE condition '{' stmt_block '}' {
+        $$ = (struct block){ .code = malloc(1024) };  // Allocation de mémoire pour un bloc de code
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in loop_stmt.");
+            YYABORT;
+        }
+        sprintf($$.code, "while (%s) {\n%s\n}", $2.code, $4.code);
+    }
+;
+
+if_stmt:
+    IF condition '{' stmt_block '}' {
+        $$ = (struct block){ .code = malloc(1024) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in if_stmt.");
+            YYABORT;
+        }
+        sprintf($$.code, "if (%s) {\n%s\n}", $2.code, $4.code);
+    }
+| IF condition '{' stmt_block '}' ELSE '{' stmt_block '}' {
+        $$ = (struct block){ .code = malloc(2048) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in if_stmt.");
+            YYABORT;
+        }
+        sprintf($$.code, "if (%s) {\n%s\n} else {\n%s\n}", $2.code, $4.code, $8.code);
+    }
+;
+
+condition:
+    IDENTIFIER '>' NUMBER {
+        $$ = (struct block){ .code = malloc(64) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in condition.");
+            YYABORT;
+        }
+        sprintf($$.code, "%s > %d", $1, $3);
+    }
+| IDENTIFIER '<' NUMBER {
+        $$ = (struct block){ .code = malloc(64) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in condition.");
+            YYABORT;
+        }
+        sprintf($$.code, "%s < %d", $1, $3);
+    }
+| IDENTIFIER '=' NUMBER {
+        $$ = (struct block){ .code = malloc(64) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in condition.");
+            YYABORT;
+        }
+        sprintf($$.code, "%s == %d", $1, $3);
+    }
+| condition AND condition {
+        $$ = (struct block){ .code = malloc(strlen($1.code) + strlen($3.code) + 6) }; // +6 pour " && " et '\0'
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in condition.");
+            YYABORT;
+        }
+        sprintf($$.code, "%s && %s", $1.code, $3.code);
+    }
+| condition OR condition {
+        $$ = (struct block){ .code = malloc(strlen($1.code) + strlen($3.code) + 6) }; // +6 pour " || " et '\0'
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in condition.");
+            YYABORT;
+        }
+        sprintf($$.code, "%s || %s", $1.code, $3.code);
+    }
 
 /*  Section: Function Definitions
     Define the functions for the parser.
