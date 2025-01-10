@@ -11,6 +11,7 @@
     #include "../external/external.h"
     #include "../common/common.h"
     #include "../command/command.h"
+    #include "../block/block.h"
     #include "../pointListSymbol/pointListSymbol.h"
 
     /* Function prototypes */
@@ -35,9 +36,7 @@
     int intval;
     char *strval;
     float floatval;
-    struct block {             // Pour les blocs de code
-        char *code;
-    } blockval;
+    Block blockval;
     Point *pointval;
     Line *lineval;
     Rectangle *rectangleval;
@@ -87,6 +86,7 @@
 %type <regular_polygonval> regular_polygon_expr
 %type <pointlistval> point_list
 %type <pointlistval> point_expr_list
+%type <blockval> loop_stmt stmt_list stmt_block if_stmt
 
 %start program
 
