@@ -151,13 +151,11 @@ void on_key_press(GtkWidget *widget, GdkEventKey *event, gpointer user_data) {
         /* Appelle la fonction save_file pour Ctrl+S */
         save_file(widget, user_data);
     }
+    /* cntrl enter pour compilier et executer */
     else if ((event->state & GDK_CONTROL_MASK) &&
             (event->keyval == GDK_KEY_KP_Enter || event->keyval == GDK_KEY_Return)) {
         execute();
         g_signal_stop_emission_by_name(widget, "key-press-event"); // Empêche l'action par défaut de sauter une ligne !
-    }
-    else if (event->keyval == GDK_KEY_Escape) {
-        gtk_main_quit(); // Cela termine le programme GTK
     }
     // Raccourci pour exécuter directement le script draw.py
     else if ((event->state & GDK_CONTROL_MASK) && event->keyval == GDK_KEY_x) {
