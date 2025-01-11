@@ -130,8 +130,10 @@ Pour ce projet, nous avons sélectionné plusieurs outils pour répondre aux bes
 - Compiler et executer l'ide (etre dans le dossier ide):
 
   ```bash
-  cd ide
-  gcc -o ide textEditor.c `pkg-config --cflags --libs gtk+-3.0 gtksourceview-3.0 vte-2.91` & ./ide
+    cd ide
+    gcc -o ide textEditor.c `pkg-config --cflags --libs gtk+-3.0 gtksourceview-3.0 vte-2.91`
+    chmod +x ide
+    ./ide
   ```
 
 ## Usage
