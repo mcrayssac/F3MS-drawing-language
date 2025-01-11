@@ -1,0 +1,26 @@
+grid(100);
+#rect
+set_color(0, 0, 0);
+set_line_width(5);
+rect = rectangle(point(345,195),310, 210);
+draw(rect);
+# Drapeau français
+set_line_width(50);
+# Bande bleue
+set_color(0, 85, 164);
+rectanglebleu = rectangle(point(350, 200), 100, 200);
+draw(rectanglebleu);
+
+# Bande blanche
+set_color(255, 255, 255);
+rectangleblanc = rectangle(point(450, 200), 100, 200);
+draw(rectangleblanc);
+
+# Bande rouge
+set_color(239, 65, 53);
+rectanglerouge = rectangle(point(550, 200), 100, 200);
+draw(rectanglerouge);
+
+#text
+set_color(0, 85, 164);
+text("Vive la France", 385 , 450 , 50);

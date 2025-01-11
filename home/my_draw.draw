@@ -1,48 +1,160 @@
-set_color(0,0,0); 
-point1 = point(200,300);
-point2 = point(400,400);
-line1 = line(point1, point2);
-draw(line1);
+#Grid
+grid(100);
 
+# Ellipse
+set_color(150,180,0);
+set_line_width(4);
+myellipse = ellipse(point(400,300), 120, 180);
+draw(myellipse);
+
+#TextEllipse
+set_color(150,180,0);
+text("Ellipse", 360, 288, 38);
+
+# Arc
+p1 = point(600, 150);
+p2 = point(700, 250);
+set_color(250, 120, 10);
 set_line_width(5);
-set_color(255,0,0); 
-point1 = point(600,600);
-point2 = point(100,600);
+myarc = arc(p1, p2, 180, 7);
+draw(myarc);
+
+#TextArc
+set_color(250, 120, 10);
+text("Arc", 580, 120, 35);
+
+#polygone irreg triangle
+set_line_width(6);
+p1 = point(100,400);
+p2 = point(180,300);
+p3 = point(260,400);
+myPoints = [ p1, p2, p3 ];
+myPoly = polygon(myPoints);
+set_color(66, 144, 70);
+draw(myPoly);
+
+#TextPolygone
+set_color(66, 144, 70);
+text("Polygone", 137, 365, 28);
+
+#polygon regulier 1
+set_line_width(5);
+moncentre = point(700,280);
+myRegPoly1 = regular_polygon(moncentre, 5, 60.0);
+set_color(39, 182, 171);
+draw(myRegPoly1);
+
+#TextPolygone2
+set_color(39, 182, 171);
+text("Polygone 2", 658, 270, 25);
+
+#polygone regulier 2
+set_line_width(10);
+set_color(171, 22, 191);
+myRegPoly2 = regular_polygon(point(800,500), 4, 100);
+draw(myRegPoly2);
+
+#TextPolygone3
+set_color(171, 22, 191);
+text("Polygone 3", 732, 488, 38);
+
+#line
+set_color(0,100,0);
+set_line_width(6);
+point1 = point(900,125);
+point2 = point(900,360);
 line1 = line(point1, point2);
 draw(line1);
 
-set_color(0,100,0); 
-point1 = point(150,500);
-point2 = point(500,100);
-line1 = line(point1, point2);
-draw(line1);
+#TextLine
+set_color(0,100,0);
+text("Line", 875, 85, 38);
 
+#Rectangle
+set_line_width(4);
 set_color(0,0,255);
-rectangle1 = rectangle(point1, 100, 200);
+point3 = point(300, 92);
+rectangle1 = rectangle(point3, 150, 70);
 draw(rectangle1);
 
-set_line_width(1);
-circle1 = circle(point2, 100);
+#TextRectangle
+set_color(0,0,255);
+text("Rectangle", 325, 117, 30);
+
+#Circle
+set_line_width(5);
+set_color(150,120,129);
+point3 = point(150,130);
+circle1 = circle(point3, 75);
 draw(circle1);
 
+#TextCircle
+set_color(150,120,129);
+text("Circle", 120, 122, 31);
+
+#Square
+set_color(225,5,15);
 set_line_width(5);
-square1 = square(point2, 100);
+p2 = point(500,400);
+square1 = square(p2, 100);
 draw(square1);
 
-rotate(line1, 45);
-rotate(rectangle1, 90);
-rotate(square1, 45);
-rotate(circle1, 60);
+# Picture
+picture("../home/image/logo.png", 100, 600, 0.75);
 
-point3 = point(500, 100); 
-point4 = point(1000,300);
-line2 = line(point3, point4);
-draw(line2);
+#TextSquare
+set_color(225,5,15);
+text("Square", 515, 442, 28);
 
+#rotate(line1, 180);
+#translate(line1, 700, 100);
 
-translate(circle1, 500, 200);
-translate(rectangle1, 500, 200);
-translate(square1, 500, 200);
+# Drapeau français
 
-rotate(square1, 0);
-set_line_width(10.0);
+# Bande bleue
+set_color(0, 85, 164);
+set_line_width(15);
+# Rectangles bleus
+rectbleu1 = rectangle(point(400, 680), 66, 20);
+draw(rectbleu1);
+rectbleu2 = rectangle(point(400, 660), 66, 20);
+draw(rectbleu2);
+rectbleu3 = rectangle(point(400, 640), 66, 20);
+draw(rectbleu3);
+rectbleu4 = rectangle(point(400, 620), 66, 20);
+draw(rectbleu4);
+rectbleu5 = rectangle(point(400, 600), 66, 20);
+draw(rectbleu5);
+rectbleu6 = rectangle(point(400, 580), 66, 20);
+draw(rectbleu6);
+rectbleu7 = rectangle(point(400, 560), 66, 20);
+draw(rectbleu7);
+
+# Fond blanc
+set_color(255, 255, 255);
+set_line_width(40);
+rectanglefond = rectangle(point(466, 560), 69, 140);
+draw(rectanglefond);
+
+# Bande rouge
+set_color(239, 65, 53);
+set_line_width(15);
+# Rectangles rouges
+rectrouge1 = rectangle(point(534, 680), 66, 20);
+draw(rectrouge1);
+rectrouge2 = rectangle(point(534, 660), 66, 20);
+draw(rectrouge2);
+rectrouge3 = rectangle(point(534, 640), 66, 20);
+draw(rectrouge3);
+rectrouge4 = rectangle(point(534, 620), 66, 20);
+draw(rectrouge4);
+rectrouge5 = rectangle(point(534, 600), 66, 20);
+draw(rectrouge5);
+rectrouge6 = rectangle(point(534, 580), 66, 20);
+draw(rectrouge6);
+rectrouge7 = rectangle(point(534, 560), 66, 20);
+draw(rectrouge7);
+
+#TextSquare
+set_color(0, 95, 154);
+text("France", 458, 723, 38);

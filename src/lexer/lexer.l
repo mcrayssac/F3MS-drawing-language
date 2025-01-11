@@ -56,7 +56,16 @@ INVALID_NUM {DIGIT}*\.{DIGIT}+
 "draw"              { return DRAW; }
 "rotate"            { return ROTATE; }
 "translate"         { return TRANSLATE; }
+"ellipse"           { return ELLIPSE; }
+"grid"              { return GRID; }
+"arc"               { return ARC; }
+"picture"           { return PICTURE; }
+"text"              { return TEXT; }
+"polygon"           { return POLYGON; }
+"regular_polygon"   { return REGULAR_POLYGON; }
 
+\"[^\"]*\"          { yylval.strval = strdup(yytext); return STRING; }
+[0-9]+\.[0-9]+      { yylval.floatval = atof(yytext); return FLOAT; }
 {IDENTIFIER}        { yylval.strval = strdup(yytext); return IDENTIFIER; }
 {NUMBER}            { yylval.intval = atoi(yytext); return NUMBER; }
 "("                 { return LPAREN; }
@@ -64,6 +73,9 @@ INVALID_NUM {DIGIT}*\.{DIGIT}+
 ","                 { return COMMA; }
 ";"                 { return SEMICOLON; }
 "="                 { return EQUALS; }
+"["                 { return LBRACKET; }
+"]"                 { return RBRACKET; }
+
 {WHITESPACE}        { /* Ignore whitespace */ }
 {COMMENT}           { /* Ignore comments */ }
 

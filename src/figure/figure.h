@@ -13,13 +13,27 @@
 #include "../line/line.h"
 #include "../color/color.h"
 #include "../linkedList/linkedList.h"
+#include "../ellipse/ellipse.h"
+#include "../grid/grid.h"
+#include "../arc/arc.h"
+#include "../picture/picture.h"
+#include "../text/text.h"
+#include "../polygon/polygon.h"
+#include "../regular_polygon/regular_polygon.h"
 
 typedef enum {
     FIGURE_POINT,
     FIGURE_LINE,
     FIGURE_RECTANGLE,
     FIGURE_SQUARE,
-    FIGURE_CIRCLE
+    FIGURE_CIRCLE,
+    FIGURE_ELLIPSE,
+    FIGURE_GRID,
+    FIGURE_ARC,
+    FIGURE_PICTURE,
+    FIGURE_TEXT,
+    FIGURE_POLYGON,
+    FIGURE_REGULAR_POLYGON,
 } FigureType;
 
 typedef struct {
@@ -31,6 +45,13 @@ typedef struct {
         Rectangle *rectangle;
         Square *square;
         Circle *circle;
+        Ellipse *ellipse;
+        Grid *grid;
+        Arc *arc;
+        Picture *picture;
+        Text *text;
+        Polygon *polygon;
+        RegularPolygon *regular_polygon;
     } data;
 } Figure;
 

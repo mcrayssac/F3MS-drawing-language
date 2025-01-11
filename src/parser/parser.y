@@ -11,6 +11,7 @@
     #include "../external/external.h"
     #include "../common/common.h"
     #include "../command/command.h"
+    #include "../pointListSymbol/pointListSymbol.h"
 
     /* Function prototypes */
     void generate_python_code();
@@ -19,6 +20,7 @@
 %}
 
 %error-verbose
+
 %locations
 
 %{
@@ -32,21 +34,33 @@
 %union {
     int intval;
     char *strval;
+    float floatval;
     Point *pointval;
     Line *lineval;
     Rectangle *rectangleval;
     Square *squareval;
     Circle *circleval;
     Figure *figureval;
+    Ellipse *ellipseval;
+    Grid *gridval;
+    Arc *arcval;
+    Picture *pictureval;
+    Text *textval;
+    PointList *pointlistval;
+    Polygon *polygonval;
+    RegularPolygon *regular_polygonval;
 }
 
 /*  Section: Token Types
     Define the token types for the parser.
 */
 %token <intval> NUMBER
-%token <strval> IDENTIFIER
-%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE
+%token <strval> IDENTIFIER STRING
+%token SET_COLOR SET_LINE_WIDTH POINT LINE RECTANGLE SQUARE CIRCLE DRAW ROTATE TRANSLATE ELLIPSE GRID ARC PICTURE TEXT POLYGON REGULAR_POLYGON
 %token LPAREN RPAREN COMMA SEMICOLON EQUALS
+%token LBRACKET RBRACKET
+
+%token <floatval> FLOAT
 
 /* Section: Nonterminal Types
     Define the nonterminal types for the parser.
@@ -58,6 +72,15 @@
 %type <circleval> circle_expr
 %type <figureval> figure_expr
 %type <figureval> expr
+%type <ellipseval> ellipse_expr
+%type <gridval> grid_expr
+%type <arcval> arc_expr
+%type <pictureval> picture_expr
+%type <textval> text_expr
+%type <polygonval> polygon_expr
+%type <regular_polygonval> regular_polygon_expr
+%type <pointlistval> point_list
+%type <pointlistval> point_expr_list
 
 %start program
 
@@ -75,6 +98,7 @@ program:
 statement:
     assignment SEMICOLON
     | function_call SEMICOLON
+    | list_definition SEMICOLON
     | error SEMICOLON {
         error_at_line(@1.first_line, 
             "Syntax Error: Invalid statement\n\n"
@@ -137,6 +161,13 @@ function_call:
     | draw_call
     | rotate_call
     | translate_call
+    | ellipse_call
+    | grid_call
+    | arc_call
+    | picture_call
+    | text_call
+    | polygon_call
+    | regular_polygon_call
     ;
 
 set_line_width_call:
@@ -272,6 +303,428 @@ circle_call:
         add_command(cmd);
     }
     ;
+
+ellipse_call:
+    ELLIPSE LPAREN expr COMMA NUMBER COMMA NUMBER RPAREN {
+        Command cmd;
+        cmd.type = CMD_DRAW_ELLIPSE;
+        cmd.data.ellipse = malloc(sizeof(Ellipse));
+        if (!cmd.data.ellipse) {
+            error_at_line(@$.first_line, "Memory allocation failed in ellipse_call.");
+            YYABORT;
+        }
+        cmd.data.ellipse->p = $3->data.point;
+        cmd.data.ellipse->width = $5;
+        cmd.data.ellipse->height = $7;
+        add_command(cmd);
+    }
+    | ELLIPSE LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid ellipse command. Usage:\n"
+            "ellipse(point, width, height) where:\n"
+            "- point: center point of the ellipse\n"
+            "- width: width of the ellipse\n"
+            "- height: height of the ellipse\n"
+            "\nExamples:\n"
+            "ellipse(point(100,100), 150, 100);  // Ellipse with width 150px and height 100px\n"
+            "\nCommon mistakes:\n"
+            "❌ ellipse(100,100, 150, 100)  // Missing point constructor\n"
+            "❌ ellipse(point, 150)         // Missing height\n"
+            "✅ ellipse(point(100,100), 150, 100)");
+        YYABORT;
+    }
+    ;
+
+grid_call:
+    GRID LPAREN NUMBER RPAREN {
+        Command cmd;
+        cmd.type = CMD_DRAW_GRID;
+        cmd.data.grid = malloc(sizeof(Grid));
+        if (!cmd.data.grid) {
+            error_at_line(@$.first_line, "Memory allocation failed in grid_call.");
+            YYABORT;
+        }
+        cmd.data.grid->spacing = $3;
+        add_command(cmd);
+    }
+    | GRID LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid grid command. Usage:\n"
+            "grid(spacing) where:\n"
+            "- spacing: distance between grid lines in pixels\n"
+            "\nExamples:\n"
+            "grid(50);  // Creates a grid with 50px spacing\n"
+            "grid(100); // Creates a grid with 100px spacing\n"
+            "\nCommon mistakes:\n"
+            "❌ grid();        // Missing spacing value\n"
+            "❌ grid(0);       // Spacing must be positive\n"
+            "❌ grid(50, 100); // Too many arguments\n"
+            "✅ grid(50)");
+        YYABORT;
+    }
+    ;
+
+arc_call:
+    ARC LPAREN expr COMMA expr COMMA NUMBER COMMA NUMBER RPAREN {
+        Command cmd;
+        cmd.type = CMD_DRAW_ARC;
+        cmd.data.arc = malloc(sizeof(Arc));
+        if (!cmd.data.arc) {
+            error_at_line(@$.first_line, "Memory allocation failed in arc_call.");
+            YYABORT;
+        }
+        cmd.data.arc->p1 = $3->data.point;
+        cmd.data.arc->p2 = $5->data.point;
+        cmd.data.arc->angle = $7;
+        cmd.data.arc->thickness = $9;
+        add_command(cmd);
+    }
+    | ARC LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid arc command. Usage:\n"
+            "arc(point1, point2, angle, thickness) where:\n"
+            "- point1: starting point\n"
+            "- point2: ending point\n"
+            "- angle: angle in degrees (0-360)\n"
+            "- thickness: line thickness\n"
+            "\nExample:\n"
+            "arc(point(100,100), point(200,200), 90, 2);\n"
+            "\nCommon mistakes:\n"
+            "❌ arc(100,100, 200,200, 90)  // Missing point constructor\n"
+            "❌ arc(p1, p2, 90)            // Missing thickness\n"
+            "✅ arc(point(100,100), point(200,200), 90, 2)");
+        YYABORT;
+    }
+    ;
+
+picture_call:
+    PICTURE LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA FLOAT RPAREN {
+        Command cmd;
+        cmd.type = CMD_DRAW_PICTURE;
+        cmd.data.picture = create_picture($3, $5, $7, $9);
+        if (!cmd.data.picture) {
+            error_at_line(@$.first_line, "Memory allocation failed in picture_call.");
+            YYABORT;
+        }
+        add_command(cmd);
+    }
+    | PICTURE LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid picture command. Usage:\n"
+            "picture(path, x, y, scale) where:\n"
+            "- path: string path to the image file\n"
+            "- x: x-coordinate position\n"
+            "- y: y-coordinate position\n"
+            "- scale: scaling factor (float)\n"
+            "\nExamples:\n"
+            "pic1 = picture(\"image.png\", 100, 100, 1.0);    // Normal size\n"
+            "pic2 = picture(\"logo.jpg\", 0, 0, 2.5);         // Scaled up\n"
+            "\nCommon mistakes:\n"
+            "❌ picture(image.png, 100, 100, 1.0)     // Missing quotes\n"
+            "❌ picture(\"image.png\", 100, 100)      // Missing scale\n"
+            "✅ picture(\"image.png\", 100, 100, 1.0)");
+        YYABORT;
+    }
+    ;
+text_call:
+    TEXT LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA NUMBER RPAREN {
+        Command cmd;
+        cmd.type = CMD_DRAW_TEXT;
+        cmd.data.text = malloc(sizeof(Text));
+        if (!cmd.data.text) {
+            error_at_line(@$.first_line, "Memory allocation failed in text_call.");
+            YYABORT;
+        }
+        cmd.data.text->text = $3;
+        cmd.data.text->position = malloc(sizeof(Point));
+        if (!cmd.data.text->position) {
+            free(cmd.data.text->text);
+            free(cmd.data.text);
+            error_at_line(@$.first_line, "Memory allocation failed in text_call.");
+            YYABORT;
+        }
+        cmd.data.text->position->x = $5;
+        cmd.data.text->position->y = $7;
+        cmd.data.text->size = $9;
+        add_command(cmd);
+    }
+    | TEXT LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid text command. Usage:\n"
+            "text(text, x, y, size) where:\n"
+            "- text: the text to display\n"
+            "- x: the x-coordinate of the text\n"
+            "- y: the y-coordinate of the text\n"
+            "- size: the font size of the text\n"
+            "\nExample:\n"
+            "text(\"Hello World\", 100, 100, 50)");
+        YYABORT;
+    }
+    ;
+
+polygon_call:
+    POLYGON LPAREN point_list RPAREN
+    {
+        /* Créer un Command CMD_DRAW_POLYGON directement,
+           sans passer par un Figure. */
+        Command cmd;
+        cmd.type = CMD_DRAW_POLYGON;
+        cmd.data.polygon = create_polygon($3);
+        if (!cmd.data.polygon) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in polygon_call (point_list).");
+            YYABORT;
+        }
+        /* Pas de vrai 'cmd.name' ici du coup donc pas de réutilisation possible */
+        cmd.name = strdup("polygon_call");
+        add_command(cmd);
+    }
+    | POLYGON LPAREN IDENTIFIER RPAREN
+    {
+        /* polygon(myPoints) */
+        PointList *lst = find_point_list($3);
+        if (!lst) {
+            error_at_line(@3.first_line, 
+                "Undefined point list '%s' in polygon_call.\n"
+                "Did you define it with something like:\n"
+                "myPoints = [ point(100,100), point(200,100) ]; ?",
+                $3);
+            YYABORT;
+        }
+        Command cmd;
+        cmd.type = CMD_DRAW_POLYGON;
+        cmd.data.polygon = create_polygon(lst);
+        if (!cmd.data.polygon) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in polygon_call (identifier).");
+            YYABORT;
+        }
+        cmd.name = strdup("polygon_call");
+        add_command(cmd);
+    }
+    | POLYGON LPAREN error
+    {
+        error_at_line(@3.first_line,
+            "Invalid polygon call usage. Example:\n"
+            "  polygon([p1, p2, p3])\n"
+            "  polygon(myPoints)\n"
+            "\nWhere myPoints is a previously defined point list.\n");
+        YYABORT;
+    }
+    ;
+
+regular_polygon_call:
+    /* 1ercas : regular_polygon(expr, NUMBER, FLOAT) */
+    REGULAR_POLYGON LPAREN expr COMMA NUMBER COMMA FLOAT RPAREN
+    {
+        RegularPolygon *rp = create_regular_polygon($3->data.point, $5, $7);
+        if (!rp) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in regular_polygon_call (float radius).");
+            YYABORT;
+        }
+
+        /* on Command de dessin direct */
+        Command cmd;
+        cmd.type = CMD_DRAW_REGULAR_POLYGON;
+        cmd.data.regular_polygon = rp;
+        /* cmd.name = "regular_polygon_call" */
+        cmd.name = strdup("regular_polygon_call");
+        add_command(cmd);
+    }
+    /* 2e cas : regular_polygon(expr, NUMBER, NUMBER) => rayon en int */
+    | REGULAR_POLYGON LPAREN expr COMMA NUMBER COMMA NUMBER RPAREN
+    {
+        RegularPolygon *rp = create_regular_polygon($3->data.point, $5, (float)$7);
+        if (!rp) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in regular_polygon_call (int radius).");
+            YYABORT;
+        }
+        Command cmd;
+        cmd.type = CMD_DRAW_REGULAR_POLYGON;
+        cmd.data.regular_polygon = rp;
+        cmd.name = strdup("regular_polygon_call");
+        add_command(cmd);
+    }
+    | REGULAR_POLYGON LPAREN error
+    {
+        error_at_line(@3.first_line,
+            "Invalid regular_polygon call usage. Examples:\n"
+            "  regular_polygon(point(100,100), 5, 60)\n"
+            "  regular_polygon(point(100,100), 5, 60.0)\n"
+            "  regular_polygon(myCenter, 6, 80.5)\n");
+        YYABORT;
+    }
+    ;
+
+
+list_definition: /* pour pouvoir stocker des listes de points */
+    IDENTIFIER EQUALS point_list
+    {
+        /*
+          On stocke la liste $3 (PointList*) sous le nom $1 (char*).
+          Par exemple, store_point_list($1, $3);
+        */
+        store_point_list($1, $3);
+    }
+    ;
+
+point_list:
+    LBRACKET point_expr_list RBRACKET {
+        /* 
+           Ici $2 est la liste chaînée de points qu’on a construite 
+           dans point_expr_list. On la renvoie dans $$.
+        */
+        $$ = $2;
+    }
+    ;
+
+point_expr_list:
+    point_expr
+    {
+        PointList *list = malloc(sizeof(PointList));
+        if (!list) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in point_expr_list (single).");
+            YYABORT;
+        }
+        list->point = $1; /* $1 = (Point*) */
+        list->next = NULL;
+        $$ = list;
+    }
+    | point_expr_list COMMA point_expr
+    {
+        PointList *new_node = malloc(sizeof(PointList));
+        if (!new_node) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in point_expr_list (append).");
+            YYABORT;
+        }
+        new_node->point = $3; /* $3 = (Point*) */
+        new_node->next = NULL;
+
+        /* Parcourir $1 pour trouver la fin */
+        PointList *temp = $1;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = new_node;
+
+        $$ = $1; /* On renvoie la liste existante */
+    }
+    ;
+
+
+polygon_expr:
+    /* Premier cas : polygon([p1, p2, p3]) */
+    POLYGON LPAREN point_list RPAREN
+    {
+        /* 
+           $3 est du type <pointlistval>, soit PointList*,
+           c’est la liste de points qu’on récupère de point_list.
+         */
+        Polygon *poly = create_polygon($3);
+        if (!poly) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in polygon_expr (create_polygon).");
+            YYABORT;
+        }
+        /* On renvoie ce Polygon* dans $$ (type <polygonval>) */
+        $$ = poly;
+    }
+    /* Deuxième cas : polygon(identifier) --> polygon(maListePoints) */
+    | POLYGON LPAREN IDENTIFIER RPAREN
+    {
+        /* 
+           $3 est un identifiant, ex. "myPoints".
+           On va chercher la liste associée, via une fonction 
+           find_point_list(const char*).
+         */
+        PointList *lst = find_point_list($3);
+        if (!lst) {
+            error_at_line(@3.first_line, 
+                "Undefined point list '%s'. Did you do something like:\n"
+                "myPoints = [point(100,100), point(200,100)]; ?",
+                $3);
+            YYABORT;
+        }
+        Polygon *poly = create_polygon(lst);
+        if (!poly) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in polygon_expr (identifier).");
+            YYABORT;
+        }
+        $$ = poly;
+    }
+    /* Troisième cas : erreur de syntaxe */
+    | POLYGON LPAREN error
+    {
+        error_at_line(@3.first_line,
+            "Invalid polygon usage.\n"
+            "Expected either:\n"
+            "  polygon([p1, p2, p3])  or  polygon(myPoints)\n\n"
+            "Where [p1, p2, p3] is a list of points.\n"
+            "Example:\n"
+            "   polygon([ point(0,0), point(100,0), point(50,50) ])\n"
+            "   polygon(myPoints)\n"
+        );
+        YYABORT;
+    }
+    ;
+
+regular_polygon_expr:
+    /* 1er cas : regular_polygon(expr, NUMBER, FLOAT) */
+    REGULAR_POLYGON LPAREN expr COMMA NUMBER COMMA FLOAT RPAREN
+    {
+        /*
+          - $3->data.point => centre (expr qui renvoie un Figure POINT ou un ident point)
+          - $5 => sides (int)
+          - $7 => radius (float)
+        */
+        RegularPolygon *rp = create_regular_polygon($3->data.point, $5, $7);
+        if (!rp) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in regular_polygon_expr (create_regular_polygon).");
+            YYABORT;
+        }
+        $$ = rp;
+    }
+    /* 2e cas : regular_polygon(expr, NUMBER, NUMBER) 
+          => rayon en int, qu'on cast en float */
+    | REGULAR_POLYGON LPAREN expr COMMA NUMBER COMMA NUMBER RPAREN
+    {
+        /* 
+           - $3->data.point => centre
+           - $5 => sides
+           - $7 => radius (int) qu’on convertit en float NÉCESSAIRE
+        */
+        RegularPolygon *rp = create_regular_polygon($3->data.point, $5, (float)$7);
+        if (!rp) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in regular_polygon_expr (int radius).");
+            YYABORT;
+        }
+        $$ = rp;
+    }
+    /* 3e cas : l’erreur */
+    | REGULAR_POLYGON LPAREN error
+    {
+        error_at_line(@3.first_line,
+            "Invalid regular_polygon usage.\n"
+            "Accepted forms:\n"
+            " - regular_polygon(point(x,y), sides, radiusFloat)\n"
+            " - regular_polygon(point(x,y), sides, radiusInt)\n"
+            "\nExamples:\n"
+            "  regular_polygon(point(100,100), 5, 60.0)\n"
+            "  regular_polygon(point(100,100), 5, 60)\n"
+            "\nYou can also do:\n"
+            "  moncentre = point(100,100);\n"
+            "  regular_polygon(moncentre, 5, 60.0)\n");
+        YYABORT;
+    }
+    ;
+
 
 rotate_call:
     ROTATE LPAREN IDENTIFIER COMMA NUMBER RPAREN {
@@ -422,6 +875,88 @@ draw_call:
                 cmd.data.circle->radius = figure->data.circle->radius;
                 break;
 
+            case FIGURE_ELLIPSE:
+                cmd.type = CMD_DRAW_ELLIPSE;
+                cmd.data.ellipse = malloc(sizeof(Ellipse));
+                if (!cmd.data.ellipse) {
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+                cmd.data.ellipse->p = malloc(sizeof(Point));
+                if (!cmd.data.ellipse->p) {
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+                cmd.data.ellipse->p->x = figure->data.ellipse->p->x;
+                cmd.data.ellipse->p->y = figure->data.ellipse->p->y;
+                cmd.data.ellipse->width = figure->data.ellipse->width;
+                cmd.data.ellipse->height = figure->data.ellipse->height;
+                break;
+
+            case FIGURE_ARC:
+                cmd.type = CMD_DRAW_ARC;
+                cmd.data.arc = malloc(sizeof(Arc));
+                if (!cmd.data.arc) {
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+
+                cmd.data.arc->p1 = malloc(sizeof(Point));
+                if (!cmd.data.arc->p1) {
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+
+                cmd.data.arc->p2 = malloc(sizeof(Point));
+                if (!cmd.data.arc->p2) {
+                    free(cmd.data.arc->p1);
+                    free(cmd.data.arc);
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+
+                // Copie des données
+                cmd.data.arc->p1->x = figure->data.arc->p1->x;
+                cmd.data.arc->p1->y = figure->data.arc->p1->y;
+                cmd.data.arc->p2->x = figure->data.arc->p2->x;
+                cmd.data.arc->p2->y = figure->data.arc->p2->y;
+                cmd.data.arc->angle = figure->data.arc->angle;
+                cmd.data.arc->thickness = figure->data.arc->thickness;
+
+                break;
+
+            case FIGURE_PICTURE:
+                cmd.type = CMD_DRAW_PICTURE;
+                cmd.data.picture = copy_picture(figure->data.picture);
+                if (!cmd.data.picture) {
+                    error_at_line(@$.first_line, "Memory allocation failed in draw_call.");
+                    YYABORT;
+                }
+                add_command(cmd);
+                break;
+            
+            case FIGURE_POLYGON:
+                cmd.type = CMD_DRAW_POLYGON;
+                cmd.data.polygon = copy_polygon(figure->data.polygon);
+                if (!cmd.data.polygon) {
+                    error_at_line(@$.first_line, 
+                        "Memory allocation failed (copy_polygon) in draw_call for polygon.");
+                    YYABORT;
+                }
+                add_command(cmd);
+                break;
+            
+            case FIGURE_REGULAR_POLYGON:
+                cmd.type = CMD_DRAW_REGULAR_POLYGON;
+                cmd.data.regular_polygon = copy_regular_polygon(figure->data.regular_polygon);
+                if (!cmd.data.regular_polygon) {
+                    error_at_line(@$.first_line, 
+                        "Memory allocation failed in draw_call (regular_polygon).");
+                    YYABORT;
+                }
+                add_command(cmd);
+                break;
+
             default:
                 error_at_line(@$.first_line, "Unknown figure type");
                 YYABORT;
@@ -502,6 +1037,88 @@ figure_expr:
         figure->data.circle = $1;
         $$ = figure;
     }
+    | ellipse_expr {
+        Figure *figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+            YYABORT;
+        }
+        figure->type = FIGURE_ELLIPSE;
+        figure->data.ellipse = $1;
+        $$ = figure;
+    }
+    | grid_expr {
+        Figure *figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+            YYABORT;
+        }
+        figure->type = FIGURE_GRID;
+        figure->data.grid = $1;
+        $$ = figure;
+    }
+    | arc_expr {
+        Figure *figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+            YYABORT;
+        }
+        figure->type = FIGURE_ARC;
+        figure->data.arc = $1;
+        $$ = figure;
+    }
+    | picture_expr {
+        Figure *figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+            YYABORT;
+        }
+        figure->type = FIGURE_PICTURE;
+        figure->data.picture = $1;
+        $$ = figure;
+    }
+    | text_expr {
+        Figure* figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, "Memory allocation failed in figure_expr.");
+            YYABORT;
+        }
+        figure->type = FIGURE_TEXT;
+        figure->data.text = $1;
+        $$ = figure;
+    }
+    
+    | polygon_expr {
+        /*
+          $1 est du type <polygonval>, soit Polygon*.
+          On crée un Figure*, on lui donne FIGURE_POLYGON, 
+          et on stocke $1 dedans.
+        */
+        Figure *figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in figure_expr (polygon).");
+            YYABORT;
+        }
+        figure->type = FIGURE_POLYGON;
+        figure->data.polygon = $1;
+        
+        /* On renvoie ce Figure* dans $$ (type <figureval>) */
+        $$ = figure;
+    }
+
+    | regular_polygon_expr {
+        Figure *figure = malloc(sizeof(Figure));
+        if (!figure) {
+            error_at_line(@$.first_line, 
+                "Memory allocation failed in figure_expr (regular_polygon).");
+            YYABORT;
+        }
+        figure->type = FIGURE_REGULAR_POLYGON;
+        figure->data.regular_polygon = $1; /* $1 = RegularPolygon* */
+        $$ = figure;
+    }
+
     | IDENTIFIER {
         Figure *figure = find_figure($1);
         if (figure == NULL) {
@@ -512,7 +1129,7 @@ figure_expr:
         }
     }
     | error {
-        error_at_line(@1.first_line, 
+        error_at_line(@1.first_line,
             "Invalid figure expression. Available figures:\n\n"
             "1. Point:\n"
             "   point(x, y)\n"
@@ -529,6 +1146,21 @@ figure_expr:
             "5. Circle:\n"
             "   circle(point, radius)\n"
             "   Example: circle(point(300,300), 75)\n\n"
+            "6. Ellipse:\n"
+            "   elipse(point, width, height)\n"
+            "   Example: elipse(point(100,100), 100, 150)\n\n"
+            "7. Grid:\n"
+            "   grid(spacing)\n"
+            "   Example: grid(50)\n\n"
+            "8. Arc:\n"
+            "   arc(point1, point2, angle, thickness)\n"
+            "   Example: arc(point(0,0), point(100,100), 90, 2)\n\n"
+            "9. Picture:\n"
+            "   picture(path, x, y, scale)\n"
+            "   Example: picture(\"image.png\", 100, 100, 1.0)\n\n"
+            "10. Text:\n"
+            "   text(content, x, y, size)\n"
+            "   Example: text(\"Hello World\", 100, 100, 24)\n\n"
             "You can also use previously defined variables.\n"
             "Example: line(p1, p2) where p1 and p2 are point variables");
         YYABORT;
@@ -546,6 +1178,26 @@ point_expr:
         point->y = $5;
         $$ = point;
     }
+
+    /* ici on autorise un identifiant qui fait réf à un point */
+    | IDENTIFIER
+    {
+        Figure *fig = find_figure($1);
+        if (!fig) {
+            error_at_line(@$.first_line,
+                "Unknown point '%s' or figure not defined before usage.",
+                $1);
+            YYABORT;
+        }
+        if (fig->type != FIGURE_POINT) {
+            error_at_line(@$.first_line,
+                "Identifier '%s' is not a point (got a different figure).",
+                $1);
+            YYABORT;
+        }
+        $$ = fig->data.point; /* On renvoie le Point* */
+    }
+
     | POINT LPAREN error {
         error_at_line(@3.first_line, 
             "Invalid point expression. Usage:\n"
@@ -666,6 +1318,104 @@ circle_expr:
     }
     ;
 
+ellipse_expr:
+    ELLIPSE LPAREN expr COMMA NUMBER COMMA NUMBER RPAREN {
+        Ellipse *ellipse = malloc(sizeof(Ellipse));
+        if (!ellipse) {
+            error_at_line(@$.first_line, "Memory allocation failed in ellipse_expr.");
+            YYABORT;
+        }
+        ellipse->p = $3->data.point;
+        ellipse->width = $5;
+        ellipse->height = $7;
+        $$ = ellipse;
+    }
+    | ELLIPSE LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid ellipse expression. Expected: ellipse(point, width, height). Example: ellipse(point(0,0), 100, 200)");
+        YYABORT;
+    }
+    ;
+
+grid_expr:
+    GRID LPAREN NUMBER RPAREN {
+        Grid *grid = malloc(sizeof(Grid));
+        if (!grid) {
+            error_at_line(@$.first_line, "Memory allocation failed in grid_expr.");
+            YYABORT;
+        }
+        grid->spacing = $3;
+        $$ = grid;
+    }
+    | GRID LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid grid expression. Expected: grid(spacing). Example: grid(50)");
+        YYABORT;
+    }
+    ;
+
+arc_expr:
+    ARC LPAREN expr COMMA expr COMMA NUMBER COMMA NUMBER RPAREN {
+        Arc *arc = malloc(sizeof(Arc));
+        if (!arc) {
+            error_at_line(@$.first_line, "Memory allocation failed in arc_expr.");
+            YYABORT;
+        }
+        arc->p1 = $3->data.point;
+        arc->p2 = $5->data.point;
+        arc->angle = $7;
+        arc->thickness = $9;
+        $$ = arc;
+    }
+    | ARC LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid arc expression. Expected: arc(point1, point2, angle, thickness). Example: arc(point(0,0), point(100,100), 90, 2)");
+        YYABORT;
+    }
+    ;
+
+picture_expr:
+    PICTURE LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA FLOAT RPAREN {
+        Picture *pic = create_picture($3, $5, $7, $9);
+        if (!pic) {
+            error_at_line(@$.first_line, "Memory allocation failed in picture_expr.");
+            YYABORT;
+        }
+        $$ = pic;
+    }
+    | PICTURE LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid picture expression. Expected: picture(path, x, y, scale). Example: picture(\"image.png\", 100, 100, 1.0)");
+        YYABORT;
+    }
+    ;
+
+text_expr:
+    TEXT LPAREN STRING COMMA NUMBER COMMA NUMBER COMMA NUMBER RPAREN {
+        Point* point = malloc(sizeof(Point));
+        if (!point) {
+            error_at_line(@$.first_line, "Memory allocation failed in text_expr.");
+            YYABORT;
+        }
+        point->x = $5;
+        point->y = $7;
+        Text* text = create_text($3, point, $9);
+        $$ = text;
+    }
+    | TEXT LPAREN error {
+        error_at_line(@3.first_line,
+            "Invalid text expression. Usage:\n"
+            "text(text, x, y, size) where:\n"
+            "- text: the text to display\n"
+            "- x: the x-coordinate of the text\n"
+            "- y: the y-coordinate of the text\n"
+            "- size: the font size of the text\n"
+            "\nExample:\n"
+            "text(\"Hello World\", 100, 100, 50)");
+        YYABORT;
+    }
+    ;
+
 %%
 
 /*  Section: Function Definitions
@@ -742,6 +1492,89 @@ void generate_python_code() {
                         cmd->data.circle->radius,
                         cmd->name);
                 break;
+
+            case CMD_DRAW_ELLIPSE:
+                printf("commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
+                    cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
+                    cmd->data.ellipse->width, cmd->data.ellipse->height,
+                    cmd->name);
+                fprintf(output, "commands.append(('DRAW_ELLIPSE', (%d, %d), %d, %d, '%s'))\n",
+                        cmd->data.ellipse->p->x, cmd->data.ellipse->p->y,
+                        cmd->data.ellipse->width, cmd->data.ellipse->height,
+                        cmd->name);
+                break;
+
+            case CMD_DRAW_GRID:
+                printf("commands.append(('DRAW_GRID', %d))\n", cmd->data.grid->spacing);
+                fprintf(output, "commands.append(('DRAW_GRID', %d))\n", cmd->data.grid->spacing);
+                break;
+
+            case CMD_DRAW_ARC:
+                printf("commands.append(('DRAW_ARC', (%d, %d), (%d, %d), %f, %d, '%s'))\n",
+                       cmd->data.arc->p1->x, cmd->data.arc->p1->y,
+                       cmd->data.arc->p2->x, cmd->data.arc->p2->y,
+                       cmd->data.arc->angle, cmd->data.arc->thickness,
+                       cmd->name);
+                fprintf(output, "commands.append(('DRAW_ARC', (%d, %d), (%d, %d), %f, %d, '%s'))\n",
+                       cmd->data.arc->p1->x, cmd->data.arc->p1->y,
+                       cmd->data.arc->p2->x, cmd->data.arc->p2->y,
+                       cmd->data.arc->angle, cmd->data.arc->thickness,
+                       cmd->name);
+                break;
+
+            case CMD_DRAW_PICTURE:
+                printf("commands.append(('DRAW_PICTURE', %s, %d, %d, %f))\n",
+                       cmd->data.picture->path,
+                       cmd->data.picture->x,
+                       cmd->data.picture->y,
+                       cmd->data.picture->scale);
+                fprintf(output, "commands.append(('DRAW_PICTURE', %s, %d, %d, %f))\n",
+                       cmd->data.picture->path,
+                       cmd->data.picture->x,
+                       cmd->data.picture->y,
+                       cmd->data.picture->scale);
+                break;
+
+            case CMD_DRAW_TEXT:
+                printf("commands.append(('DRAW_TEXT', %s, %d, %d, %d))\n",
+                       cmd->data.text->text, cmd->data.text->position->x, cmd->data.text->position->y, cmd->data.text->size);
+                fprintf(output, "commands.append(('DRAW_TEXT', %s, %d, %d, %d))\n",
+                       cmd->data.text->text, cmd->data.text->position->x, cmd->data.text->position->y, cmd->data.text->size);
+                break;
+
+            case CMD_DRAW_POLYGON:
+                printf("commands.append(('DRAW_POLYGON', [");
+                fprintf(output, "commands.append(('DRAW_POLYGON', [");
+
+                PointList *pl = cmd->data.polygon->points;
+                while (pl != NULL) {
+                    /* On écrit (x,y) */
+                    printf("(%d,%d), ", pl->point->x, pl->point->y);
+                    fprintf(output, "(%d,%d), ", pl->point->x, pl->point->y);
+
+                    pl = pl->next;
+                }
+
+                /* On termine la liste Python et on inclut le nom */
+                printf("], '%s'))\n", cmd->name);
+                fprintf(output, "], '%s'))\n", cmd->name);
+                break;
+                
+                case CMD_DRAW_REGULAR_POLYGON:
+                {
+                    int cx = cmd->data.regular_polygon->center->x;
+                    int cy = cmd->data.regular_polygon->center->y;
+                    int sides = cmd->data.regular_polygon->sides;
+                    float radius = cmd->data.regular_polygon->radius; /* que ce soit un float ou un int converti en float */
+
+                    printf("commands.append(('DRAW_REGULAR_POLYGON', (%d,%d), %d, %f, '%s'))\n",
+                        cx, cy, sides, radius, cmd->name);
+                    fprintf(output, "commands.append(('DRAW_REGULAR_POLYGON', (%d,%d), %d, %f, '%s'))\n",
+                            cx, cy, sides, radius, cmd->name);
+                    break;
+                }
+
+
             case CMD_ROTATE:
                 printf("commands.append(('ROTATE', '%s', %d))\n",
                        cmd->data.rotate.figure->name, cmd->data.rotate.angle);
