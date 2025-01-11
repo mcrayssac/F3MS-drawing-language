@@ -20,7 +20,6 @@
 %}
 
 %error-verbose
-
 %locations
 
 %{

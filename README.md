@@ -35,6 +35,20 @@ Ce compilateur permet aux utilisateurs de créer des dessins complexes et des an
 langage simple et convivial ressemblant à Python. Les fichiers `.draw` sont ensuite compilés en scripts Python qui
 utilisent Pygame pour exécuter les instructions de dessin.
 
+## Mise en œuvre
+
+### Choix des Outils
+
+Pour ce projet, nous avons sélectionné plusieurs outils pour répondre aux besoins spécifiques du compilateur et offrir une expérience utilisateur optimale :
+
+- **Flex** : Générateur d'analyseur lexical choisi pour sa capacité à analyser efficacement le code source `.draw` et à convertir les séquences de caractères en tokens compréhensibles par le compilateur.
+
+- **Bison** : Générateur d'analyseur syntaxique utilisé pour construire l'arbre syntaxique abstrait (AST) à partir des tokens fournis par Flex. Bison facilite la définition de la grammaire du langage personnalisé.
+
+- **Pygame** : Bibliothèque Python dédiée au multimédia et aux jeux, choisie pour sa facilité d'utilisation dans la création de graphiques 2D et la gestion des animations nécessaires pour exécuter les scripts générés.
+
+- **GTK 3** : Utilisé pour développer une interface graphique utilisateur (IDE) conviviale, permettant aux utilisateurs d'éditer, de compiler et d'exécuter des fichiers `.draw` dans un environnement intégré.
+
 ## Fonctionnalités
 
 - **Primitives de Dessin** : Lignes, cercles, rectangles, polygones, images, texte.
@@ -622,7 +636,7 @@ Le compilateur fournit des messages d'erreur clairs avec des numéros de ligne p
 
 ## Crédits
 
-Développé par **CRAYSSAC Maxime, DELSUC Florian, AGUEL Fatima, AHMED Faïkidine et ???** dans le cadre du projet *
+Développé par **CRAYSSAC Maxime, DELSUC Florian, AGUEL Fatima, DRIDI Iskander, AHMED Faïkidine, ELBAZ Benjamin et HAMMOUCHE Kévin** dans le cadre du projet *
 *Compilateur C de langage de dessin** pour le cours de **Complément algorithmique** à **CY Tech - Cergy Paris
 Université (ex EISTI)**.
 

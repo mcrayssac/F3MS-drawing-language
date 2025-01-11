@@ -38,8 +38,8 @@ LETTER      [a-zA-Z]
 IDENTIFIER  {LETTER}({LETTER}|{DIGIT})*
 WHITESPACE  [ \t\r\n]+
 COMMENT     "#".*
-INVALID_ID  {DIGIT}+{LETTER}+({LETTER}|{DIGIT})*
-INVALID_NUM {DIGIT}*\.{DIGIT}+
+INVALID_ID  {DIGIT}+({LETTER}|{DIGIT})*|{LETTER}+(-|_)+({LETTER}|{DIGIT})*
+INVALID_NUM {DIGIT}+\.{DIGIT}+|(-){DIGIT}+
 
 /*  Section: Token Rules
     Define rules for the lexer.

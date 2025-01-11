@@ -11,7 +11,7 @@ BISON = bison
 # Flags
 CFLAGS = -Wall -Wextra -std=c99 -I../src -I../src/temp -Wno-sign-compare -D_GNU_SOURCE
 
-# Add -lm to link the math library if needed, and -ll or -lfl for Flex
+# Add -ll or -lfl for Flex library
 LDLIBS = -ll -lm
 
 # Source files
@@ -95,10 +95,10 @@ clean:
 # Phony targets
 .PHONY: all clean output
 
-# Compile the compiler and generate output.py
+# Compile the compiler (parameters can be overridden without [ ])
 # Usage: make [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py] [FRAME=5]
 
-# Generate output.py
+# Generate output.py (parameters can be overridden without [ ])
 # Usage: make output [DRAW_FILE=my_draw.draw] [OUTPUT_PY=draw.py] [FRAME=5]
 
 # Clean generated files

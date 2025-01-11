@@ -1,0 +1,1066 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage{graphicx} 
+\usepackage{titling} 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{enumitem} 
+\usepackage{geometry}
+
+\geometry{a4paper, margin=2cm}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    
+    \begin{figure}[h!]
+        \centering
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \includegraphics[height=2cm]{cy-univ.png}
+        \end{minipage}
+        \hspace{0.5cm}
+        \begin{minipage}{0.45\textwidth}
+            \centering
+            \includegraphics[height=2cm]{cy-tech.png}
+        \end{minipage}
+    \end{figure}
+
+    {\LARGE\bfseries GIA - ING1 - Groupe 1 \\[0.5cm]}
+
+    {\huge\bfseries F3MS - Langage de dessin \\[0.4cm]}
+    {\large\itshape Compilateur C de fichiers \texttt{.draw} vers Python avec Pygame \\[1cm]}
+    
+    \vfill
+
+    \textbf{Établi par:} \\[0.2cm]
+    {\Large CRAYSSAC Maxime, DELSUC Florian, AGUEL Fatima, DRIDI Iskander, AHMED Faïkidine, ELBAZ Benjamin et HAMMOUCHE Kévin \\}
+    Groupe Projet C \\[0.5cm]
+    
+    \textbf{Enseignante:} \\[0.2cm]
+    {\Large ZAOUCHE Djaouida} \\[1cm]
+
+    \vfill
+    \textbf{Source du projet:} \\[0.2cm] 
+    \href{https://github.com/mcrayssac/F3MS-drawing-language}{Lien projet GitHub}
+
+    \vfill
+    {\large\bfseries \today}
+
+    \vfill
+    \rule{0.7\textwidth}{0.4pt} \\[0.2cm]
+    {\large Département Informatique} \\[0.1cm]
+    CY TECH
+\end{titlepage}
+
+\newpage
+\tableofcontents
+
+\newpage
+\section*{Tableau des participants}
+
+\begin{center}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|l|l|p{8cm}|}
+        \hline
+        \textbf{Participant} & \textbf{Rôle} & \textbf{Taches assignées} \\ \hline
+        CRAYSSAC Maxime      & Chef de projet/Développeur     & 
+        \begin{itemize}[noitemsep, left=0pt]
+            \item Principes de compilation
+            \item Principes fondamentaux de l'analyse lexicale et syntaxique
+            \item Refonte avec liste chaînée et stockage des commandes/figures
+            \item Implémentation de la gestion des erreurs
+        \end{itemize} \\ \hline
+        DELSUC Florian          & Développeur      & 
+        \begin{itemize}[noitemsep, left=0pt]
+            \item Principes fondamentaux de l'analyse lexicale et syntaxique
+            \item Développement des éléments complexes de dessin
+        \end{itemize} \\ \hline
+        AGUEL Fatima          & Développeuse      & 
+        \begin{itemize}[noitemsep, left=0pt]
+            \item Conception et développement des éléments de condition complexes
+        \end{itemize} \\ \hline
+        DRIDI Iskander          & Développeur      & 
+        \begin{itemize}[noitemsep, left=0pt]
+            \item Conception et développement des éléments de condition complexes
+        \end{itemize} \\ \hline
+        AHMED Faïkidine          & Développeur      & 
+        \begin{itemize}[noitemsep, left=0pt]
+            \item Développement des éléments complexes de dessin
+        \end{itemize} \\ \hline
+        ELBAZ Benjamin          & Développeur      & 
+        \begin{itemize}[noitemsep, left=0pt]
+            \item Développement des éléments complexes de dessin
+            \item Environnement de développement intégré (IDE)
+        \end{itemize} \\ \hline
+        HAMMOUCHE Kévin          & Développeur      & 
+        \begin{itemize}[noitemsep, left=0pt]
+            \item Conception de l’implémentation globale
+        \end{itemize} \\ \hline
+    \end{tabular}
+\end{center}
+
+\newpage
+\section{Principes de compilation et génération de code}
+
+Le processus de compilation de notre langage personnalisé repose sur un outil développé en interne qui, à partir d’un fichier source au format \texttt{.draw}, produit un script Python entièrement fonctionnel. Ce script Python, lorsqu’il est exécuté, permet de visualiser dynamiquement les formes et transformations décrites dans le fichier source.
+
+\subsection{Flux de travail global}
+
+Le flux de travail global est le suivant :
+
+\begin{enumerate}
+    \item \textbf{Entrée utilisateur} : \\
+    L’utilisateur fournit un fichier source, par exemple \texttt{my\_draw.draw}, contenant des instructions du langage personnalisé (définition de formes, transformations, etc.).
+
+    \item \textbf{Compiler sur mesure} : \\
+    Nous avons développé un outil de compilation, \texttt{draw\_compiler}, qui intègre :
+    \begin{itemize}
+        \item Analyse lexicale et syntaxique,
+        \item Vérification sémantique,
+        \item Génération de code Python.
+    \end{itemize}
+    Cet outil est un exécutable construit à l’aide du makefile fourni.
+
+    \item \textbf{Génération de code Python} : \\
+    Une fois le fichier \texttt{.draw} analysé, le compilateur produit un fichier Python (par exemple \texttt{draw.py}). Ce fichier contient le code nécessaire au rendu graphique (via la bibliothèque \texttt{Pygame}), reproduisant et animant les formes spécifiées dans le fichier \texttt{.draw}.
+
+    \item \textbf{Exécution dynamique} : \\
+    L’utilisateur exécute le fichier Python généré. Un écran de visualisation s’ouvre, affichant les formes et les transformations (rotations, translations, changements de couleur, épaisseur de trait, etc.) en temps réel, selon le nombre d’images par seconde spécifié.
+\end{enumerate}
+
+\subsection{Fonctionnement du système de compilation}
+
+Le processus de compilation est piloté par un \texttt{makefile} dédié. Les étapes essentielles sont :
+
+\subsubsection{Gestion des sources et des dépendances}
+Le \texttt{makefile} définit toutes les règles nécessaires pour transformer les différentes composantes du projet (fichiers source C, fichiers Flex/Bison, etc.) en un exécutable unique, \texttt{draw\_compiler}. Ce dernier est ensuite utilisé pour traduire le fichier \texttt{.draw} en \texttt{.py}.
+
+\subsubsection{Invocation du compilateur}
+Une simple commande \texttt{make output} (paramétrable avec des variables comme \texttt{DRAW\_FILE}, \texttt{OUTPUT\_PY}, ou \texttt{FRAME}) permet de lancer le processus. Le \texttt{makefile} prend en charge :
+\begin{itemize}
+    \item La génération du code intermédiaire,
+    \item L’appel à l’analyseur lexical et syntaxique,
+    \item La compilation des différents modules,
+    \item La création du binaire final \texttt{draw\_compiler}.
+\end{itemize}
+
+\paragraph*{Exemple :}
+La commande suivante :
+\begin{verbatim}
+make output DRAW_FILE=my_draw.draw OUTPUT_PY=draw.py FRAME=5
+\end{verbatim} 
+
+Elle génère un fichier \texttt{draw.py} à partir de \texttt{my\_draw.draw} et prépare un rendu à 5 images par seconde.
+
+\subsubsection{Exécutable final}
+L’exécutable \texttt{draw\_compiler} prend en arguments :
+\begin{itemize}
+    \item Le fichier source \texttt{.draw},
+    \item Le nom du fichier Python de sortie,
+    \item La fréquence d’images par seconde.
+\end{itemize}
+
+Il se charge :
+\begin{itemize}
+    \item D’ouvrir le fichier source,
+    \item D’analyser le contenu (lexical et syntaxique),
+    \item D’appeler les fonctions internes (dont \texttt{generate\_python\_code()}) pour produire le code Python.
+\end{itemize}
+
+À ce stade, tout est automatisé, rendant l’ensemble du processus fluide et transparent pour l’utilisateur.
+
+\subsection{Améliorations apportées au processus}
+
+Afin d’optimiser le fonctionnement, plusieurs améliorations ont été introduites :
+
+\subsubsection{Séparation claire des tâches}
+Les différentes étapes (analyse lexicale, syntaxique, génération de code) sont encapsulées, ce qui rend :
+\begin{itemize}
+    \item Le \texttt{makefile} plus lisible,
+    \item Le code \texttt{main.c} plus concis.
+\end{itemize}
+
+Cette séparation facilite la maintenance et l’évolution du langage.
+
+\subsubsection{Gestion des dépendances et du cache}
+Le \texttt{makefile} garantit que seules les parties modifiées sont recompilées :
+\begin{itemize}
+    \item Si vous modifiez uniquement le fichier source du langage, la recompilation sera plus rapide.
+    \item Les fichiers intermédiaires, tels que \texttt{lex.yy.c} ou \texttt{parser.tab.c/h}, ne sont régénérés que si nécessaire.
+\end{itemize}
+
+Cette optimisation réduit sensiblement le temps de construction global.
+
+\subsubsection{Intégration fluide du rendu dynamique}
+Le code Python généré inclut non seulement les commandes de dessin statiques, mais également une boucle d’événements interactive basée sur \texttt{Pygame}. Les étapes suivantes sont entièrement automatisées dans \texttt{main.c} :
+\begin{itemize}
+    \item Importation et configuration du module \texttt{Pygame},
+    \item Initialisation de la fenêtre,
+    \item Logique de rafraîchissement,
+    \item Prise en compte de la variable \texttt{FRAME} (nombre d’images par seconde).
+\end{itemize}
+
+En conséquence, l’utilisateur n’a qu’à fournir un fichier \texttt{.draw} valide ; toute la chaîne de traitement, de la source au rendu dynamique, est prise en charge.
+
+\subsubsection{Extensibilité}
+L’architecture retenue permet d’ajouter aisément de nouvelles fonctionnalités au langage :
+\begin{itemize}
+    \item Par exemple, pour introduire un nouveau type de figure (ellipse, polygone, etc.) ou une transformation (redimensionnement, cisaillement) :
+    \begin{itemize}
+        \item Ajoutez les règles sémantiques correspondantes dans le code du compilateur.
+        \item Mettez à jour la logique de génération Python.
+    \end{itemize}
+\end{itemize}
+
+Cette extensibilité garantit que le système global de compilation n’a pas besoin d’être entièrement revu à chaque évolution.
+
+\newpage
+\section{Description de la grammaire et des règles de production}
+
+\subsection{Non-terminaux}
+Les non-terminaux sont des éléments qui apparaissent sur le côté gauche des règles de production. Ils représentent des structures grammaticales complexes du langage. Voici la liste des non-terminaux :
+\begin{itemize}
+    \item \texttt{program}
+    \item \texttt{statement}
+    \item \texttt{assignment}
+    \item \texttt{function\_call}
+    \item \texttt{set\_color\_call}
+    \item \texttt{set\_line\_width\_call}
+    \item \texttt{rectangle\_call}
+    \item \texttt{square\_call}
+    \item \texttt{circle\_call}
+    \item \texttt{draw\_call}
+    \item \texttt{rotate\_call}
+    \item \texttt{translate\_call}
+    \item \texttt{expr}
+    \item \texttt{figure\_expr}
+    \item \texttt{line\_expr}
+    \item \texttt{point\_expr}
+    \item \texttt{rectangle\_expr}
+    \item \texttt{circle\_expr}
+    \item \texttt{square\_expr}
+\end{itemize}
+
+\subsection{Terminaux}
+Les terminaux sont les éléments de base du langage, souvent définis dans le fichier \texttt{lexer.l}. Ils incluent des tokens tels que :
+\begin{itemize}
+    \item \texttt{NUMBER}
+    \item \texttt{LPAREN}
+    \item \texttt{RPAREN}
+    \item \texttt{COMMA}
+    \item \texttt{IDENTIFIER}
+    \item \texttt{SEMICOLON}
+    \item \texttt{EQUALS}
+\end{itemize}
+Ces terminaux sont utilisés pour représenter des valeurs atomiques (comme des nombres ou des mots-clés).
+
+\subsection{Règles de production}
+Les règles de production spécifient comment les non-terminaux peuvent être dérivés.
+
+\paragraph{Programme (\texttt{program})}
+\begin{verbatim}
+program :
+    /* Empty */
+  | program statement
+  ;
+\end{verbatim}
+
+\paragraph*{Instruction (\texttt{statement})}
+\begin{verbatim}
+statement :
+    assignment SEMICOLON
+  | function_call SEMICOLON
+  | error SEMICOLON
+  ;
+\end{verbatim}
+
+\paragraph{Affectation (\texttt{assignment})}
+\begin{verbatim}
+assignment :
+    IDENTIFIER EQUALS figure_expr
+  ;
+\end{verbatim}
+
+\paragraph{Appel de fonction (\texttt{function\_call})}
+\begin{verbatim}
+function_call :
+    set_color_call
+  | set_line_width_call
+  | rectangle_call
+  | square_call
+  | circle_call
+  | draw_call
+  | rotate_call
+  | translate_call
+  ;
+\end{verbatim}
+
+\subsection{Règles pour les appels de fonction}
+\paragraph*{\texttt{set\_line\_width\_call}}
+\begin{verbatim}
+set_line_width_call :
+    SET_LINE_WIDTH LPAREN NUMBER RPAREN
+  ;
+\end{verbatim}
+
+\paragraph*{\texttt{set\_color\_call}}
+\begin{verbatim}
+set_color_call :
+    SET_COLOR LPAREN NUMBER COMMA NUMBER COMMA NUMBER RPAREN
+  ;
+\end{verbatim}
+
+\paragraph*{\texttt{rectangle\_call}}
+\begin{verbatim}
+rectangle_call :
+    RECTANGLE LPAREN expr COMMA NUMBER COMMA NUMBER RPAREN
+  ;
+\end{verbatim}
+
+\paragraph*{\texttt{square\_call}}
+\begin{verbatim}
+square_call :
+    SQUARE LPAREN expr COMMA NUMBER RPAREN
+  ;
+\end{verbatim}
+
+\paragraph*{\texttt{circle\_call}}
+\begin{verbatim}
+circle_call :
+    CIRCLE LPAREN expr COMMA NUMBER RPAREN
+  ;
+\end{verbatim}
+
+\paragraph*{\texttt{draw\_call}}
+\begin{verbatim}
+draw_call :
+    DRAW LPAREN IDENTIFIER RPAREN
+  ;
+\end{verbatim}
+
+\paragraph*{\texttt{rotate\_call}}
+\begin{verbatim}
+rotate_call :
+    ROTATE LPAREN IDENTIFIER COMMA NUMBER RPAREN
+  ;
+\end{verbatim}
+
+\paragraph*{\texttt{translate\_call}}
+\begin{verbatim}
+translate_call :
+    TRANSLATE LPAREN IDENTIFIER COMMA NUMBER COMMA NUMBER RPAREN
+  ;
+\end{verbatim}
+
+
+\newpage
+\section{Analyseur lexical (Lexer)}
+
+\subsection{Contexte et rôle du Lexer}
+
+Le lexer, ou analyseur lexical, est la première étape du processus d’analyse d’un langage. Son rôle est de lire le flux de caractères en entrée (par exemple, un fichier source décrivant des instructions graphiques) et de le décomposer en une suite de jetons (tokens). Ces jetons, identifiés par des catégories lexicales (mots-clés, identifiants, nombres, symboles, etc.), seront ensuite transmis à l’analyseur syntaxique (parser) afin d’être organisés selon la grammaire définie. \newline
+
+Dans le contexte présent, le lexer sert à interpréter une syntaxe qui semble décrire des commandes graphiques, telles que \texttt{set\_color}, \texttt{set\_line\_width}, \texttt{point}, \texttt{line}, etc. L’objectif est donc de reconnaître ces mots-clés spécifiques, ainsi que les identifiants utilisateurs, les nombres entiers, et les signes de ponctuation utilisés dans la syntaxe (parenthèses, virgules, points-virgules, etc.). Les règles définies dans \texttt{lexer.l} contrôlent comment les chaînes de caractères sont converties en jetons, comment les erreurs lexicales sont gérées, et comment les informations de localisation (numéro de ligne) sont transmises.
+
+\subsection{Structure générale du fichier \texttt{lexer.l}}
+
+\subsubsection{Section d’en-tête Flex (\%\{ ... \%\})}
+
+Entre \%{ et \%}, on inclut des fichiers d’en-tête nécessaires à l’environnement global. Ici :
+
+\begin{itemize}
+    \item \textbf{\#include "../external/external.h"} : \\
+    Fichier d’en-tête externe gérant les inclusions standard (e.g., \texttt{stdio.h}, etc.).
+
+    \item \textbf{\#include "../common/common.h"} : \\
+    Fichier commun contenant des déclarations et fonctions utilitaires, comme \texttt{error\_at\_line}.
+
+    \item \textbf{\#include "../temp/parser.tab.h"} : \\
+    Fichier généré par Bison contenant les définitions de tokens (comme \texttt{SET\_COLOR}, \texttt{POINT}, etc.) et d’autres symboles utiles.
+\end{itemize}
+
+On y trouve également :
+
+\begin{itemize}
+    \item \textbf{\texttt{extern int yylineno;}} : \\
+    Variable fournie par Flex pour suivre le numéro de ligne.
+
+    \item \textbf{\texttt{\#define YY\_USER\_ACTION yylloc.first\_line = yylloc.last\_line = yylineno;}} : \\
+    Macro permettant d’actualiser la localisation du jeton à chaque action du lexer. Ceci est crucial pour le rapport d’erreurs précis.
+\end{itemize}
+
+Ces inclusions assurent que le lexer peut communiquer avec le parser (via \texttt{yylval} et les tokens) et gérer les erreurs de manière cohérente.
+
+\subsubsection{Section des options Flex}
+
+\begin{itemize}
+    \item \textbf{\%option noyywrap} : \\
+    Empêche l’appel de \texttt{yywrap()} à la fin du fichier, souvent utilisé quand le traitement s’arrête une fois la fin de fichier atteinte.
+
+    \item \textbf{\%option nounput} et \textbf{\%option noinput} : \\
+    Ces options désactivent certaines fonctionnalités obsolètes ou inutilisées de Flex, rendant le lexer plus léger.
+
+    \item \textbf{\%option yylineno} : \\
+    Permet de maintenir le numéro de ligne dans \texttt{yylineno}, ce qui facilite la génération de messages d’erreurs précis et l’utilisation de \texttt{YY\_USER\_ACTION}.
+\end{itemize}
+
+\subsubsection{Section des définitions de motifs}
+
+On définit des motifs lexicaux réutilisables sous forme de macros. Par exemple :
+
+\begin{itemize}
+    \item \textbf{DIGIT} : \texttt{[0-9]} \\
+    Un seul chiffre.
+    
+    \item \textbf{NUMBER} : \texttt{\{DIGIT\}+} \\
+    Une séquence d’un ou plusieurs chiffres, représentant un entier.
+    
+    \item \textbf{LETTER} : \texttt{[a-zA-Z]} \\
+    Une lettre majuscule ou minuscule.
+    
+    \item \textbf{IDENTIFIER} : \texttt{\{LETTER\}(\{LETTER\}|\{DIGIT\})*} \\
+    Un identifiant commence par une lettre, suivie de zéro ou plusieurs lettres ou chiffres. Cette règle encadre la définition d’un identifiant valide.
+    
+    \item \textbf{WHITESPACE} : \texttt{[ \textbackslash t\textbackslash r\textbackslash n]+} \\
+    Un ou plusieurs caractères d’espacement (espace, tabulation, retour chariot, saut de ligne).
+    
+    \item \textbf{COMMENT} : \texttt{\#.*} \\
+    Une ligne débutant par \texttt{\#} sera considérée comme un commentaire jusqu’à la fin de la ligne.
+\end{itemize}
+
+On trouve également des motifs pour les formes invalides :
+
+\begin{itemize}
+    \item \textbf{INVALID\_ID} : \texttt{\{DIGIT\}+\{LETTER\}+(\{LETTER\}|\{DIGIT\})*} \\
+    Une chaîne commençant par un ou plusieurs chiffres puis une ou plusieurs lettres, etc., définissant un identifiant invalide selon les règles imposées.
+    
+    \item \textbf{INVALID\_NUM} : \texttt{\{DIGIT\}*.\{DIGIT\}+} \\
+    Un nombre contenant un point (par exemple 3.14) qui n’est pas permis car seuls les entiers sont autorisés.
+\end{itemize}
+
+Ces définitions facilitent la maintenance et permettent d’écrire des règles plus lisibles.
+
+
+\subsubsection{Section des règles Flex (\%\% ... \%\% )}
+
+Ici, chaque ligne associe un motif (expression rationnelle) à une action en C. Lorsqu’un motif est reconnu dans l’entrée, l’action correspondante est exécutée. L’ordre de définition des règles compte : la première règle correspondant au texte scanné sera utilisée.
+
+\subsubsection*{Mots-clés}
+\begin{itemize}
+    \item \texttt{"set\_color"} \hfill \texttt{\{ return SET\_COLOR; \}}
+    \item \texttt{"set\_line\_width"} \hfill \texttt{\{ return SET\_LINE\_WIDTH; \}}
+    \item \texttt{"point"} \hfill \texttt{\{ return POINT; \}}
+    \item \texttt{"line"} \hfill \texttt{\{ return LINE; \}}
+    \item \texttt{"rectangle"} \hfill \texttt{\{ return RECTANGLE; \}}
+    \item \texttt{"square"} \hfill \texttt{\{ return SQUARE; \}}
+    \item \texttt{"circle"} \hfill \texttt{\{ return CIRCLE; \}}
+    \item \texttt{"draw"} \hfill \texttt{\{ return DRAW; \}}
+    \item \texttt{"rotate"} \hfill \texttt{\{ return ROTATE; \}}
+    \item \texttt{"translate"} \hfill \texttt{\{ return TRANSLATE; \}}
+\end{itemize}
+Ces règles reconnaissent des mots réservés du langage. Lorsqu’un mot-clé apparaît, le lexer renvoie un jeton correspondant qui sera interprété par le parser.
+
+\subsubsection*{Identifiants}
+\begin{itemize}
+    \item \texttt{\{IDENTIFIER\}} \hfill \texttt{\{ yylval.strval = strdup(yytext); return IDENTIFIER; \}}
+\end{itemize}
+Si la séquence de caractères correspond au motif d’un identifiant valide, elle est copiée dans \texttt{yylval.strval}, et le token \texttt{IDENTIFIER} est retourné.
+
+\subsubsection*{Nombres}
+\begin{itemize}
+    \item \texttt{\{NUMBER\}} \hfill \texttt{\{ yylval.intval = atoi(yytext); return NUMBER; \}}
+\end{itemize}
+Les nombres sont convertis en entier avec \texttt{atoi} et stockés dans \texttt{yylval.intval}.
+
+\subsubsection*{Symboles de ponctuation}
+\begin{itemize}
+    \item \texttt{"("} \hfill \texttt{\{ return LPAREN; \}}
+    \item \texttt{")"} \hfill \texttt{\{ return RPAREN; \}}
+    \item \texttt{","} \hfill \texttt{\{ return COMMA; \}}
+    \item \texttt{";"} \hfill \texttt{\{ return SEMICOLON; \}}
+    \item \texttt{"="} \hfill \texttt{\{ return EQUALS; \}}
+\end{itemize}
+
+
+\subsubsection*{Mots-clés de contrôle et opérateurs logiques}
+\begin{itemize}
+    \item \texttt{"for"} \hfill \texttt{\{ return FOR; \}}
+    \item \texttt{"while"} \hfill \texttt{\{ return WHILE; \}}
+    \item \texttt{"if"} \hfill \texttt{\{ return IF; \}}
+    \item \texttt{"else"} \hfill \texttt{\{ return ELSE; \}}
+    \item \texttt{"to"} \hfill \texttt{\{ return TO; \}}
+    \item \texttt{"in"} \hfill \texttt{\{ return IN; \}}
+    \item \texttt{"or"} \hfill \texttt{\{ return OR; \}}
+    \item \texttt{"and"} \hfill \texttt{\{ return AND; \}}
+\end{itemize}
+
+
+\subsubsection*{Espaces blancs et commentaires}
+\begin{itemize}
+    \item \texttt{\{WHITESPACE\}} \hfill \texttt{\{ /* Ignore whitespace */ \}}
+    \item \texttt{\{COMMENT\}} \hfill \texttt{\{ /* Ignore comments */ \}}
+\end{itemize}
+Les espaces et commentaires sont ignorés, évitant tout bruit inutile pour le parser.
+
+\subsubsection*{Règles d’erreurs}
+\textbf{Identifiant invalide :}
+\begin{itemize}
+    \item \texttt{\{INVALID\_ID\}} \\
+    \texttt{\{ error\_at\_line(yylineno, "Invalid identifier ...", yytext); return -1; \}}
+\end{itemize}
+
+\textbf{Nombre invalide :}
+\begin{itemize}
+    \item \texttt{\{INVALID\_NUM\}} \\
+    \texttt{\{ error\_at\_line(yylineno, "Invalid number ...", yytext); return -1; \}}
+\end{itemize}
+
+\textbf{Caractère inattendu :}
+\begin{itemize}
+    \item \texttt{.} \\
+    \texttt{\{ error\_at\_line(yylineno, "Unexpected character ...", yytext); return -1; \}}
+\end{itemize}
+
+Chaque règle d’erreur fournit un message détaillé, guidant l’utilisateur dans la compréhension des erreurs lexicales rencontrées.
+
+\newpage
+\section{Analyseur syntaxique (Parser)}
+
+\subsection{Contexte et rôle du Parser}
+
+Le parser a pour rôle de prendre la suite de l’analyseur lexical. Tandis que le lexer fournit une séquence de jetons (mots-clés, identifiants, nombres, symboles), le parser utilise ces jetons et les assemble en une structure syntaxique significative, selon les règles d’une grammaire formelle. \\
+
+En d’autres termes, le parser vérifie que la séquence d’instructions fournie par l’utilisateur correspond bien au langage prévu, et construit des objets internes (figures, commandes) qui pourront être interprétés, exécutés, ou transformés (par exemple en code Python). \\
+
+Ici, le langage semble permettre de définir des formes géométriques (points, lignes, rectangles, carrés, cercles), de les stocker dans des variables, puis de les manipuler :
+\begin{itemize}
+    \item Affichage,
+    \item Rotation,
+    \item Translation,
+    \item Changement de couleur,
+    \item Épaisseur de trait, etc.
+\end{itemize} 
+
+Le parser valide la syntaxe, crée des structures de données internes, et appelle des fonctions utilitaires pour stocker ces objets (ex : \texttt{add\_figure}, \texttt{add\_command}).
+
+\subsection{Structure générale du fichier \texttt{parser.y}}
+Le fichier Bison se divise en plusieurs sections standard :
+
+\subsubsection{Section d’en-tête (\%\{ ... \%\})}
+
+Entre les balises \%\{ ... \%\}, on inclut les en-têtes nécessaires au bon fonctionnement du parser :
+
+\begin{itemize}
+    \item \textbf{\#include "../external/external.h"} et \textbf{\#include "../common/common.h"} : \\
+    Fournissent des déclarations communes, des fonctions d’erreur (ex : \texttt{error\_at\_line}), l’accès aux structures \texttt{Figure}, \texttt{Command} et la fonctionnalité d’entrées/sorties.
+
+    \item \textbf{\#include "../command/command.h"} : \\
+    Pour la gestion des commandes graphiques.
+
+    \item \textbf{\texttt{void generate\_python\_code();}} : \\
+    Déclaration de la fonction qui sera utilisée ultérieurement pour générer le code Python final.
+\end{itemize}
+
+On déclare également :
+\begin{itemize}
+    \item \textbf{\texttt{extern int yylineno;}} : Pour le suivi du numéro de ligne.
+    \item L’inclusion ultérieure de \textbf{\texttt{parser.tab.h}} (généré par Bison) : \\
+    Pour récupérer \texttt{YYLTYPE} et les définitions des tokens.
+\end{itemize}
+
+Ces inclusions et déclarations préparent le terrain pour que le parser connaisse les types, fonctions et variables globales nécessaires.
+
+\subsubsection{Directives Bison}
+\begin{itemize}
+    \item \textbf{\%error-verbose} : \\
+    Demande à Bison de produire des messages d’erreurs plus détaillés.
+
+    \item \textbf{\%locations} : \\
+    Active la gestion des positions (lignes, colonnes) pour les tokens et non-terminaux, permettant un meilleur retour d’information en cas d’erreur (exemple : \texttt{@1.first\_line}).
+\end{itemize}
+
+\subsubsection{Section \%union}
+
+Cette section définit l’union C utilisée pour stocker la valeur sémantique de chaque symbole non-terminal ou token. On y trouve :
+
+\begin{itemize}
+    \item \texttt{int intval;} : \\
+    Pour les nombres entiers.
+
+    \item \texttt{char *strval;} : \\
+    Pour les identifiants (noms de variables).
+
+    \item Des pointeurs vers des structures de données : \\
+    \texttt{Point *}, \texttt{Line *}, \texttt{Rectangle *}, \texttt{Square *}, \texttt{Circle *}, \texttt{Figure *} \\
+    Pour représenter les entités géométriques et les figures complexes.
+
+    
+\end{itemize}
+
+Cette union permet de stocker des données hétérogènes en fonction du type de token ou non-terminal rencontré.
+
+\subsubsection{Section \%token et \%type}
+
+On associe chaque token défini par le lexer à un type de la \%union. Par exemple :
+
+\begin{itemize}
+    \item \texttt{\%token <intval> NUMBER} : \\
+    Indique que le token \texttt{NUMBER} est associé à \texttt{intval} dans la \%union.
+
+    \item \texttt{\%token FOR WHILE IF ELSE TO IN OR AND} : \\
+    Définit les mots-clés de contrôle de flux et d’opérateurs logiques, comme \texttt{FOR} et \texttt{WHILE}.
+\end{itemize}
+
+Des non-terminaux (via \texttt{\%type}) sont également typés. Par exemple :
+
+\begin{itemize}
+    \item \texttt{\%type <pointval> point\_expr} : \\
+    Cela informe Bison du type de valeur renvoyée par chaque règle.
+
+    \item \texttt{\%type <blockval> stmt stmt\_list stmt\_block loop\_stmt if\_stmt condition function\_call} : \\
+    Indique que ces non-terminaux sont associés au type \texttt{blockval}, pour stocker des blocs de code, des instructions de contrôle, ou des appels de fonctions.
+\end{itemize}
+
+\subsubsection{\%start program}
+
+Définit le symbole de départ de la grammaire : \texttt{program}. C’est le point d’entrée de l’analyse syntaxique. Le parseur attend d’analyser un \texttt{program} complet.
+
+\subsection{Section des règles de grammaire (\%\% ... \%\%)}
+
+C’est le cœur du parser. On y trouve la description de la grammaire, c’est-à-dire l’ensemble des règles qui décrivent comment les jetons s’assemblent en instructions, expressions, figures, etc.
+
+Chaque règle a la forme :
+
+\begin{verbatim}
+nom_non_terminal:
+    production1 { action1 }
+  | production2 { action2 }
+  | ...
+  ;
+\end{verbatim}
+
+Les actions sont des blocs de code C exécutés lorsque la règle est réduite. Elles permettent de construire des structures de données, appeler des fonctions utilitaires, émettre des erreurs, etc. Les références aux valeurs sémantiques des symboles se font via \texttt{\$1, \$2}, etc. Les positions sont accessibles via \texttt{@1, @2}, etc.
+
+\subsubsection{program}
+Le programme se compose d’une liste de déclarations ou peut être vide. Chaque \textit{statement} est traité et validé.
+
+\begin{verbatim}
+program:
+    /* Empty */
+  | program statement
+  ;
+\end{verbatim}
+
+La grammaire autorise un programme vide ou une suite de \textit{statement}.
+
+\subsubsection{statement}
+Les \textit{statement} peuvent être des assignations, des appels de fonction ou contenir des erreurs. En cas d’erreur, on invoque \texttt{error\_at\_line} avec un message complet, puis on utilise \texttt{YYABORT} pour interrompre le parsing. \\
+
+Exemple de gestion d’erreur :
+\begin{verbatim}
+statement:
+    assignment SEMICOLON
+  | function_call SEMICOLON
+  | error SEMICOLON {
+       error_at_line(@1.first_line, "Syntax Error: Invalid statement\n\n...Explications et exemples...");
+       YYABORT;
+    }
+  ;
+\end{verbatim}
+
+Cette approche guide l’utilisateur en lui donnant non seulement l’erreur, mais aussi une liste d’exemples, de bonnes pratiques, et les erreurs courantes.
+
+\subsubsection{assignment}
+Gère les affectations de figures à des variables. Une règle réussie crée un \texttt{Figure *figure} à partir d’une \texttt{figure\_expr} et l’ajoute via \texttt{add\_figure(\$1, figure)}. \\
+
+En cas d’erreur, un message détaillé sur la syntaxe attendue, avec des exemples valides et des erreurs courantes, est fourni.
+
+\subsubsection{function\_call}
+Gère les appels de fonctions du langage : \texttt{set\_color(...), set\_line\_width(...), rectangle(...),} etc. Chacune est traitée par une règle spécifique. Si un appel est invalide, un message d’erreur détaillé est fourni. \\
+
+Pour chacune des fonctions du langage (ex : \texttt{set\_line\_width\_call, set\_color\_call}), on récupère les arguments depuis les \texttt{\$i} correspondants, on crée une structure de commande (\texttt{Command}) et on l’ajoute via \texttt{add\_command(cmd)}. \\
+
+Les messages d’erreur incluent :
+\begin{itemize}
+    \item La forme correcte de l’appel,
+    \item Des exemples d’appels réussis,
+    \item Des valeurs recommandées (par exemple pour l’épaisseur de ligne),
+    \item Les erreurs communes.
+\end{itemize}
+
+\subsubsection{figure\_expr}
+Transforme une expression représentant une figure en une structure \texttt{Figure}. Cela inclut :
+\begin{itemize}
+    \item \texttt{point\_expr},
+    \item \texttt{line\_expr},
+    \item \texttt{rectangle\_expr},
+    \item \texttt{square\_expr},
+    \item \texttt{circle\_expr},
+    \item L’utilisation d’un identifiant déjà défini comme figure.
+\end{itemize}
+
+\textbf{Exemple :} lorsque \texttt{figure\_expr} rencontre \texttt{point\_expr}, elle alloue un \texttt{Figure}, assigne le type \texttt{FIGURE\_POINT} et stocke \texttt{point\_expr} dans \texttt{figure->data.point}. Une gestion des échecs d’allocation mémoire est également présente, déclenchant un \texttt{error\_at\_line} et un \texttt{YYABORT} en cas de problème.
+
+\subsubsection{point\_expr, line\_expr, rectangle\_expr, square\_expr, circle\_expr}
+Chaque non-terminal correspond à une construction syntaxique spécifique du langage. Par exemple :
+
+\begin{verbatim}
+point_expr:
+    POINT LPAREN NUMBER COMMA NUMBER RPAREN
+\end{verbatim}
+
+Lorsqu’un point est reconnu, il alloue un \texttt{Point} et renseigne \texttt{x} et \texttt{y}. En cas d’erreur, un message spécifique détaille :
+\begin{itemize}
+    \item La syntaxe attendue,
+    \item Des exemples de syntaxe correcte,
+    \item Les erreurs fréquentes.
+\end{itemize}
+
+\subsubsection{loop\_stmt}
+Les \textit{loop\_stmt} gèrent les boucles \texttt{FOR} et \texttt{WHILE}. Voici des exemples d’implémentation et de gestion :
+
+\begin{itemize}
+
+\item \textbf{Boucle \texttt{WHILE}} : \\
+    Une boucle \texttt{WHILE} est traduite avec une condition. Exemple :
+\begin{verbatim}
+loop_stmt:
+    WHILE condition '{' stmt_block '}' {
+        $$ = (struct block){ .code = malloc(1024) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in loop_stmt.");
+            YYABORT;
+        }
+        sprintf($$.code, "while (%s) {\n%s\n}", $2.code, $4.code);
+    }
+\end{verbatim}
+\end{itemize}
+
+\subsubsection{if\_stmt}
+Les \textit{if\_stmt} gèrent les structures conditionnelles, avec ou sans \texttt{ELSE}. Voici des exemples d’implémentation et de gestion :
+
+\begin{itemize}
+    \item \textbf{\texttt{IF} seul} : \\
+    Une condition \texttt{IF} simple est traduite comme suit :
+\begin{verbatim}
+if_stmt:
+    IF condition '{' stmt_block '}' {
+        $$ = (struct block){ .code = malloc(1024) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in if_stmt.");
+            YYABORT;
+        }
+        sprintf($$.code, "if (%s) {\n%s\n}", $2.code, $4.code);
+    }
+\end{verbatim}
+
+\item \textbf{\texttt{IF} avec \texttt{ELSE}} : \\
+    Une structure conditionnelle avec \texttt{ELSE} est traduite comme suit :
+\begin{verbatim}
+if_stmt:
+    IF condition '{' stmt_block '}' ELSE '{' stmt_block '}' {
+        $$ = (struct block){ .code = malloc(2048) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in if_stmt.");
+            YYABORT;
+        }
+        sprintf($$.code, "if (%s) {\n%s\n} else {\n%s\n}", 
+        $2.code, $4.code, $8.code);
+    }
+\end{verbatim}
+\end{itemize}
+
+\subsubsection{condition}
+Les \textit{condition} définissent des expressions booléennes avec des opérateurs de comparaison. Voici des exemples :
+
+\begin{itemize}
+    \item \texttt{IDENTIFIER > NUMBER} :
+\begin{verbatim}
+condition:
+    IDENTIFIER '>' NUMBER {
+        $$ = (struct block){ .code = malloc(64) };
+        if ($$.code == NULL) {
+            yyerror("Memory allocation failed in condition.");
+            YYABORT;
+        }
+        sprintf($$.code, "%s > %d", $1, $3);
+    }
+\end{verbatim}
+
+\end{itemize}
+
+
+\newpage
+\section{Architecture C et optimisations internes}
+
+Dans le cadre de ce projet, une attention particulière a été portée à la structure et à l’organisation du code \texttt{C}, afin de garantir une maintenance aisée, une extensibilité optimale, et des performances acceptables. Notre approche repose sur plusieurs principes clés : modularité, séparation des préoccupations et utilisation de structures de données adaptées.
+
+
+\subsection{Séparation clairvoyante des composants}
+L’un des points forts de notre implémentation est le découpage logique en plusieurs modules cohérents. Chaque type de figure (\textit{point}, \textit{ligne}, \textit{rectangle}, \textit{carré}, \textit{cercle}) est défini dans des fichiers distincts. De même :
+\begin{itemize}
+    \item Les commandes (\textit{changement de couleur}, \textit{modification de l’épaisseur de trait}, \textit{tracé}, \textit{rotation}, \textit{translation}) sont centralisées dans un module \texttt{command}.
+    \item La liste chaînée utilisée pour stocker ces entités est gérée par un module générique \texttt{linkedList}.
+\end{itemize} 
+
+Cette approche modulaire présente plusieurs avantages :
+\begin{itemize}
+    \item \textbf{Lisibilité et maintenance} : \\
+    En regroupant les définitions et fonctions relatives à chaque entité dans son propre fichier :
+    \begin{itemize}
+        \item Il est plus simple de naviguer dans le code,
+        \item Les modifications sont localisées, limitant ainsi les effets de bord.
+    \end{itemize}
+
+    \item \textbf{Réutilisabilité} : \\
+    Le module \texttt{linkedList} peut être utilisé pour stocker n’importe quel type de données. Par exemple :
+    \begin{itemize}
+        \item Figures,
+        \item Commandes,
+        \item Potentiellement d’autres éléments à l’avenir.
+    \end{itemize}
+
+    \item \textbf{Évolutivité} : \\
+    Ajouter un nouveau type de figure ou une nouvelle commande :
+    \begin{itemize}
+        \item N’implique pas de revoir tout le code existant.
+        \item Requiert seulement d’ajouter un nouveau fichier et d’adapter les appels nécessaires.
+    \end{itemize}
+    La structure du code et la gestion via la liste chaînée demeurent stables.
+\end{itemize}
+
+\subsection{Gestion des données avec une liste chaînée générique}
+Le choix d’utiliser une liste chaînée générique pour stocker figures et commandes est au cœur de notre stratégie. Cette structure, définie dans \texttt{linkedList.h}, permet :
+
+\begin{itemize}
+    \item \textbf{Insertion Dynamique} : \\
+    On peut ajouter facilement de nouvelles entités (figures ou commandes) en début ou en fin de liste. Cela offre une grande souplesse, notamment lorsque les données sont découvertes progressivement durant l’analyse.
+
+    \item \textbf{Recherche et Manipulation Simples} : \\
+    Les fonctions \texttt{find}, \texttt{contains}, ou \texttt{deleteValue} permettent de manipuler le contenu de la liste sans réécrire de code spécifique pour chaque type d’entité. Cela constitue un gain de productivité non négligeable.
+
+    \item \textbf{Extension Futurisée} : \\
+    Si, à l’avenir, nous souhaitons introduire un autre type de données (par exemple, une nouvelle structure pour :
+    \begin{itemize}
+        \item Des groupes de figures,
+        \item Des scènes,
+        \item Des animations complexes),
+    \end{itemize}
+    il suffira de réutiliser la même liste chaînée. Cela réduit considérablement le risque d’introduire des bugs lors des évolutions.
+\end{itemize}
+
+\subsection{Structuration des figures et des commandes}
+Les figures sont définies au moyen d’une énumération (\texttt{FigureType}) et d’une union, permettant de stocker divers types de figures sous une seule abstraction \texttt{Figure}. Cette union, couplée à une variable \texttt{type}, rend possible le traitement uniformisé de données hétérogènes :
+
+\begin{itemize}
+    \item \textbf{Uniformisation des Accès} : \\
+    En connaissant le \texttt{FigureType}, le code peut accéder aux champs appropriés sans confusion. Cela simplifie la logique du code en évitant le recours à des conversions complexes ou des types distincts partout.
+
+    \item \textbf{Facilité de Mises à Jour} : \\
+    Pour ajouter un nouveau type de figure (par exemple un polygone), il suffit :
+    \begin{itemize}
+        \item D’ajouter une entrée dans l’énumération,
+        \item De définir une structure adaptée,
+        \item De compléter l’union.
+    \end{itemize}
+    Le reste du code (stockage, recherche, manipulation) demeure identique.
+\end{itemize}
+
+Côté commandes, une stratégie similaire est utilisée :
+\begin{itemize}
+    \item Une énumération \texttt{CommandType} (\texttt{SET\_COLOR}, \texttt{SET\_LINE\_WIDTH}, \texttt{DRAW\_POINT}, etc.),
+    \item Une union de données associée.
+\end{itemize}
+
+Ainsi, chaque commande est traitée de manière cohérente et standardisée. Les fonctions \texttt{add\_command} et la liste \texttt{command\_list} centralisent la gestion des modifications à appliquer aux figures, rendant le système :
+\begin{itemize}
+    \item Flexible,
+    \item Cohérent.
+\end{itemize}
+
+\subsection{Flexibilité et performance}
+Grâce à cette architecture, le code reste performant sans nécessiter d’optimisations prématurées. Les accès en temps linéaire (\(O(n)\)) de la liste chaînée sont raisonnables au vu de la nature du problème, généralement limité en taille. 
+
+Par ailleurs, la structure permet :
+\begin{itemize}
+    \item De trier,
+    \item De filtrer,
+    \item De transformer les données ultérieurement si besoin,
+\end{itemize}
+simplement en ajoutant quelques fonctions utilitaires.
+
+\subsubsection*{Avantages de l’approche}
+Les avantages en termes de performance résident davantage dans :
+\begin{itemize}
+    \item \textbf{Clarté de la gestion des données} : \\
+    Une bonne structuration facilite l’identification des points à optimiser.
+    \item \textbf{Adaptabilité future} : \\
+    Si les besoins en performance augmentent, il sera possible de :
+    \begin{itemize}
+        \item Passer à une autre structure de données plus adaptée,
+        \item Introduire des caches.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Maintenabilité et facilité de débogage}
+La cohérence du code facilite largement le débogage. Chaque module est focalisé sur une tâche précise :
+\begin{itemize}
+    \item Les figures sont définies dans \texttt{figure.[ch]},
+    \item Les commandes dans \texttt{command.[ch]},
+    \item La liste chaînée dans \texttt{linkedList.[ch]}.
+\end{itemize}
+
+En cas de bug, il est aisé de localiser le problème dans un module spécifique, sans se perdre dans une implémentation monolithique.
+
+
+\newpage
+\section{Gestion des erreurs dans le Lexer et le Parser}
+
+La gestion des erreurs est souvent l’un des éléments les plus négligés dans la conception d’un langage. Beaucoup de compilateurs ou d’interpréteurs se contentent de messages d’erreurs laconiques et peu informatifs, ce qui force l’utilisateur à perdre beaucoup de temps en conjectures et en allers-retours fastidieux. \\
+
+Dans la solution proposée ici, l’objectif est radicalement différent : chaque erreur, qu’elle soit détectée au niveau lexical (lexer) ou syntaxique (parser), déclenche une réponse précise, contextualisée, et soigneusement rédigée pour aider l’utilisateur à comprendre son erreur, en saisir les règles correctes, et disposer d’exemples concrets pour réparer son code.
+
+\subsection{Philosophie générale}
+La démarche adoptée est pédagogique. L’idée est que l’utilisateur, qu’il soit débutant ou confirmé, doit pouvoir apprendre du message d’erreur. Au lieu de simplement signaler : \texttt{Error: invalid input}, on préfère expliquer :
+\begin{itemize}
+    \item \textbf{Ce qui s’est produit} : On indique clairement la ligne et le symbole fautif.
+    \item \textbf{Pourquoi c’est un problème} : On rappelle les règles attendues (par exemple, ``Un identifiant doit commencer par une lettre, puis éventuellement contenir des chiffres'').
+    \item \textbf{Comment corriger} : On fournit une série d’exemples valides et des erreurs courantes avec explications.
+\end{itemize}
+
+Ce feedback didactique transforme chaque erreur en opportunité d’apprentissage et de progression.
+
+\subsection{Gestion des erreurs au niveau lexical}
+Le lexer (implémenté avec Flex) est le premier rempart contre les entrées invalides. Il transforme les caractères en jetons. Lorsqu’une entrée ne respecte pas les règles lexicales, chaque erreur a une règle dédiée dans le fichier \texttt{lexer.l}.
+
+\paragraph*{Exemple : INVALID\_ID}
+Si l’utilisateur tape \texttt{1circle} au lieu de \texttt{circle1}, le lexer :
+\begin{itemize}
+    \item Détecte immédiatement que l’identifiant débute par un chiffre.
+    \item Invoque \texttt{error\_at\_line()} pour afficher un message explicatif.
+\end{itemize}
+Le message inclut :
+\begin{itemize}
+    \item Les règles des identifiants : doivent commencer par une lettre, ne contenir que lettres et chiffres.
+    \item Exemples valides : \texttt{myPoint1}, \texttt{circleA}, \texttt{line123}.
+    \item Contre-exemples : \texttt{1point} (commence par un chiffre), \texttt{my-point} (contient un tiret).
+\end{itemize}
+
+\paragraph*{Exemple : INVALID\_NUM}
+Lorsqu’un utilisateur écrit \texttt{3.14} alors que seuls les entiers sont permis, le message :
+\begin{itemize}
+    \item Explique les règles : seuls les entiers sont autorisés.
+    \item Donne des exemples corrects : \texttt{42}, \texttt{100}, \texttt{255}.
+    \item Met en garde contre les erreurs courantes : \texttt{3.14} (nombre à virgule), \texttt{1,000} (format invalide).
+\end{itemize}
+
+\paragraph*{Caractères inattendus (\texttt{.})}
+Pour des symboles comme \texttt{\{} ou \texttt{@}, le lexer :
+\begin{itemize}
+    \item Liste les symboles valides (\texttt{( ) , ; =}).
+    \item Explique leur usage (parenthèses pour les arguments, \texttt{=} pour les affectations).
+    \item Détaille les erreurs fréquentes (ex : \texttt{\{} au lieu de \texttt{(}).
+\end{itemize}
+
+\subsection{Gestion des erreurs au niveau syntaxique}
+Le parser (implémenté avec Bison) valide la structure des instructions après le lexer. Voici des exemples d’erreurs courantes et leur gestion.
+
+\subsubsection{Affectation incorrecte}
+Par exemple :
+\begin{verbatim}
+myRect = rectangle(100,100,200,150) /* Incorrect */
+myRect = rectangle(point(100,100),200,150) /* Correct */
+\end{verbatim}
+
+Le parser fournit un message expliquant la syntaxe attendue.
+
+\subsubsection{Fonction mal formée}
+Exemple :
+\begin{verbatim}
+draw(myLine,100) /* Incorrect */
+draw(myLine)     /* Correct */
+\end{verbatim}
+
+Le message d’erreur inclut :
+\begin{itemize}
+    \item \textbf{Rappel de la syntaxe} : ``Usage : \texttt{draw(figure\_name)}''.
+    \item \textbf{Exemples valides} : \texttt{draw(myCircle)}.
+    \item \textbf{Erreurs fréquentes} : Utilisation de guillemets ou définition directe au lieu de variables.
+\end{itemize}
+
+\subsubsection{Contrôles sémantiques}
+Le parser intègre des contrôles tels que :
+\begin{itemize}
+    \item Vérification de l’existence d’une figure avant manipulation (ex : \texttt{rotate} sur une figure non définie).
+    \item Vérification du type et du nombre d’arguments (ex : \texttt{line()} nécessite deux points).
+\end{itemize}
+
+En cas d’erreur, \texttt{YYABORT} interrompt l’analyse immédiatement pour éviter des messages confus en cascade.
+
+\subsection{Communication et cohérence entre Lexer et Parser}
+Le lexer et le parser partagent une approche cohérente :
+\begin{itemize}
+    \item Le lexer bloque les fautes lexicales avant l’analyse syntaxique.
+    \item Le parser travaille sur un flux garanti correct pour se concentrer sur la structure et la sémantique.
+\end{itemize}
+
+La fonction \texttt{error\_at\_line()} est utilisée pour un formatage uniforme des erreurs. La gestion des positions (via \%locations et \texttt{yylineno}) permet de localiser précisément chaque problème.
+
+\subsection{Impact sur l’expérience développeur}
+Cette stratégie globale de gestion des erreurs améliore considérablement l’expérience utilisateur :
+\begin{itemize}
+    \item \textbf{Gain de temps} : Les messages détaillés réduisent les conjectures.
+    \item \textbf{Apprentissage continu} : Chaque erreur devient une leçon.
+    \item \textbf{Moins de frustration} : Des messages bienveillants guident l’utilisateur.
+    \item \textbf{Qualité du code} : Les bonnes pratiques sont adoptées plus rapidement.
+\end{itemize}
+
+
+\newpage
+\section{Environnement de développement intégré (IDE)}
+
+\subsection{Environnement de développement}
+L'IDE a été développé en C en utilisant la bibliothèque \texttt{GTK3} pour l'interface graphique et \texttt{VTE} (Virtual Terminal Emulator) pour l'intégration du terminal. Cette combinaison de bibliothèques permet de créer un environnement de développement complet et performant, offrant tous les outils nécessaires au développement.
+
+\subsection{Interface et fonctionnalités}
+L'interface de l'IDE est conçue pour être intuitive et efficace. La fenêtre principale est divisée en deux parties :
+\begin{itemize}
+    \item Une large zone d'édition de texte.
+    \item Un terminal intégré dans la partie inférieure.
+\end{itemize}
+
+Ce terminal joue un rôle crucial en affichant, lors de la compilation ou de l'exécution, les erreurs éventuelles, permettant aux développeurs d'identifier et de corriger rapidement les problèmes dans leur code. Le titre de la fenêtre s'adapte automatiquement pour afficher le nom du fichier en cours d'édition.
+
+Dans l'éditeur de texte, les numéros de lignes sont affichés grâce à l'utilisation de la bibliothèque \texttt{GtkSourceView-3.0}, ce qui facilite la navigation et la lecture du code pour les développeurs.
+
+\subsection{Gestion des fichiers et édition}
+L'environnement offre une gestion complète des fichiers avec :
+\begin{itemize}
+    \item Des fonctionnalités de sauvegarde rapide via \texttt{Ctrl+S}.
+    \item Une option ``Enregistrer sous'' pour les nouveaux fichiers.
+\end{itemize}
+
+L'éditeur intègre une coloration syntaxique qui se met à jour en temps réel, notamment avec les commentaires mis en évidence en vert.
+
+\subsection{Exécution et productivité}
+Le système d'exécution intégré :
+\begin{itemize}
+    \item Vérifie automatiquement la présence des dépendances nécessaires (notamment \texttt{Pygame}) et les installe si besoin.
+    \item Utilise un environnement virtuel Python pour garantir une exécution isolée et stable.
+\end{itemize}
+
+Des raccourcis clavier optimisent le flux de travail :
+\begin{itemize}
+    \item \texttt{Ctrl+Enter} : Compilation et exécution.
+    \item \texttt{Ctrl+X} : Compilation et exécution directement du fichier \texttt{my\_draw.draw}.
+    \item \texttt{Échap} : Quitter l'application.
+\end{itemize}
+
+
+\end{document}

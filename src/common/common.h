@@ -14,6 +14,7 @@
 void yyerror(const char *msg);  // Basic error handler for Bison
 void error_at_line(int line, const char *fmt, ...);  // Line-aware error handler with formatting
 
+/* Function prototypes for the lexer */
 int yylex(void);
 
 /* External variables */

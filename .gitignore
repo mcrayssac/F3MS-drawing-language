@@ -19,3 +19,6 @@ __pycache__/
 # Ignore editor or OS-specific files
 .DS_Store
 Thumbs.db
+
+# Ignore vscode settings
+.vscode/

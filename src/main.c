@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "./external/external.h"
 #include "./common/common.h"
 
 extern FILE *yyin;
