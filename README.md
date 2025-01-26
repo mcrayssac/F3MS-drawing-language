@@ -84,10 +84,10 @@ Pour ce projet, nous avons sélectionné plusieurs outils pour répondre aux bes
    pip install pygame
    ```
 
-3. **Installer Gtk 3**
+3. **Installer Gtk3 , Gtksourceview3 et Vte2.91 **
 
    ```bash
-   sudo apt install libgtk-3-dev
+   sudo apt install libgtk-3-dev libgtksourceview-3.0-dev libvte-2.91-dev
     ```
 
 4. **Etapes de Compilation**
